@@ -1,0 +1,126 @@
+{
+  "paths": {
+    "/locations": {
+      "get": {
+        "description": "Get a list of all locations.",
+        "responses": {
+          "200": {
+            "description": "All locations.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Location": {
+        "type": "object",
+        "required": [
+          "locationId",
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "locationId": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string",
+            "example": "1234 Mountain St"
+          },
+          "country": {
+            "type": "string",
+            "example": "USA"
+          },
+          "latitude": {
+            "$ref": "#/components/schemas/Latitude"
+          },
+          "locality": {
+            "type": "string",
+            "example": "Provo"
+          },
+          "longitude": {
+            "$ref": "#/components/schemas/Longitude"
+          },
+          "postalCode": {
+            "type": "string",
+            "example": "84606"
+          },
+          "province": {
+            "type": "string",
+            "example": "UT"
+          },
+          "units": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Unit"
+            }
+          }
+        }
+      },
+      "Latitude": {
+        "type": "number",
+        "minimum": -90,
+        "maximum": 90
+      },
+      "Longitude": {
+        "type": "number",
+        "minimum": -180,
+        "maximum": 180
+      },
+      "LongLat": {
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "latitude": {
+            "$ref": "#/components/schemas/Latitude"
+          },
+          "longitude": {
+            "$ref": "#/components/schemas/Longitude"
+          }
+        }
+      },
+      "Unit": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "networks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "openapi": "3.0.2",
+  "info": {
+    "title": "KAOS",
+    "version": "0.0.1"
+  }
+}
