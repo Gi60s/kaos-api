@@ -5,7 +5,8 @@
   "description": "The KAOS API build tools",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node build/index build",
+    "watch": "node build/index watch"
   },
   "repository": {
     "type": "git",
