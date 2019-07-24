@@ -1,0 +1,17 @@
+components:
+  schemas:
+    Unit:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        networks:
+          type: array
+          items:
+            type: string
