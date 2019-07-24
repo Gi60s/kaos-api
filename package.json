@@ -1,0 +1,26 @@
+{
+  "name": "kaos-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The KAOS API build tools",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gi60s/kaos-api.git"
+  },
+  "author": "James Speirs <james.speirs@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Gi60s/kaos-api/issues"
+  },
+  "homepage": "https://github.com/Gi60s/kaos-api#readme",
+  "dependencies": {
+    "chokidar": "^3.0.2",
+    "fs-extra": "^8.1.0",
+    "js-yaml": "^3.13.1",
+    "openapi-enforcer": "^1.4.4"
+  }
+}
