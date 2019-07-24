@@ -1,0 +1,6 @@
+openapi: '3.0.2'
+info:
+  title: KAOS
+  version: '0.0.1'
+paths:
+  $ref: paths.yml
