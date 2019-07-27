@@ -1,9 +1,13 @@
 # kaos-api
 
-You want to edit and create YAML files within the `definition` directory. All files that exist there will be merged into a single file, `openapi.json` at the project root directory. This built file can be used to produce Open API documentation.
+All files to edit exist in the `definitions` directory. Use `$ref` appropriately within files to reference other files.
 
-To run the build once: `npm run build`
+## Run a Local Server
 
-To run the build continually while you develop: `npm run watch`
+From a command line terminal: `npm run serve` 
 
-Once changes to the `openapi.json` files are pushed to the master branch then you can see the docs at: https://gi60s.github.io/kaos-api/
+## Build for Online Documenation
+
+1. From a command line terminal: `npm run build`
+
+2. Commit and push changes to github
