@@ -11,3 +11,7 @@ From a command line terminal: `npm run serve`
 1. From a command line terminal: `npm run build`
 
 2. Commit and push changes to github
+
+## TODO:
+
+1. Auto reload web page as documents are being updated
