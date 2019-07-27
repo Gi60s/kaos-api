@@ -44,7 +44,7 @@ components:
         units:
           type: array
           items:
-            $ref: '#/components/schemas/Unit'
+            $ref: './units.yml#components/schemas/Unit'
     Latitude:
       type: number
       minimum: -90
