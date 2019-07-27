@@ -6,7 +6,7 @@ All files to edit exist in the `definitions` directory. Use `$ref` appropriately
 
 From a command line terminal: `npm run serve` 
 
-## Build for Online Documenation
+## Build for Online Documentation
 
 1. From a command line terminal: `npm run build`
 
