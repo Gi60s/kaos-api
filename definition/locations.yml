@@ -1,6 +1,8 @@
 paths:
-  /locations:
+  locations:
     get:
+      tags:
+        - Location
       description: Get a list of all locations.
       responses:
         200:
@@ -10,7 +12,42 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
+                  $ref: '#/components/schemas/Location'
+  location:
+    parameters:
+      - $ref: '#/components/parameters/locationId'
+    get:
+      tags:
+        - Location
+      description: Get a specific location.
+      responses:
+        200:
+          description: A single location.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+  locationUnits:
+    parameters:
+      - $ref: '#/components/parameters/locationId'
+    get:
+      tags:
+        - Location
+      description: Get the units at a specific location.
+      responses:
+        200:
+          description: A single location and its units.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  location:
+                    $ref: '#/components/schemas/Location'
+                  units:
+                    type: array
+                    items:
+                      $ref: './units.yml#/components/schemas/Unit'
 components:
   schemas:
     Location:
@@ -22,12 +59,20 @@ components:
       properties:
         locationId:
           type: string
-        address:
+        addressLine1:
           type: string
           example: 1234 Mountain St
+        addressLine2:
+          type: string
+        addressLine4:
+          type: string
+        addressLine5:
+          type: string
         country:
           type: string
           example: USA
+        displayName:
+          type: string
         latitude:
           $ref: '#/components/schemas/Latitude'
         locality:
@@ -41,10 +86,6 @@ components:
         province:
           type: string
           example: UT
-        units:
-          type: array
-          items:
-            $ref: './units.yml#components/schemas/Unit'
     Latitude:
       type: number
       minimum: -90
@@ -63,3 +104,10 @@ components:
           $ref: '#/components/schemas/Latitude'
         longitude:
           $ref: '#/components/schemas/Longitude'
+  parameters:
+    locationId:
+      name: locationId
+      in: path
+      required: true
+      schema:
+        type: string

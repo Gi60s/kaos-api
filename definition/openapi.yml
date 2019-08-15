@@ -4,4 +4,22 @@ info:
   version: '0.0.1'
 paths:
   /locations:
-    $ref: '/home/james/Code/kaos/openapi/definition/locations.yml#/paths/%2Flocations'
+    $ref: '/home/james/Code/kaos/openapi/definition/locations.yml#/paths/locations'
+  /locations/{locationId}:
+    $ref: '/home/james/Code/kaos/openapi/definition/locations.yml#/paths/location'
+  /locations/{locationId}/units:
+    $ref: '/home/james/Code/kaos/openapi/definition/locations.yml#/paths/locationUnits'
+  /units:
+    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/units'
+  /units/{unitId}:
+    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unit'
+  /units/{unitId}/members:
+    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitMembers'
+  /units/{unitId}/members/{userId}:
+    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitMember'
+  /units/{unitId}/authorizatonRoles/{userId}:
+    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitAuthorizationRoles'
+  /users:
+    $ref: '/home/james/Code/kaos/openapi/definition/users.yml#/paths/users'
+  /users/{userId}:
+    $ref: '/home/james/Code/kaos/openapi/definition/users.yml#/paths/user'

@@ -1,17 +1,323 @@
+paths:
+  units:
+    get:
+      tags:
+        - Unit
+      description: Get a list of units
+      parameters:
+        - name: accessibility
+          in: query
+          schema:
+            type: string
+        - name: unitType
+          in: query
+          schema:
+            type: string
+        - name: freshnessScore
+          in: query
+          style: deepObject
+          schema:
+            type: object
+            properties:
+              minimum:
+                type: integer
+              maximum:
+                type: integer
+        - name: qualityScore
+          in: query
+          style: deepObject
+          schema:
+            type: object
+            properties:
+              minimum:
+                type: integer
+              maximum:
+                type: integer
+        - name: contentQualityScore
+          in: query
+          style: deepObject
+          schema:
+            type: object
+            properties:
+              minimum:
+                type: integer
+              maximum:
+                type: integer
+      responses:
+        200:
+          description: A list of units
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+    post:
+      tags:
+        - Unit
+      description: Create a new unit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit'
+      responses:
+        201:
+          description: Unit created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+  unit:
+    parameters:
+      - name: 'unitId'
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Unit
+      description: Get a single unit and its details
+      responses:
+        200:
+          description: Retrieved unit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+    put:
+      tags:
+        - Unit
+      description: Update a single unit's details
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit'
+      responses:
+        200:
+          description: Unit found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        404:
+          description: Unit not found
+    delete:
+      tags:
+        - Unit
+      description: Delete a unit
+      responses:
+        204:
+          description: Unit deleted
+  unitMembers:
+    get:
+      tags:
+        - Users
+        - Unit
+      description: Get a list of unit members
+      parameters:
+        - name: 'unitId'
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Users who are members of this unit
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: './users.yml#/components/schemas/User'
+                    - type: object
+                      properties:
+                        authorizationRoles:
+                          type: array
+                          items:
+                            type: string
+                        memberRole:
+                          type: string
+                        memberRoleDescription:
+                          type: string
+  unitMember:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Users
+        - Unit
+      description: Make a user a member of the unit
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                description: The unit authorization roles to apply to the user.
+      responses:
+        200:
+          description: User added
+        404:
+          description: User or unit not found
+    delete:
+      tags:
+        - Users
+        - Unit
+      description: Remove a user from the unit
+      responses:
+        204:
+          description: User removed from unit
+        404:
+          description: User or unit not found
+  unitAuthorizationRoles:
+    get:
+      tags:
+        - Unit
+      description: Get the unit authorization roles and permissions
+      responses:
+        200:
+          description: A list of unit's authorization roles and their permissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuthorizationRole'
+    put:
+      tags:
+        - Unit
+      description: Set the unit authorization roles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AuthorizationRole'
+      responses:
+        200:
+          description: A list of unit's authorization roles and their permissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuthorizationRole'
 components:
   schemas:
-    Unit:
+    AuthorizationRole:
       type: object
       properties:
-        id:
+        name:
           type: string
-        title:
+        permissions:
+          type: array
+          items:
+            type: string
+            enum:
+              - todo
+    Unit:
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        uid:
+          description: Unique identifier (UUID v4)
           type: string
-        description:
+        name:
           type: string
-        icon:
-          type: string
+        location:
+          $ref: './locations.yml#/components/schemas/Location'
+        unitType:
+          type: array
+          items:
+            type: string
         networks:
           type: array
           items:
             type: string
+        longDescription:
+          type: string
+        shortDescription:
+          type: string
+          maxLength: 500
+        logo:
+          type: object
+          properties:
+            url:
+              type: string
+        banner:
+          type: object
+          properties:
+            url:
+              type: string
+        accessibility:
+          type: string
+          enum:
+            - public
+            - private
+            - unlisted
+            - closed
+        vanityUrlPath:
+          type: string
+        hoursOfOperation:
+          type: object
+          properties:
+            sunday:
+              $ref: '#/components/schemas/HoursOfOperation'
+            monday:
+              $ref: '#/components/schemas/HoursOfOperation'
+            tuesday:
+              $ref: '#/components/schemas/HoursOfOperation'
+            wednesday:
+              $ref: '#/components/schemas/HoursOfOperation'
+            thursday:
+              $ref: '#/components/schemas/HoursOfOperation'
+            friday:
+              $ref: '#/components/schemas/HoursOfOperation'
+            saturday:
+              $ref: '#/components/schemas/HoursOfOperation'
+        email:
+          type: string
+        phoneNumber:
+          type: string
+          pattern: ^\+\d+ \d{3}-\d{3}-\d{4}$
+        website:
+          type: string
+        freshnessScore:
+          type: integer
+          minimum: 1
+          maximum: 100
+        qualityScore:
+          type: integer
+          minimum: 1
+          maximum: 100
+        contentQualityScore:
+          type: integer
+          minimum: 1
+          maximum: 100
+    HoursOfOperation:
+      type: array
+      items:
+        type: object
+        properties:
+          open:
+            $ref: '#/components/schemas/Time'
+          close:
+            $ref: '#/components/schemas/Time'
+    Time:
+      type: string
+      description: Stored as military time.
+      pattern: ^\d{2}:\d{2}$
+
+

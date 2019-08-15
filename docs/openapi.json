@@ -24,6 +24,140 @@
           }
         }
       }
+    },
+    "/locations/{locationId}": {
+      "parameters": [
+        {
+          "name": "locationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "description": "Get a specific location.",
+        "responses": {
+          "200": {
+            "description": "A single location.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "locationId",
+                    "latitude",
+                    "longitude"
+                  ],
+                  "properties": {
+                    "locationId": {
+                      "type": "string"
+                    },
+                    "addressLine1": {
+                      "type": "string",
+                      "example": "1234 Mountain St"
+                    },
+                    "addressLine2": {
+                      "type": "string"
+                    },
+                    "addressLine4": {
+                      "type": "string"
+                    },
+                    "addressLine5": {
+                      "type": "string"
+                    },
+                    "country": {
+                      "type": "string",
+                      "example": "USA"
+                    },
+                    "latitude": {
+                      "type": "number",
+                      "minimum": -90,
+                      "maximum": 90
+                    },
+                    "locality": {
+                      "type": "string",
+                      "example": "Provo"
+                    },
+                    "longitude": {
+                      "type": "number",
+                      "minimum": -180,
+                      "maximum": 180
+                    },
+                    "postalCode": {
+                      "type": "string",
+                      "example": "84606"
+                    },
+                    "province": {
+                      "type": "string",
+                      "example": "UT"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/locations/{locationId}/units": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1locations~1%7BlocationId%7D/parameters/0"
+        }
+      ],
+      "get": {
+        "description": "Get the units at a specific location.",
+        "responses": {
+          "200": {
+            "description": "A single location and its units.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "location": {
+                      "$ref": "#/paths/~1locations~1%7BlocationId%7D/get/responses/200/content/application~1json/schema"
+                    },
+                    "units": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "location"
+                        ],
+                        "properties": {
+                          "uid": {
+                            "description": "Unique identifier (UUID v4)",
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "networks": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
