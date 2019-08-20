@@ -2,7 +2,7 @@ paths:
   units:
     get:
       tags:
-        - Unit
+        - Units
       description: Get a list of units
       parameters:
         - name: accessibility
@@ -52,7 +52,7 @@ paths:
                 $ref: '#/components/schemas/Unit'
     post:
       tags:
-        - Unit
+        - Units
       description: Create a new unit
       requestBody:
         content:
@@ -75,7 +75,7 @@ paths:
           type: string
     get:
       tags:
-        - Unit
+        - Units
       description: Get a single unit and its details
       responses:
         200:
@@ -86,7 +86,7 @@ paths:
                 $ref: '#/components/schemas/Unit'
     put:
       tags:
-        - Unit
+        - Units
       description: Update a single unit's details
       requestBody:
         content:
@@ -104,7 +104,7 @@ paths:
           description: Unit not found
     delete:
       tags:
-        - Unit
+        - Units
       description: Delete a unit
       responses:
         204:
@@ -113,7 +113,7 @@ paths:
     get:
       tags:
         - Users
-        - Unit
+        - Units
       description: Get a list of unit members
       parameters:
         - name: 'unitId'
@@ -151,7 +151,7 @@ paths:
     put:
       tags:
         - Users
-        - Unit
+        - Units
       description: Make a user a member of the unit
       requestBody:
         required: false
@@ -170,7 +170,7 @@ paths:
     delete:
       tags:
         - Users
-        - Unit
+        - Units
       description: Remove a user from the unit
       responses:
         204:
@@ -180,7 +180,7 @@ paths:
   unitAuthorizationRoles:
     get:
       tags:
-        - Unit
+        - Units
       description: Get the unit authorization roles and permissions
       responses:
         200:
@@ -193,7 +193,7 @@ paths:
                   $ref: '#/components/schemas/AuthorizationRole'
     put:
       tags:
-        - Unit
+        - Units
       description: Set the unit authorization roles
       requestBody:
         required: true

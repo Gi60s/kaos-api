@@ -2,7 +2,7 @@ paths:
   locations:
     get:
       tags:
-        - Location
+        - Locations
       description: Get a list of all locations.
       responses:
         200:
@@ -18,7 +18,7 @@ paths:
       - $ref: '#/components/parameters/locationId'
     get:
       tags:
-        - Location
+        - Locations
       description: Get a specific location.
       responses:
         200:
@@ -32,7 +32,7 @@ paths:
       - $ref: '#/components/parameters/locationId'
     get:
       tags:
-        - Location
+        - Locations
       description: Get the units at a specific location.
       responses:
         200:

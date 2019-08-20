@@ -2,6 +2,14 @@ openapi: '3.0.2'
 info:
   title: KAOS
   version: '0.0.1'
+x-tagGroups:
+  - name: User Management
+    tags:
+      - Users
+  - name: Other
+    tags:
+      - Units
+      - Locations
 paths:
   /locations:
     $ref: '/home/james/Code/kaos/openapi/definition/locations.yml#/paths/locations'

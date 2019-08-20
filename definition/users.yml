@@ -2,7 +2,7 @@ paths:
   users:
     get:
       tags:
-        - User
+        - Users
       description: Get a list of users
       parameters:
         - name: accessibility
@@ -48,7 +48,7 @@ paths:
                 $ref: '#/components/schemas/User'
     post:
       tags:
-        - User
+        - Users
       description: Create a new user
       requestBody:
         content:
@@ -71,7 +71,7 @@ paths:
           type: string
     get:
       tags:
-        - User
+        - Users
       description: Get a single user and its details
       responses:
         200:
@@ -82,7 +82,7 @@ paths:
                 $ref: '#/components/schemas/User'
     put:
       tags:
-        - User
+        - Users
       description: Update a single user's details
       requestBody:
         content:
@@ -100,7 +100,7 @@ paths:
           description: User not found
     delete:
       tags:
-        - User
+        - Users
       description: Delete a user
       responses:
         204:
