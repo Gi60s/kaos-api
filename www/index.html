@@ -18,7 +18,10 @@
   </style>
 </head>
 <body>
-  <redoc spec-url='http://localhost:<%= port %>/openapi.json'></redoc>
-  <script src="http://localhost:<%= port %>/redoc.js"> </script>
+  <redoc spec-url='http://localhost:<%= port %>/openapi.json'
+         sort-props-alphabetically="true"
+         required-props-first="true"
+         expand-responses="200,201"></redoc>
+  <script src="http://localhost:<%= port %>/redoc.js"></script>
 </body>
 </html>
