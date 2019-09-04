@@ -9,11 +9,22 @@ paths:
           in: query
           schema:
             type: string
-        - name: unitType
+        - name: unitTypes
           in: query
+          explode: false
           schema:
-            type: string
+            type: array
+            items:
+              type: string
+        - name: networks
+          in: query
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
         - name: freshnessScore
+          description: Score based on a units engagement level (posts created, comments made, post impressions, post reactions, etc).
           in: query
           style: deepObject
           schema:
@@ -24,6 +35,7 @@ paths:
               maximum:
                 type: integer
         - name: qualityScore
+          description: Score based on how setup a unit is.
           in: query
           style: deepObject
           schema:
@@ -34,6 +46,18 @@ paths:
               maximum:
                 type: integer
         - name: contentQualityScore
+          description: Score based on the quality of the content created by the unit (articles, posts, comments, etc).
+          in: query
+          style: deepObject
+          schema:
+            type: object
+            properties:
+              minimum:
+                type: integer
+              maximum:
+                type: integer
+        - name: activityScore
+          description: Score based on the frequency that a unit accesses the network.
           in: query
           style: deepObject
           schema:
@@ -62,17 +86,18 @@ paths:
       responses:
         201:
           description: Unit created
+          headers:
+            Location:
+              description: The API endpoint to hit to get the created unit.
+              schema:
+                type: string
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Unit'
   unit:
     parameters:
-      - name: 'unitId'
-        in: path
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/pathUnitId'
     get:
       tags:
         - Units
@@ -112,8 +137,7 @@ paths:
   unitMembers:
     get:
       tags:
-        - Users
-        - Units
+        - Members
       description: Get a list of unit members
       parameters:
         - name: 'unitId'
@@ -150,8 +174,7 @@ paths:
           type: string
     put:
       tags:
-        - Users
-        - Units
+        - Members
       description: Make a user a member of the unit
       requestBody:
         required: false
@@ -169,8 +192,7 @@ paths:
           description: User or unit not found
     delete:
       tags:
-        - Users
-        - Units
+        - Members
       description: Remove a user from the unit
       responses:
         204:
@@ -180,7 +202,7 @@ paths:
   unitAuthorizationRoles:
     get:
       tags:
-        - Units
+        - Roles
       description: Get the unit authorization roles and permissions
       responses:
         200:
@@ -193,7 +215,7 @@ paths:
                   $ref: '#/components/schemas/AuthorizationRole'
     put:
       tags:
-        - Units
+        - Roles
       description: Set the unit authorization roles
       requestBody:
         required: true
@@ -213,6 +235,13 @@ paths:
                 items:
                   $ref: '#/components/schemas/AuthorizationRole'
 components:
+  parameters:
+    pathUnitId:
+      name: 'unitId'
+      in: path
+      required: true
+      schema:
+        type: string
   schemas:
     AuthorizationRole:
       type: object
@@ -238,10 +267,23 @@ components:
           type: string
         location:
           $ref: './locations.yml#/components/schemas/Location'
-        unitType:
-          type: array
-          items:
-            type: string
+        unitTypes:
+          type: object
+          properties:
+            contentCreator:
+              type: object
+            group:
+              type: object
+            manufacturer:
+              type: object
+            organization:
+              type: object
+            retailer:
+              type: object
+            service:
+              type: object
+            team:
+              $ref: './units_teams.yml#/components/schemas/TeamAttributes'
         networks:
           type: array
           items:
@@ -251,6 +293,8 @@ components:
         shortDescription:
           type: string
           maxLength: 500
+        welcomeMessage:
+          type: string
         logo:
           type: object
           properties:
@@ -294,6 +338,10 @@ components:
           pattern: ^\+\d+ \d{3}-\d{3}-\d{4}$
         website:
           type: string
+        activityScore:
+          type: integer
+          minimum: 1
+          maximum: 100
         freshnessScore:
           type: integer
           minimum: 1
@@ -306,6 +354,25 @@ components:
           type: integer
           minimum: 1
           maximum: 100
+        # metadata:
+        #   oneOf:
+        #     - description: team
+        #       type: object
+        #       properties:
+        #         recruiting:
+        #           type: boolean
+        #         recruitingMessage:
+        #           type: string
+        #         recrutingMinimumAge:
+        #           type: integer
+        #           minimum: 0
+        #     - description: retailer
+        #       type: object
+        #       properties:
+        #         hasOnlineStore:
+        #           type: boolean
+        #         hasPhysicalStore:
+        #           type: boolean
     HoursOfOperation:
       type: array
       items:

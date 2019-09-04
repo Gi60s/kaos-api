@@ -6,10 +6,13 @@ x-tagGroups:
   - name: User Management
     tags:
       - Users
-  - name: Other
+  - name: Unit Management
     tags:
-      - Units
       - Locations
+      - Members
+      - Roles
+      - Teams
+      - Units
 paths:
   /locations:
     $ref: '/home/james/Code/kaos/openapi/definition/locations.yml#/paths/locations'
@@ -27,6 +30,8 @@ paths:
     $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitMember'
   /units/{unitId}/authorizatonRoles/{userId}:
     $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitAuthorizationRoles'
+  /units/{unitId}/teams:
+    $ref: '/home/james/Code/kaos/openapi/definition/units_teams.yml#/paths/teams'
   /users:
     $ref: '/home/james/Code/kaos/openapi/definition/users.yml#/paths/users'
   /users/{userId}:
