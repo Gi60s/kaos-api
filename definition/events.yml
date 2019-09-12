@@ -1,0 +1,9 @@
+components:
+  schemas:
+    Event:
+      type: object
+    Events:
+      type: array
+      maxItems: 4
+      items:
+        $ref: '#/components/schemas/Event'

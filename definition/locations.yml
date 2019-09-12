@@ -12,7 +12,40 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Location'
+                  allOf:
+                    - $ref: '#/components/schemas/Location'
+                    - type: object
+                      properties:
+                        units:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              uid:
+                                $ref: './units.yml#/components/schemas/UnitBasic/properties/uid'
+                              name:
+                                $ref: './units.yml#/components/schemas/UnitBasic/properties/name'
+                              shortDescription:
+                                $ref: './units.yml#/components/schemas/UnitBasic/properties/shortDescription'
+                              logo:
+                                $ref: './units.yml#/components/schemas/UnitBasic/properties/logo'
+                        users:
+                          type: array
+                          items:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                uid:
+                                  $ref: './users.yml#/components/schemas/UserBasic/properties/uid'
+                                displayName:
+                                  $ref: './users.yml#/components/schemas/UserBasic/properties/displayName'
+                                avatar:
+                                  $ref: './users.yml#/components/schemas/UserBasic/properties/avatar'
+                                firstName:
+                                  $ref: './users.yml#/components/schemas/UserPersonal/properties/firstName'
+                                lastName:
+                                  $ref: './users.yml#/components/schemas/UserPersonal/properties/lastName'
   location:
     parameters:
       - $ref: '#/components/parameters/locationId'
@@ -26,7 +59,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Location'
+                allOf:
+                  - $ref: '#/components/schemas/Location'
+                  - type: object
+                    properties:
+                      units:
+                        type: array
+                        items:
+                          $ref: './units.yml#/components/schemas/UnitBasic'
   locationUnits:
     parameters:
       - $ref: '#/components/parameters/locationId'
@@ -57,8 +97,8 @@ components:
       - latitude
       - longitude
       properties:
-        locationId:
-          type: string
+        uid:
+          $ref: './common.yml#/Uid2'
         addressLine1:
           type: string
           example: 1234 Mountain St

@@ -3,6 +3,10 @@ info:
   title: KAOS
   version: '0.0.1'
 x-tagGroups:
+  - name: Network Management
+    tags:
+      - Networks
+      - Metadata
   - name: User Management
     tags:
       - Users
@@ -20,6 +24,12 @@ paths:
     $ref: '/home/james/Code/kaos/openapi/definition/locations.yml#/paths/location'
   /locations/{locationId}/units:
     $ref: '/home/james/Code/kaos/openapi/definition/locations.yml#/paths/locationUnits'
+  /networks:
+    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/networks'
+  /networks/{networkId}:
+    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/network'
+  /networks/{networkId}/meta:
+    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/networkMeta'
   /units:
     $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/units'
   /units/{unitId}:

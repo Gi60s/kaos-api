@@ -1,0 +1,160 @@
+paths:
+  networks:
+    get:
+      tags:
+        - Networks
+      description: Get a list of networks.
+      parameters:
+        - $ref: '#/components/parameters/queryFieldSet'
+      responses:
+        200:
+          description: A list of networks.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Network'
+    post:
+      tags:
+        - Networks
+      description: Create a network.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkBasic'
+      responses:
+        201:
+          description: Network created.
+          headers:
+            Location:
+              schema:
+                type: string
+  network:
+    parameters:
+      - $ref: '#/components/parameters/pathNetworkId'
+      - $ref: '#/components/parameters/queryFieldSet'
+    get:
+      tags:
+        - Networks
+      description: Get a single network.
+      responses:
+        200:
+          description: A single network.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Network'
+    put:
+      tags:
+        - Networks
+      description: Update a network.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkBasic'
+      responses:
+        200:
+          description: Network updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Network'
+  networkMeta:
+    parameters:
+      - $ref: '#/components/parameters/pathNetworkId'
+    get:
+      tags:
+        - Metadata
+      description: Get a single network's meta information.
+      responses:
+        200:
+          description: A single network's meta information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkMeta'
+    put:
+      tags:
+        - Metadata
+      description: Update a single network's meta information.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkMeta'
+      responses:
+        200:
+          description: Updated the network's meta information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkMeta'
+
+components:
+  parameters:
+    pathNetworkId:
+      name: 'networkId'
+      in: path
+      required: true
+      schema:
+        type: string
+    queryFieldSet:
+      name: fieldsets
+      description: Specify which fieldsets to return.
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        default: ['basic']
+        minItems: 1
+        items:
+          type: string
+          enum:
+            - basic
+            - meta
+  schemas:
+    Network:
+      type: object
+      properties:
+        basic:
+          $ref: '#/components/schemas/NetworkBasic'
+        meta:
+          $ref: '#/components/schemas/NetworkMeta'
+    NetworkBasic:
+      type: object
+      required:
+        - name
+      properties:
+        accessibility:
+          $ref: './common.yml#/Accessibility'
+        name:
+          type: string
+        shortDescription:
+          type: string
+          maxLength: 500
+        description:
+          type: string
+    NetworkMeta:
+      type: object
+      properties:
+        venueTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/VenueType'
+    VenueType:
+      type: object
+      required:
+        - type
+        - shortDescription
+      properties:
+        type:
+          type: string
+        shortDescription:
+          type: string
+          maxLength: 500
+        description:
+          type: string

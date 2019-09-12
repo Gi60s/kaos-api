@@ -7,6 +7,9 @@ const wwwDir = path.resolve(__dirname, '..', 'www')
 
 module.exports = async function ({ source, port = 3000 }) {
   const builder = Builder(source)
+  let openapiDoc
+
+  builder.watch()
 
   // render index.html file
   const indexHtml = await new Promise((resolve, reject) => {
@@ -29,8 +32,7 @@ module.exports = async function ({ source, port = 3000 }) {
   })
 
   app.get('/openapi.json', async (req, res) => {
-    const obj = await builder.build()
-    res.json(obj)
+    res.json(builder.openapiDoc || {})
   })
 
   app.use(express.static(wwwDir))

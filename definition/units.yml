@@ -5,18 +5,9 @@ paths:
         - Units
       description: Get a list of units
       parameters:
-        - name: accessibility
-          in: query
-          schema:
-            type: string
-        - name: unitTypes
-          in: query
-          explode: false
-          schema:
-            type: array
-            items:
-              type: string
+        - $ref: './common.yml#/parameterQueryAccessibility'
         - name: networks
+          description: The networks to limit returned units and fieldsets to.
           in: query
           explode: false
           schema:
@@ -24,49 +15,29 @@ paths:
             items:
               type: string
         - name: freshnessScore
-          description: Score based on a units engagement level (posts created, comments made, post impressions, post reactions, etc).
+          description: Filter on freshness score range.
           in: query
           style: deepObject
           schema:
-            type: object
-            properties:
-              minimum:
-                type: integer
-              maximum:
-                type: integer
+            $ref: './common.yml#/SocialScoreRange'
         - name: qualityScore
           description: Score based on how setup a unit is.
           in: query
           style: deepObject
           schema:
-            type: object
-            properties:
-              minimum:
-                type: integer
-              maximum:
-                type: integer
+            $ref: './common.yml#/SocialScoreRange'
         - name: contentQualityScore
           description: Score based on the quality of the content created by the unit (articles, posts, comments, etc).
           in: query
           style: deepObject
           schema:
-            type: object
-            properties:
-              minimum:
-                type: integer
-              maximum:
-                type: integer
+            $ref: './common.yml#/SocialScoreRange'
         - name: activityScore
           description: Score based on the frequency that a unit accesses the network.
           in: query
           style: deepObject
           schema:
-            type: object
-            properties:
-              minimum:
-                type: integer
-              maximum:
-                type: integer
+            $ref: './common.yml#/SocialScoreRange'
       responses:
         200:
           description: A list of units
@@ -135,16 +106,12 @@ paths:
         204:
           description: Unit deleted
   unitMembers:
+    parameters:
+      - $ref: '#/components/parameters/pathUnitId'
     get:
       tags:
         - Members
       description: Get a list of unit members
-      parameters:
-        - name: 'unitId'
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         200:
           description: Users who are members of this unit
@@ -153,25 +120,11 @@ paths:
               schema:
                 type: array
                 items:
-                  allOf:
-                    - $ref: './users.yml#/components/schemas/User'
-                    - type: object
-                      properties:
-                        authorizationRoles:
-                          type: array
-                          items:
-                            type: string
-                        memberRole:
-                          type: string
-                        memberRoleDescription:
-                          type: string
+                  $ref: '#/components/schemas/UnitMembers'
   unitMember:
     parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/pathUnitId'
+      - $ref: './users.yml#/components/parameters/pathUserId'
     put:
       tags:
         - Members
@@ -200,6 +153,9 @@ paths:
         404:
           description: User or unit not found
   unitAuthorizationRoles:
+    parameters:
+      - $ref: '#/components/parameters/pathUnitId'
+      - $ref: './users.yml#/components/parameters/pathUserId'
     get:
       tags:
         - Roles
@@ -242,7 +198,32 @@ components:
       required: true
       schema:
         type: string
+    queryFieldSet:
+      name: fieldsets
+      description: Specify which fieldsets to return.
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        default: ['basic']
+        minItems: 1
+        items:
+          type: string
+          enum:
+            - basic
+            - members
+            - roles
+            - teams
+            - venues
   schemas:
+    Accessibility:
+      type: string
+      enum:
+        - public
+        - private
+        - unlisted
+        - closed
     AuthorizationRole:
       type: object
       properties:
@@ -256,34 +237,33 @@ components:
               - todo
     Unit:
       type: object
+      properties:
+        basic:
+          $ref: '#/components/schemas/UnitBasic'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitMembers'
+        teams:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitTeams'
+        venues:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitVenue'
+    UnitBasic:
+      type: object
       required:
         - name
         - location
       properties:
         uid:
-          description: Unique identifier (UUID v4)
-          type: string
+          $ref: './common.yml#/Uid2'
         name:
           type: string
         location:
           $ref: './locations.yml#/components/schemas/Location'
-        unitTypes:
-          type: object
-          properties:
-            contentCreator:
-              type: object
-            group:
-              type: object
-            manufacturer:
-              type: object
-            organization:
-              type: object
-            retailer:
-              type: object
-            service:
-              type: object
-            team:
-              $ref: './units_teams.yml#/components/schemas/TeamAttributes'
         networks:
           type: array
           items:
@@ -296,95 +276,84 @@ components:
         welcomeMessage:
           type: string
         logo:
-          type: object
-          properties:
-            url:
-              type: string
+          $ref: './common.yml#/Image'
         banner:
-          type: object
-          properties:
-            url:
-              type: string
+          $ref: './common.yml#/Image'
         accessibility:
-          type: string
-          enum:
-            - public
-            - private
-            - unlisted
-            - closed
+          $ref: '#/components/schemas/Accessibility'
         vanityUrlPath:
           type: string
-        hoursOfOperation:
-          type: object
-          properties:
-            sunday:
-              $ref: '#/components/schemas/HoursOfOperation'
-            monday:
-              $ref: '#/components/schemas/HoursOfOperation'
-            tuesday:
-              $ref: '#/components/schemas/HoursOfOperation'
-            wednesday:
-              $ref: '#/components/schemas/HoursOfOperation'
-            thursday:
-              $ref: '#/components/schemas/HoursOfOperation'
-            friday:
-              $ref: '#/components/schemas/HoursOfOperation'
-            saturday:
-              $ref: '#/components/schemas/HoursOfOperation'
         email:
           type: string
         phoneNumber:
-          type: string
-          pattern: ^\+\d+ \d{3}-\d{3}-\d{4}$
+          $ref: './common.yml#/PhoneNumber'
         website:
           type: string
         activityScore:
-          type: integer
-          minimum: 1
-          maximum: 100
+          $ref: './common.yml#/SocialScore'
         freshnessScore:
-          type: integer
-          minimum: 1
-          maximum: 100
+          $ref: './common.yml#/SocialScore'
         qualityScore:
-          type: integer
-          minimum: 1
-          maximum: 100
+          $ref: './common.yml#/SocialScore'
         contentQualityScore:
+          $ref: './common.yml#/SocialScore'
+    UnitMembers:
+      allOf:
+        - $ref: './users.yml#/components/schemas/UserBasic'
+        - type: object
+          properties:
+            authorizationRoles:
+              type: array
+              items:
+                type: string
+            memberRole:
+              type: string
+            memberRoleDescription:
+              type: string
+    UnitRetailers:
+      type: object
+      properties:
+        hasOnlineStore:
+          type: boolean
+        hasPhysicalStore:
+          type: boolean
+    UnitTeams:
+      type: object
+      properties:
+        uid:
+          $ref: './common.yml#/Uid2'
+        networks:
+          type: array
+          items:
+            type: string
+        recruiting:
+          type: boolean
+        recruitingMessage:
+          type: string
+        recruitingMinimumAge:
           type: integer
-          minimum: 1
-          maximum: 100
-        # metadata:
-        #   oneOf:
-        #     - description: team
-        #       type: object
-        #       properties:
-        #         recruiting:
-        #           type: boolean
-        #         recruitingMessage:
-        #           type: string
-        #         recrutingMinimumAge:
-        #           type: integer
-        #           minimum: 0
-        #     - description: retailer
-        #       type: object
-        #       properties:
-        #         hasOnlineStore:
-        #           type: boolean
-        #         hasPhysicalStore:
-        #           type: boolean
-    HoursOfOperation:
-      type: array
-      items:
-        type: object
-        properties:
-          open:
-            $ref: '#/components/schemas/Time'
-          close:
-            $ref: '#/components/schemas/Time'
-    Time:
-      type: string
-      description: Stored as military time.
-      pattern: ^\d{2}:\d{2}$
-
-
+          minimum: 0
+        upcomingEvents:
+          $ref: './events.yml#/components/schemas/Events'
+    UnitVenue:
+      type: object
+      properties:
+        uid:
+          $ref: './common.yml#/Uid2'
+        hoursOfOperation:
+          $ref: './common.yml#/HoursOfOperationWeek'
+        location:
+          $ref: './locations.yml#/components/schemas/Location'
+        networks:
+          type: array
+          items:
+            type: string
+        rules:
+          type: string
+        types:
+          description: Network specific venue types.
+          type: array
+          items:
+            type: string
+        upcomingEvents:
+          $ref: './events.yml#/components/schemas/Events'

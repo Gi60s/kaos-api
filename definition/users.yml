@@ -5,40 +5,26 @@ paths:
         - Users
       description: Get a list of users
       parameters:
-        - name: accessibility
-          in: query
-          schema:
-            type: string
+        - $ref: '#/components/parameters/queryFieldSet'
+        - $ref: './common.yml#/parameterQueryAccessibility'
         - name: freshnessScore
+          description: Filter on freshness score range.
           in: query
           style: deepObject
           schema:
-            type: object
-            properties:
-              minimum:
-                type: integer
-              maximum:
-                type: integer
+            $ref: './common.yml#/SocialScoreRange'
         - name: qualityScore
+          description: Filter on quality score range.
           in: query
           style: deepObject
           schema:
-            type: object
-            properties:
-              minimum:
-                type: integer
-              maximum:
-                type: integer
+            $ref: './common.yml#/SocialScoreRange'
         - name: contentQualityScore
+          description: Filter on content quality score range.
           in: query
           style: deepObject
           schema:
-            type: object
-            properties:
-              minimum:
-                type: integer
-              maximum:
-                type: integer
+            $ref: './common.yml#/SocialScoreRange'
       responses:
         200:
           description: A list of users
@@ -54,10 +40,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserBasic'
       responses:
         201:
           description: Unit created
+          headers:
+            Location:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -73,6 +63,8 @@ paths:
       tags:
         - Users
       description: Get a single user and its details
+      parameters:
+        - $ref: '#/components/parameters/queryFieldSet'
       responses:
         200:
           description: Retrieved user
@@ -88,14 +80,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserBasic'
       responses:
         200:
-          description: User found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
+          description: User updated
         404:
           description: User not found
     delete:
@@ -106,6 +94,29 @@ paths:
         204:
           description: User deleted
 components:
+  parameters:
+    pathUserId:
+      name: 'userId'
+      in: path
+      required: true
+      schema:
+        type: string
+    queryFieldSet:
+      name: fieldsets
+      description: Specify which fieldsets to return.
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        default: ['basic']
+        minItems: 1
+        items:
+          type: string
+          enum:
+            - basic
+            - personal
+            - units
   schemas:
     Credentials:
       type: object
@@ -125,63 +136,93 @@ components:
           format: password
     User:
       type: object
+      properties:
+        basic:
+          $ref: '#/components/schemas/UserBasic'
+        personal:
+          $ref: '#/components/schemas/UserPersonal'
+        units:
+          $ref: '#/components/schemas/UserUnits'
+    UserBasic:
+      type: object
+      description: Basic fieldset data
       required:
         - displayName
-        - location
+      properties:
+        uid:
+          $ref: './common.yml#/Uid2'
+        accessibility:
+          $ref: './common.yml#/Accessibility'
+        avatar:
+          $ref: './common.yml#/Image'
+        displayName:
+          description: The publicly displayed name for this user.
+          type: string
+        shortDescription:
+          description: A short description that a user can add for themself.
+          type: string
+          maxLength: 500
+        longDescription:
+          description: A longer description that a user can add for themself.
+          type: string
+        networks:
+          description: The networks that the user currently has an account with.
+          type: array
+          readOnly: true
+          items:
+            type: string
+        vanityUrlPath:
+          description: The URL to the user's own page within the networks.
+          type: string
+        website:
+          description: A URL to the user's own external website.
+          type: string
+        freshnessScore:
+          allOf:
+            - $ref: './common.yml#/SocialScore'
+            - type: integer
+              # readOnly: true
+              description: How active the user is, how often the log in, how often they interact.
+        qualityScore:
+          allOf:
+            - $ref: './common.yml#/SocialScore'
+            - type: integer
+              # readOnly: true
+              description: Quality of a user's identifying data. The more information the unit has filled out (phone, address, logo, about, etc) the higher the quality.
+        contentQualityScore:
+          allOf:
+            - $ref: './common.yml#/SocialScore'
+            - type: integer
+              # readOnly: true
+              description: Quality of a units content. Are their posts relevant? Do they have images, how many likes, how many comments. Have posts been reported as bad or inappropriate content.
+    UserPersonal:
+      type: object
+      description: Personal fieldset data
       properties:
         uid:
           description: Unique identifier (UUID v4)
           type: string
+        accessibility:
+          $ref: './common.yml#/Accessibility'
         birthdate:
           type: string
           format: date
-        identifyVerified:
+        birthdateVerified:
           type: boolean
-        displayName:
-          type: string
         firstName:
           type: string
         lastName:
           type: string
+        nameVerified:
+          type: boolean
         email:
           type: string
           format: email
+        emailVerified:
+          type: boolean
         location:
           $ref: './locations.yml#/components/schemas/Location'
-        networks:
-          type: array
-          items:
-            type: string
-        longDescription:
-          type: string
-        shortDescription:
-          type: string
-          maxLength: 500
-        avatar:
-          type: object
-          properties:
-            url:
-              type: string
-        accessibility:
-          type: string
-          enum:
-            - public
-            - private
-        vanityUrlPath:
-          type: string
-        website:
-          type: string
-        freshnessScore:
-          type: integer
-          minimum: 1
-          maximum: 100
-        qualityScore:
-          type: integer
-          minimum: 1
-          maximum: 100
-        contentQualityScore:
-          type: integer
-          minimum: 1
-          maximum: 100
-
-
+        locationVerified:
+          type: boolean
+    UserUnits:
+      type: object

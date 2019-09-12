@@ -1,0 +1,88 @@
+Accessibility:
+  type: object
+  properties:
+    discoverable:
+      type: boolean
+    public:
+      type: boolean
+# Hateoas:
+#   type: object
+#   properties:
+#     rel:
+#       type: string
+#       description: The relationship the link has to the current resource.
+#     href:
+#       type: string
+#       description: The URL to beforme the HATEOAS action.
+#     method:
+#       type: string
+#       description: The HTTP method to use when invoking the URL.
+HoursOfOperationDay:
+  type: array
+  items:
+    type: object
+    properties:
+      open:
+        $ref: '#/Time'
+      close:
+        $ref: '#/Time'
+HoursOfOperationWeek:
+  type: object
+  properties:
+    sunday:
+      $ref: '#/HoursOfOperationDay'
+    monday:
+      $ref: '#/HoursOfOperationDay'
+    tuesday:
+      $ref: '#/HoursOfOperationDay'
+    wednesday:
+      $ref: '#/HoursOfOperationDay'
+    thursday:
+      $ref: '#/HoursOfOperationDay'
+    friday:
+      $ref: '#/HoursOfOperationDay'
+    saturday:
+      $ref: '#/HoursOfOperationDay'
+Image:
+  type: object
+  properties:
+    url:
+      type: string
+PhoneNumber:
+  type: string
+  pattern: ^\+\d+ \d{3}-\d{3}-\d{4}$
+SocialScore:
+  type: integer
+  minimum: 1
+  maximum: 100
+SocialScoreRange:
+  type: object
+  properties:
+    minimum:
+      $ref: './common.yml#/SocialScore'
+    maximum:
+      $ref: './common.yml#/SocialScore'
+Time:
+  type: string
+  description: Stored as military time.
+  pattern: ^\d{2}:\d{2}$
+Uid2:
+  description: Unique identifier (UUID v2, date-time and MAC address, DCE security)
+  type: string
+Uid4:
+  description: Unique identifier (UUID v4, random)
+  type: string
+
+
+parameterQueryAccessibility:
+  name: accessibility
+  description: Filter based on accessibility
+  in: query
+  style: deepObject
+  schema:
+    allOf:
+      - $ref: './common.yml#/Accessibility'
+      - type: object
+        default:
+          discoverable: true
+          public: true
