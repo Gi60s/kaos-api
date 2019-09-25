@@ -1,0 +1,270 @@
+paths:
+  portfolios:
+    get:
+      tags:
+        - Portfolios
+      summary: Get a list of portfolios
+      description: Get a list of the portfolios that you have access to.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: '#/components/parameters/queryFieldSet'
+      responses:
+        200:
+          description: A list of portfolios.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Portfolios'
+    post:
+      tags:
+        - Portfolios
+      summary: Create a portfolio
+      description: Create a portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PortfolioBasic'
+      responses:
+        201:
+          description: Portfolio created.
+          headers:
+            Location:
+              description: The API endpoint to hit to get the created portfolio.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioBasic'
+  portfolio:
+    parameters:
+      - $ref: '#/components/parameters/pathPortfolioId'
+    get:
+      tags:
+        - Portfolios
+      summary: Get a single portfolio
+      description: Get a single portfolio.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: '#/components/parameters/queryFieldSet'
+      responses:
+        200:
+          description: A portfolio.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Portfolio'
+    put:
+      tags:
+        - Portfolios
+      summary: Set basic info
+      description: Set basic information for a portfolio.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PortfolioBasic'
+      responses:
+        200:
+          description: A portfolio.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Portfolio'
+    patch:
+      tags:
+        - Portfolios
+      summary: Partial update a portfolio
+      description: Update part of the basic information for a portfolio.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Portfolio'
+      responses:
+        200:
+          description: A portfolio.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Portfolio'
+    delete:
+      tags:
+        - Portfolios
+      summary: Delete a portfolio
+      description: Delete a portfolio and its sub portfolios for all effective dates
+      responses:
+        204:
+          description: Portfolio deleted
+  childPortfolios:
+    parameters:
+      - $ref: '#/components/parameters/pathPortfolioId'
+      - in: path
+        name: childPortfolioId
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Child Portfolios
+      summary: Attach a child portfolio
+      description: Attach an existing portfolio as a child portfolio. If the portfolio is already attached to a different parent then it will be removed from the existing parent.
+      responses:
+        200:
+          description: Attached successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioBasic'
+    delete:
+      tags:
+        - Child Portfolios
+      summary: Detatch a child portfolio
+      description: Detatch an existing child portfolio from the parent. This will not delete the child portfolio.
+      responses:
+        200:
+          description: Detached successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioBasic'
+
+components:
+  parameters:
+    pathPortfolioId:
+      name: 'portfolioId'
+      in: path
+      required: true
+      schema:
+        type: string
+    queryFieldSet:
+      name: fieldsets
+      description: Specify which fieldsets to return.
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        default: ['basic']
+        minItems: 1
+        items:
+          type: string
+          enum:
+            - basic
+            - members
+            - portfolios
+            - units
+  schemas:
+    Portfolio:
+      type: object
+      properties:
+        basic:
+          $ref: '#/components/schemas/PortfolioBasic'
+        members:
+          type: array
+          description: A list of up to 100 members. Use the portfolio members service to get other members.
+          items:
+            $ref: './common.yml#/Member'
+        portfolios:
+          type: array
+          description: A list of up to 100 sub portfolios basic information.
+          items:
+            $ref: '#/components/schemas/Portfolios'
+        units:
+          type: array
+          description: A list of up to 100 units. Use the portfolio units service to get other units.
+          items:
+            $ref: './units.yml#/components/schemas/UnitBasic'
+    Portfolios:
+      type: array
+      items:
+        type: object
+        properties:
+          basic:
+            $ref: '#/components/schemas/PortfolioBasic'
+          members:
+            type: array
+            description: A list of up to 100 members. Use the portfolio members service to get other members.
+            readOnly: true
+            items:
+              $ref: './common.yml#/Member'
+          parentPortfolio:
+            type: object
+            description: The parent portfolio that this is attached to.
+            readOnly: true
+            properties:
+              uid:
+                $ref: './common.yml#/Uid2'
+              name:
+                type: string
+          portfolios:
+            type: array
+            description: A list of portfolio basic info for up to 100 sub portfolios.
+            readOnly: true
+            items:
+              $ref: '#/components/schemas/PortfolioBasic'
+          units:
+            type: array
+            description: A list of up to 100 units. Use the portfolio units service to get other units.
+            readOnly: true
+            items:
+              $ref: './units.yml#/components/schemas/UnitBasic'
+    PortfolioBasic:
+      type: object
+      required:
+        - name
+      properties:
+        uid:
+          $ref: './common.yml#/Uid2'
+        name:
+          type: string
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveRanges:
+          $ref: './common.yml#/EffectiveRanges'
+        members:
+          type: array
+          description: A list of users that are associated with this portfolio.
+          items:
+            type: object
+            properties:
+              uid:
+                $ref: './common.yml#/Uid2'
+              displayName:
+                type: string
+              authorizationAttributes:
+                type: array
+                items:
+                  type: string
+        portfolios:
+          type: array
+          description: A list of portfolios that are associated with this portfolio.
+          items:
+            type: object
+            required:
+              - name
+            properties:
+              uid:
+                $ref: './common.yml#/Uid2'
+              name:
+                type: string
+        units:
+          type: array
+          description: A list of units that are associated with this portfolio.
+          items:
+            type: object
+            properties:
+              uid:
+                $ref: './common.yml#/Uid2'
+              name:
+                $ref: './units.yml#/components/schemas/UnitBasic/properties/name'
+              shortDescription:
+                $ref: './units.yml#/components/schemas/UnitBasic/properties/shortDescription'
+
+

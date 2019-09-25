@@ -6,6 +6,7 @@ paths:
       description: Get a list of units
       parameters:
         - $ref: './common.yml#/parameterQueryAccessibility'
+        - $ref: './common.yml#/parameterEffectiveDate'
         - name: networks
           description: The networks to limit returned units and fieldsets to.
           in: query
@@ -53,7 +54,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Unit'
+              $ref: '#/components/schemas/UnitBasic'
       responses:
         201:
           description: Unit created
@@ -65,13 +66,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Unit'
+                $ref: '#/components/schemas/UnitBasic'
   unit:
     parameters:
       - $ref: '#/components/parameters/pathUnitId'
     get:
       tags:
         - Units
+      summary: Get a unit
       description: Get a single unit and its details
       responses:
         200:
@@ -83,7 +85,11 @@ paths:
     put:
       tags:
         - Units
+      summary: Update a unit
       description: Update a single unit's details
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
       requestBody:
         content:
           application/json:
@@ -101,7 +107,8 @@ paths:
     delete:
       tags:
         - Units
-      description: Delete a unit
+      summary: Delete a unit
+      description: Delete a unit and its sub resources for all effective dates.
       responses:
         204:
           description: Unit deleted
@@ -152,6 +159,112 @@ paths:
           description: User removed from unit
         404:
           description: User or unit not found
+  unitTeams:
+    parameters:
+      - $ref: './units.yml#/components/parameters/pathUnitId'
+    get:
+      tags:
+        - Teams
+      summary: Get a list of teams
+      description: Get a list of teams that belong to the unit.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+      responses:
+        200:
+          description: A list of teams that belong to the unit.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnitTeams'
+    post:
+      tags:
+        - Teams
+      summary: Create a team
+      description: Create a new team for this unit.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnitTeams'
+      responses:
+        201:
+          description: Team created.
+          headers:
+            Location:
+              description: The API endpoint to hit to get the created team.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitTeams'
+  unitTeam:
+    parameters:
+      - $ref: './units.yml#/components/parameters/pathUnitId'
+      - $ref: './units.yml#/components/parameters/pathTeamId'
+    get:
+      tags:
+        - Teams
+      summary: Get a team
+      description: Get the specified team from the unit.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+      responses:
+        200:
+          description: The specified team from the unit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitTeams'
+    put:
+      tags:
+        - Teams
+      summary: Update a team
+      description: Update the team for the unit.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnitTeams'
+      responses:
+        200:
+          description: Updated the team.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitTeams'
+    patch:
+      tags:
+        - Teams
+      summary: Partial update a team
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      description: Update one or more properties for a team, potentially over multiple effective dates. This operation is idempotent.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnitTeams'
+      responses:
+        200:
+          description: Updated the team.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitTeams'
+    delete:
+      tags:
+        - Teams
+      summary: Delete a team
+      description: Delete a team for all effective dates.
+      responses:
+        204:
+          description: Team deleted
   unitAuthorizationRoles:
     parameters:
       - $ref: '#/components/parameters/pathUnitId'
@@ -194,6 +307,12 @@ components:
   parameters:
     pathUnitId:
       name: 'unitId'
+      in: path
+      required: true
+      schema:
+        type: string
+    pathTeamId:
+      name: 'teamId'
       in: path
       required: true
       schema:
@@ -265,6 +384,7 @@ components:
         location:
           $ref: './locations.yml#/components/schemas/Location'
         networks:
+          description: Array of network ID's for the networks this unit is a part of.
           type: array
           items:
             type: string
@@ -280,7 +400,7 @@ components:
         banner:
           $ref: './common.yml#/Image'
         accessibility:
-          $ref: '#/components/schemas/Accessibility'
+          $ref: './common.yml#/Accessibility'
         vanityUrlPath:
           type: string
         email:
@@ -297,6 +417,10 @@ components:
           $ref: './common.yml#/SocialScore'
         contentQualityScore:
           $ref: './common.yml#/SocialScore'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveRanges:
+          $ref: './common.yml#/EffectiveRanges'
     UnitMembers:
       allOf:
         - $ref: './users.yml#/components/schemas/UserBasic'
@@ -310,6 +434,10 @@ components:
               type: string
             memberRoleDescription:
               type: string
+            effectiveDate:
+              $ref: './common.yml#/EffectiveDate'
+            effectiveRanges:
+              $ref: './common.yml#/EffectiveRanges'
     UnitRetailers:
       type: object
       properties:
@@ -317,6 +445,10 @@ components:
           type: boolean
         hasPhysicalStore:
           type: boolean
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveRanges:
+          $ref: './common.yml#/EffectiveRanges'
     UnitTeams:
       type: object
       properties:
@@ -334,7 +466,11 @@ components:
           type: integer
           minimum: 0
         upcomingEvents:
-          $ref: './events.yml#/components/schemas/Events'
+          $ref: './events.yml#/components/schemas/UpcomingEvents'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveRanges:
+          $ref: './common.yml#/EffectiveRanges'
     UnitVenue:
       type: object
       properties:
@@ -356,4 +492,8 @@ components:
           items:
             type: string
         upcomingEvents:
-          $ref: './events.yml#/components/schemas/Events'
+          $ref: './events.yml#/components/schemas/UpcomingEvents'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveRanges:
+          $ref: './common.yml#/EffectiveRanges'

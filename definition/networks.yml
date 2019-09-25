@@ -117,6 +117,19 @@ components:
             - basic
             - meta
   schemas:
+    AuthorizationAttribute:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+        shortDescription:
+          type: string
+          maxLength: 250
+        description:
+          type: string
     Network:
       type: object
       properties:
@@ -141,6 +154,10 @@ components:
     NetworkMeta:
       type: object
       properties:
+        authorizationAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizationAttribute'
         venueTypes:
           type: array
           items:
@@ -158,3 +175,5 @@ components:
           maxLength: 500
         description:
           type: string
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'

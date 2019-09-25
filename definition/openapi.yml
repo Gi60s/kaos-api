@@ -10,6 +10,10 @@ x-tagGroups:
   - name: User Management
     tags:
       - Users
+  - name: Portfolio Management
+    tags:
+      - Portfolios
+      - Child Portfolios
   - name: Unit Management
     tags:
       - Locations
@@ -30,6 +34,12 @@ paths:
     $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/network'
   /networks/{networkId}/meta:
     $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/networkMeta'
+  /portfolios:
+    $ref: './portfolio.yml#/paths/portfolios'
+  /portfolios/{portfolioId}:
+    $ref: './portfolio.yml#/paths/portfolio'
+  /portfolios/{portfolioId}/child-portfolios/{childPortfolioId}:
+    $ref: './portfolio.yml#/paths/childPortfolios'
   /units:
     $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/units'
   /units/{unitId}:
@@ -41,7 +51,9 @@ paths:
   /units/{unitId}/authorizatonRoles/{userId}:
     $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitAuthorizationRoles'
   /units/{unitId}/teams:
-    $ref: '/home/james/Code/kaos/openapi/definition/units_teams.yml#/paths/teams'
+    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitTeams'
+  /units/{unitId}/teams/{teamId}:
+    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitTeam'
   /users:
     $ref: '/home/james/Code/kaos/openapi/definition/users.yml#/paths/users'
   /users/{userId}:
