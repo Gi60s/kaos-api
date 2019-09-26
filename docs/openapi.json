@@ -269,7 +269,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/paths/~1networks~1%7BnetworkId%7D/get/responses/200/content/application~1json/schema"
+                    "$ref": "#/paths/~1networks~1%7BnetworkId%7D/put/responses/200/content/application~1json/schema"
                   }
                 }
               }
@@ -373,24 +373,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "basic": {
-                      "$ref": "#/paths/~1networks/post/requestBody/content/application~1json/schema"
-                    },
-                    "authorizationAttributes": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
-                      }
-                    },
-                    "venuTypes": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
-                      }
-                    }
-                  }
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D/put/responses/200/content/application~1json/schema"
                 }
               }
             }
@@ -417,7 +400,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D/get/responses/200/content/application~1json/schema"
+                  "type": "object",
+                  "properties": {
+                    "basic": {
+                      "$ref": "#/paths/~1networks/post/requestBody/content/application~1json/schema"
+                    },
+                    "authorizationAttributes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
+                      }
+                    },
+                    "venuTypes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -572,20 +572,6 @@
         ],
         "summary": "Update an authorization",
         "description": "Update a single an authorization attribute's information. Using the effective date range query parameter can be used to overwrite (delete) other effective dates.",
-        "parameters": [
-          {
-            "$ref": "#/paths/~1units/get/parameters/1"
-          },
-          {
-            "name": "effectiveDateRange",
-            "description": "The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter.\nIf the date range specified overlaps existing effective dates for this item then the following will occur:\n1. If an effective dated entry's date range is partially overwritten then the effective date range for that item will be modified to exclude the overwritten portion. 2. If an effective dated entry's date range is completely overwritten then that entry will be deleted. 3. If an effective dated entry's date range exceeds the range specified for update then that entry will be split into two entries that surround the new update.",
-            "in": "query",
-            "style": "deepObject",
-            "schema": {
-              "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1/schema"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -807,14 +793,6 @@
         ],
         "summary": "Update a venu",
         "description": "Update a single venue's information.",
-        "parameters": [
-          {
-            "$ref": "#/paths/~1units/get/parameters/1"
-          },
-          {
-            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1328,7 +1306,7 @@
           },
           {
             "name": "effectiveDate",
-            "description": "The date and time to use as the effective date identifier. Defaults to the current date and time.",
+            "description": "The date and time to use as the effective date identifier. Defaults to the current date and time.  See the [effectiveDate docs](./docs.html) for more information.",
             "in": "query",
             "schema": {
               "type": "string",
@@ -1353,7 +1331,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/2/schema"
+              "$ref": "#/paths/~1users/get/parameters/4/schema"
             }
           },
           {
@@ -1362,7 +1340,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/2/schema"
+              "$ref": "#/paths/~1users/get/parameters/4/schema"
             }
           },
           {
@@ -1371,7 +1349,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/2/schema"
+              "$ref": "#/paths/~1users/get/parameters/4/schema"
             }
           },
           {
@@ -1380,7 +1358,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/2/schema"
+              "$ref": "#/paths/~1users/get/parameters/4/schema"
             }
           }
         ],
@@ -1571,7 +1549,7 @@
           },
           {
             "name": "effectiveDateRange",
-            "description": "The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter.",
+            "description": "The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter. See the [effectiveDate docs](./docs.html) for more information.",
             "in": "query",
             "style": "deepObject",
             "schema": {
@@ -1626,6 +1604,21 @@
                           "type": "object",
                           "properties": {
                             "sunday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
+                            },
+                            "monday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
+                            },
+                            "tuesday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
+                            },
+                            "wednesday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
+                            },
+                            "thursday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
+                            },
+                            "friday": {
                               "type": "array",
                               "items": {
                                 "type": "object",
@@ -1641,23 +1634,8 @@
                                 }
                               }
                             },
-                            "monday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
-                            },
-                            "tuesday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
-                            },
-                            "wednesday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
-                            },
-                            "thursday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
-                            },
-                            "friday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
-                            },
                             "saturday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
                             }
                           }
                         },
@@ -2205,6 +2183,24 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
+              "$ref": "#/paths/~1users/get/parameters/4/schema"
+            }
+          },
+          {
+            "name": "qualityScore",
+            "description": "Filter on quality score range.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "$ref": "#/paths/~1users/get/parameters/4/schema"
+            }
+          },
+          {
+            "name": "contentQualityScore",
+            "description": "Filter on content quality score range.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
               "type": "object",
               "properties": {
                 "minimum": {
@@ -2217,24 +2213,6 @@
                   "readOnly": true
                 }
               }
-            }
-          },
-          {
-            "name": "qualityScore",
-            "description": "Filter on quality score range.",
-            "in": "query",
-            "style": "deepObject",
-            "schema": {
-              "$ref": "#/paths/~1users/get/parameters/2/schema"
-            }
-          },
-          {
-            "name": "contentQualityScore",
-            "description": "Filter on content quality score range.",
-            "in": "query",
-            "style": "deepObject",
-            "schema": {
-              "$ref": "#/paths/~1users/get/parameters/2/schema"
             }
           }
         ],

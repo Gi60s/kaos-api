@@ -19,6 +19,7 @@ EffectiveDate:
       nullable: true
       default: null
 EffectiveRanges:
+  description: Other effective date ranges that exist for this item.
   type: array
   readOnly: true
   items:
@@ -113,14 +114,14 @@ Uid4:
 
 parameterEffectiveDate:
   name: effectiveDate
-  description: The date and time to use as the effective date identifier. Defaults to the current date and time.
+  description: The date and time to use as the effective date identifier. Defaults to the current date and time.  See the [effectiveDate docs](./docs.html) for more information.
   in: query
   schema:
     type: string
     format: date-time
 parameterEffectiveDateRange:
   name: effectiveDateRange
-  description: The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter.
+  description: The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter. See the [effectiveDate docs](./docs.html) for more information.
   in: query
   style: deepObject
   schema:

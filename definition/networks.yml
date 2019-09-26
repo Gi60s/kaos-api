@@ -73,6 +73,11 @@ paths:
       parameters:
         - $ref: './common.yml#/parameterEffectiveDate'
         - $ref: './common.yml#/parameterEffectiveDateRange'
+        - name: authorizationId
+          in: query
+          description: Specify the authorization attribute id to filter results to.
+          schema:
+              type: string
       responses:
         200:
           description: A single network's athorization attributes.
@@ -119,27 +124,18 @@ paths:
       description: Get an authorization attribute within a network.
       parameters:
         - $ref: './common.yml#/parameterEffectiveDate'
-        - $ref: './common.yml#/parameterEffectiveDateRange'
       responses:
         200:
-          x-summary: Authorization attribute(s) retrieved.
-          description: If the `effectiveDateRange` query parameter was used then an array of all authorization attributes that fit this range will be returned, otherwise a single authoriztion attribute will be returned.
+          description: Authorization attribute retrieved.
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/AuthorizationAttribute'
-                  - type: array
-                    items:
-                      $ref: '#/components/schemas/AuthorizationAttribute'
+                $ref: '#/components/schemas/AuthorizationAttribute'
     put:
       tags:
         - Network Authorizations
       summary: Update an authorization
       description: Update a single an authorization attribute's information. Using the effective date range query parameter can be used to overwrite (delete) other effective dates.
-      parameters:
-        - $ref: './common.yml#/parameterEffectiveDate'
-        - $ref: './common.yml#/parameterEffectiveDateRange'
       requestBody:
         content:
           application/json:
@@ -191,6 +187,11 @@ paths:
       parameters:
         - $ref: './common.yml#/parameterEffectiveDate'
         - $ref: './common.yml#/parameterEffectiveDateRange'
+        - name: venueId
+          in: query
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: A single network's venue type information.
@@ -237,27 +238,18 @@ paths:
       description: Get the venue metadata for a single venue within a network.
       parameters:
         - $ref: './common.yml#/parameterEffectiveDate'
-        - $ref: './common.yml#/parameterEffectiveDateRange'
       responses:
         200:
-          x-summary: Venue(s) retrieved.
-          description: If the `effectiveDateRange` query parameter was used then an array of all venus that fit this range will be returned, otherwise a single venue will be returned.
+          description: Venue retrieved.
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/VenueType'
-                  - type: array
-                    items:
-                      $ref: '#/components/schemas/VenueType'
+                $ref: '#/components/schemas/VenueType'
     put:
       tags:
         - Network Venues
       summary: Update a venu
       description: Update a single venue's information.
-      parameters:
-        - $ref: './common.yml#/parameterEffectiveDate'
-        - $ref: './common.yml#/parameterEffectiveDateRange'
       requestBody:
         content:
           application/json:
