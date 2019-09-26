@@ -62,36 +62,242 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Network'
-  networkMeta:
+  authorizationAttributes:
     parameters:
       - $ref: '#/components/parameters/pathNetworkId'
     get:
       tags:
-        - Metadata
-      description: Get a single network's meta information.
+        - Network Authorizations
+      summary: Get a list of authorizations
+      description: Get a single network's athorization attributes.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
       responses:
         200:
-          description: A single network's meta information.
+          description: A single network's athorization attributes.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NetworkMeta'
-    put:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuthorizationAttribute'
+    post:
       tags:
-        - Metadata
-      description: Update a single network's meta information.
+        - Network Authorizations
+      summary: Create an authorization
+      description: Create an authorization attribute for the network.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NetworkMeta'
+              $ref: '#/components/schemas/AuthorizationAttribute'
       responses:
-        200:
-          description: Updated the network's meta information.
+        201:
+          description: Authorization attribute created.
+          headers:
+            Location:
+              description: The API endpoint to hit to get the created authorization attribute.
+              schema:
+                type: string
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NetworkMeta'
+                $ref: '#/components/schemas/AuthorizationAttribute'
+  authorizationAttribute:
+    parameters:
+      - $ref: '#/components/parameters/pathNetworkId'
+      - name: authorizationId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Network Authorizations
+      summary: Get an authorization
+      description: Get an authorization attribute within a network.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      responses:
+        200:
+          x-summary: Authorization attribute(s) retrieved.
+          description: If the `effectiveDateRange` query parameter was used then an array of all authorization attributes that fit this range will be returned, otherwise a single authoriztion attribute will be returned.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AuthorizationAttribute'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/AuthorizationAttribute'
+    put:
+      tags:
+        - Network Authorizations
+      summary: Update an authorization
+      description: Update a single an authorization attribute's information. Using the effective date range query parameter can be used to overwrite (delete) other effective dates.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationAttribute'
+      responses:
+        200:
+          description: Authorization attribute updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationAttribute'
+    patch:
+      tags:
+        - Network Authorizations
+      summary: Partial update an authorization
+      description: Update parts of an authorization attribute for one or more effective dates.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationAttribute'
+      responses:
+        200:
+          description: Authorization attribute updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationAttribute'
+    delete:
+      tags:
+        - Network Authorizations
+      summary: Delete an authorization
+      description: Delete a single authorization attribute for all effective dates.
+      responses:
+        204:
+          description: Authorization attribute deleted.
+  venueTypes:
+    parameters:
+      - $ref: '#/components/parameters/pathNetworkId'
+    get:
+      tags:
+        - Network Venues
+      summary: Get a list of venues
+      description: Get a single network's venue type information.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      responses:
+        200:
+          description: A single network's venue type information.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VenueType'
+    post:
+      tags:
+        - Network Venues
+      summary: Create a venu
+      description: Update a single venue's information.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VenueType'
+      responses:
+        201:
+          description: Venue created.
+          headers:
+            Location:
+              description: The API endpoint to hit to get the created venue.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VenueType'
+  venueType:
+    parameters:
+      - $ref: '#/components/parameters/pathNetworkId'
+      - name: venueId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Network Venues
+      summary: Get a venue
+      description: Get the venue metadata for a single venue within a network.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      responses:
+        200:
+          x-summary: Venue(s) retrieved.
+          description: If the `effectiveDateRange` query parameter was used then an array of all venus that fit this range will be returned, otherwise a single venue will be returned.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/VenueType'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/VenueType'
+    put:
+      tags:
+        - Network Venues
+      summary: Update a venu
+      description: Update a single venue's information.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VenueType'
+      responses:
+        200:
+          description: Venue updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VenueType'
+    patch:
+      tags:
+        - Network Venues
+      summary: Partial update a venu
+      description: Update parts of a venue for one or more effective dates.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VenueType'
+      responses:
+        200:
+          description: Venue updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VenueType'
+    delete:
+      tags:
+        - Network Venues
+      summary: Delete a venue
+      description: Delete a single venue's information for all effective dates.
+      responses:
+        204:
+          description: Venue deleted.
 
 components:
   parameters:
@@ -115,7 +321,8 @@ components:
           type: string
           enum:
             - basic
-            - meta
+            - authorizationAttributes
+            - venueTypes
   schemas:
     AuthorizationAttribute:
       type: object
@@ -130,13 +337,23 @@ components:
           maxLength: 250
         description:
           type: string
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveRanges:
+          $ref: './common.yml#/EffectiveRanges'
     Network:
       type: object
       properties:
         basic:
           $ref: '#/components/schemas/NetworkBasic'
-        meta:
-          $ref: '#/components/schemas/NetworkMeta'
+        authorizationAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizationAttribute'
+        venuTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/VenueType'
     NetworkBasic:
       type: object
       required:
@@ -151,23 +368,18 @@ components:
           maxLength: 500
         description:
           type: string
-    NetworkMeta:
-      type: object
-      properties:
-        authorizationAttributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/AuthorizationAttribute'
-        venueTypes:
-          type: array
-          items:
-            $ref: '#/components/schemas/VenueType'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveRanges:
+          $ref: './common.yml#/EffectiveRanges'
     VenueType:
       type: object
       required:
         - type
         - shortDescription
       properties:
+        uid:
+          $ref: './common.yml#/Uid2'
         type:
           type: string
         shortDescription:
@@ -177,3 +389,5 @@ components:
           type: string
         effectiveDate:
           $ref: './common.yml#/EffectiveDate'
+        effectiveRanges:
+          $ref: './common.yml#/EffectiveRanges'

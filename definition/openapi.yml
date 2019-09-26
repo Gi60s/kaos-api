@@ -6,7 +6,8 @@ x-tagGroups:
   - name: Network Management
     tags:
       - Networks
-      - Metadata
+      - Network Authorizations
+      - Network Venues
   - name: User Management
     tags:
       - Users
@@ -32,8 +33,14 @@ paths:
     $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/networks'
   /networks/{networkId}:
     $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/network'
-  /networks/{networkId}/meta:
-    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/networkMeta'
+  /networks/{networkId}/authorizations:
+    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/authorizationAttributes'
+  /networks/{networkId}/authorizations/{authorizationId}:
+    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/authorizationAttribute'
+  /networks/{networkId}/venues:
+    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/venueTypes'
+  /networks/{networkId}/venues/{venueId}:
+    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/venueType'
   /portfolios:
     $ref: './portfolio.yml#/paths/portfolios'
   /portfolios/{portfolioId}:
