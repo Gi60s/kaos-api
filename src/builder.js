@@ -19,10 +19,12 @@ function Builder (source) {
     if (err) {
       console.log(err.toString())
       console.log('\nBuild failed\n')
+      throw err
     } else {
       if (warn) console.log(warn.toString())
       cache = openapiDoc
       console.log('\nBuilt successfully\n')
+      return cache
     }
   }
 
