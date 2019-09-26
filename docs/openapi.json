@@ -1,1 +1,2492 @@
-undefined
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "KAOS",
+    "version": "0.0.1"
+  },
+  "x-tagGroups": [
+    {
+      "name": "Network Management",
+      "tags": [
+        "Networks",
+        "Network Authorizations",
+        "Network Venues"
+      ]
+    },
+    {
+      "name": "User Management",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "name": "Portfolio Management",
+      "tags": [
+        "Portfolios",
+        "Child Portfolios"
+      ]
+    },
+    {
+      "name": "Unit Management",
+      "tags": [
+        "Locations",
+        "Members",
+        "Roles",
+        "Teams",
+        "Units"
+      ]
+    }
+  ],
+  "paths": {
+    "/locations": {
+      "get": {
+        "tags": [
+          "Locations"
+        ],
+        "description": "Get a list of all locations.",
+        "responses": {
+          "200": {
+            "description": "All locations.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "allOf": [
+                      {
+                        "$ref": "#/paths/~1locations~1%7BlocationId%7D/get/responses/200/content/application~1json/schema/allOf/0"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "units": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "uid": {
+                                  "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                                },
+                                "name": {
+                                  "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/name"
+                                },
+                                "shortDescription": {
+                                  "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/shortDescription"
+                                },
+                                "logo": {
+                                  "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/logo"
+                                }
+                              }
+                            }
+                          },
+                          "users": {
+                            "type": "array",
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "uid": {
+                                    "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                                  },
+                                  "displayName": {
+                                    "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/displayName"
+                                  },
+                                  "avatar": {
+                                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/logo"
+                                  },
+                                  "firstName": {
+                                    "$ref": "#/paths/~1users/get/responses/200/content/application~1json/schema/properties/personal/properties/firstName"
+                                  },
+                                  "lastName": {
+                                    "$ref": "#/paths/~1users/get/responses/200/content/application~1json/schema/properties/personal/properties/lastName"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/locations/{locationId}": {
+      "parameters": [
+        {
+          "name": "locationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Locations"
+        ],
+        "description": "Get a specific location.",
+        "responses": {
+          "200": {
+            "description": "A single location.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "locationId",
+                        "latitude",
+                        "longitude"
+                      ],
+                      "properties": {
+                        "uid": {
+                          "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                        },
+                        "addressLine1": {
+                          "type": "string",
+                          "example": "1234 Mountain St"
+                        },
+                        "addressLine2": {
+                          "type": "string"
+                        },
+                        "addressLine4": {
+                          "type": "string"
+                        },
+                        "addressLine5": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string",
+                          "example": "USA"
+                        },
+                        "displayName": {
+                          "type": "string"
+                        },
+                        "latitude": {
+                          "type": "number",
+                          "minimum": -90,
+                          "maximum": 90
+                        },
+                        "locality": {
+                          "type": "string",
+                          "example": "Provo"
+                        },
+                        "longitude": {
+                          "type": "number",
+                          "minimum": -180,
+                          "maximum": 180
+                        },
+                        "postalCode": {
+                          "type": "string",
+                          "example": "84606"
+                        },
+                        "province": {
+                          "type": "string",
+                          "example": "UT"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "units": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/locations/{locationId}/units": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1locations~1%7BlocationId%7D/parameters/0"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Locations"
+        ],
+        "description": "Get the units at a specific location.",
+        "responses": {
+          "200": {
+            "description": "A single location and its units.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "location": {
+                      "$ref": "#/paths/~1locations~1%7BlocationId%7D/get/responses/200/content/application~1json/schema/allOf/0"
+                    },
+                    "units": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/networks": {
+      "get": {
+        "tags": [
+          "Networks"
+        ],
+        "description": "Get a list of networks.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1networks~1%7BnetworkId%7D/parameters/1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of networks.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1networks~1%7BnetworkId%7D/put/responses/200/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Networks"
+        ],
+        "description": "Create a network.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "accessibility": {
+                    "$ref": "#/paths/~1users/get/parameters/1/schema/allOf/0"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "shortDescription": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "effectiveDate": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
+                  },
+                  "effectiveRanges": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Network created.",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/networks/{networkId}": {
+      "parameters": [
+        {
+          "name": "networkId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "fieldsets",
+          "description": "Specify which fieldsets to return.",
+          "in": "query",
+          "style": "form",
+          "explode": false,
+          "schema": {
+            "type": "array",
+            "default": [
+              "basic"
+            ],
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "enum": [
+                "basic",
+                "authorizationAttributes",
+                "venueTypes"
+              ]
+            }
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Networks"
+        ],
+        "description": "Get a single network.",
+        "responses": {
+          "200": {
+            "description": "A single network.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D/put/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Networks"
+        ],
+        "description": "Update a network.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1networks/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Network updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "basic": {
+                      "$ref": "#/paths/~1networks/post/requestBody/content/application~1json/schema"
+                    },
+                    "authorizationAttributes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
+                      }
+                    },
+                    "venuTypes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/networks/{networkId}/authorizations": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1networks~1%7BnetworkId%7D/parameters/0"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Network Authorizations"
+        ],
+        "summary": "Get a list of authorizations",
+        "description": "Get a single network's athorization attributes.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single network's athorization attributes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Network Authorizations"
+        ],
+        "summary": "Create an authorization",
+        "description": "Create an authorization attribute for the network.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "shortDescription": {
+                    "type": "string",
+                    "maxLength": 250
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "effectiveDate": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
+                  },
+                  "effectiveRanges": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Authorization attribute created.",
+            "headers": {
+              "Location": {
+                "description": "The API endpoint to hit to get the created authorization attribute.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/networks/{networkId}/authorizations/{authorizationId}": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1networks~1%7BnetworkId%7D/parameters/0"
+        },
+        {
+          "name": "authorizationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Network Authorizations"
+        ],
+        "summary": "Get an authorization",
+        "description": "Get an authorization attribute within a network.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-summary": "Authorization attribute(s) retrieved.",
+            "description": "If the `effectiveDateRange` query parameter was used then an array of all authorization attributes that fit this range will be returned, otherwise a single authoriztion attribute will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Network Authorizations"
+        ],
+        "summary": "Update an authorization",
+        "description": "Update a single an authorization attribute's information. Using the effective date range query parameter can be used to overwrite (delete) other effective dates.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authorization attribute updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Network Authorizations"
+        ],
+        "summary": "Partial update an authorization",
+        "description": "Update parts of an authorization attribute for one or more effective dates.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authorization attribute updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Network Authorizations"
+        ],
+        "summary": "Delete an authorization",
+        "description": "Delete a single authorization attribute for all effective dates.",
+        "responses": {
+          "204": {
+            "description": "Authorization attribute deleted."
+          }
+        }
+      }
+    },
+    "/networks/{networkId}/venues": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1networks~1%7BnetworkId%7D/parameters/0"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Network Venues"
+        ],
+        "summary": "Get a list of venues",
+        "description": "Get a single network's venue type information.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single network's venue type information.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Network Venues"
+        ],
+        "summary": "Create a venu",
+        "description": "Update a single venue's information.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "shortDescription"
+                ],
+                "properties": {
+                  "uid": {
+                    "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "shortDescription": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "effectiveDate": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
+                  },
+                  "effectiveRanges": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Venue created.",
+            "headers": {
+              "Location": {
+                "description": "The API endpoint to hit to get the created venue.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/networks/{networkId}/venues/{venueId}": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1networks~1%7BnetworkId%7D/parameters/0"
+        },
+        {
+          "name": "venueId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Network Venues"
+        ],
+        "summary": "Get a venue",
+        "description": "Get the venue metadata for a single venue within a network.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-summary": "Venue(s) retrieved.",
+            "description": "If the `effectiveDateRange` query parameter was used then an array of all venus that fit this range will be returned, otherwise a single venue will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Network Venues"
+        ],
+        "summary": "Update a venu",
+        "description": "Update a single venue's information.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Venue updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Network Venues"
+        ],
+        "summary": "Partial update a venu",
+        "description": "Update parts of a venue for one or more effective dates.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Venue updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Network Venues"
+        ],
+        "summary": "Delete a venue",
+        "description": "Delete a single venue's information for all effective dates.",
+        "responses": {
+          "204": {
+            "description": "Venue deleted."
+          }
+        }
+      }
+    },
+    "/portfolios": {
+      "get": {
+        "tags": [
+          "Portfolios"
+        ],
+        "summary": "Get a list of portfolios",
+        "description": "Get a list of the portfolios that you have access to.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "name": "fieldsets",
+            "description": "Specify which fieldsets to return.",
+            "in": "query",
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "default": [
+                "basic"
+              ],
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "basic",
+                  "members",
+                  "portfolios",
+                  "units"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of portfolios.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "basic": {
+                        "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema"
+                      },
+                      "members": {
+                        "type": "array",
+                        "description": "A list of up to 100 members. Use the portfolio members service to get other members.",
+                        "readOnly": true,
+                        "items": {
+                          "$ref": "#/paths/~1portfolios~1%7BportfolioId%7D/patch/requestBody/content/application~1json/schema/properties/members/items"
+                        }
+                      },
+                      "parentPortfolio": {
+                        "type": "object",
+                        "description": "The parent portfolio that this is attached to.",
+                        "readOnly": true,
+                        "properties": {
+                          "uid": {
+                            "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "portfolios": {
+                        "type": "array",
+                        "description": "A list of portfolio basic info for up to 100 sub portfolios.",
+                        "readOnly": true,
+                        "items": {
+                          "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema"
+                        }
+                      },
+                      "units": {
+                        "type": "array",
+                        "description": "A list of up to 100 units. Use the portfolio units service to get other units.",
+                        "readOnly": true,
+                        "items": {
+                          "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Portfolios"
+        ],
+        "summary": "Create a portfolio",
+        "description": "Create a portfolio",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "uid": {
+                    "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "effectiveDate": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
+                  },
+                  "effectiveRanges": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                  },
+                  "members": {
+                    "type": "array",
+                    "description": "A list of users that are associated with this portfolio.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "uid": {
+                          "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                        },
+                        "displayName": {
+                          "type": "string"
+                        },
+                        "authorizationAttributes": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "portfolios": {
+                    "type": "array",
+                    "description": "A list of portfolios that are associated with this portfolio.",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "name"
+                      ],
+                      "properties": {
+                        "uid": {
+                          "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "units": {
+                    "type": "array",
+                    "description": "A list of units that are associated with this portfolio.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "uid": {
+                          "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                        },
+                        "name": {
+                          "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/name"
+                        },
+                        "shortDescription": {
+                          "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/shortDescription"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Portfolio created.",
+            "headers": {
+              "Location": {
+                "description": "The API endpoint to hit to get the created portfolio.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/portfolios/{portfolioId}": {
+      "parameters": [
+        {
+          "name": "portfolioId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Portfolios"
+        ],
+        "summary": "Get a single portfolio",
+        "description": "Get a single portfolio.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1portfolios/get/parameters/1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A portfolio.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1portfolios~1%7BportfolioId%7D/patch/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Portfolios"
+        ],
+        "summary": "Set basic info",
+        "description": "Set basic information for a portfolio.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A portfolio.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1portfolios~1%7BportfolioId%7D/patch/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Portfolios"
+        ],
+        "summary": "Partial update a portfolio",
+        "description": "Update part of the basic information for a portfolio.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "basic": {
+                    "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema"
+                  },
+                  "members": {
+                    "type": "array",
+                    "description": "A list of up to 100 members. Use the portfolio members service to get other members.",
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "authorizationAttributes": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "attribute": {
+                                    "type": "string",
+                                    "description": "The name of an attribute from the network meta."
+                                  },
+                                  "effectiveDate": {
+                                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
+                                  },
+                                  "effectiveRanges": {
+                                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "portfolios": {
+                    "type": "array",
+                    "description": "A list of up to 100 sub portfolios basic information.",
+                    "items": {
+                      "$ref": "#/paths/~1portfolios/get/responses/200/content/application~1json/schema"
+                    }
+                  },
+                  "units": {
+                    "type": "array",
+                    "description": "A list of up to 100 units. Use the portfolio units service to get other units.",
+                    "items": {
+                      "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A portfolio.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1portfolios~1%7BportfolioId%7D/patch/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Portfolios"
+        ],
+        "summary": "Delete a portfolio",
+        "description": "Delete a portfolio and its sub portfolios for all effective dates",
+        "responses": {
+          "204": {
+            "description": "Portfolio deleted"
+          }
+        }
+      }
+    },
+    "/portfolios/{portfolioId}/child-portfolios/{childPortfolioId}": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1portfolios~1%7BportfolioId%7D/parameters/0"
+        },
+        {
+          "in": "path",
+          "name": "childPortfolioId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "tags": [
+          "Child Portfolios"
+        ],
+        "summary": "Attach a child portfolio",
+        "description": "Attach an existing portfolio as a child portfolio. If the portfolio is already attached to a different parent then it will be removed from the existing parent.",
+        "responses": {
+          "200": {
+            "description": "Attached successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Child Portfolios"
+        ],
+        "summary": "Detatch a child portfolio",
+        "description": "Detatch an existing child portfolio from the parent. This will not delete the child portfolio.",
+        "responses": {
+          "200": {
+            "description": "Detached successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/units": {
+      "get": {
+        "tags": [
+          "Units"
+        ],
+        "description": "Get a list of units",
+        "parameters": [
+          {
+            "name": "accessibility",
+            "description": "Filter based on accessibility",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "allOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "discoverable": {
+                      "type": "boolean"
+                    },
+                    "public": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "default": {
+                    "discoverable": true,
+                    "public": true
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "effectiveDate",
+            "description": "The date and time to use as the effective date identifier. Defaults to the current date and time.",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "networks",
+            "description": "The networks to limit returned units and fieldsets to.",
+            "in": "query",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "freshnessScore",
+            "description": "Filter on freshness score range.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
+            }
+          },
+          {
+            "name": "qualityScore",
+            "description": "Score based on how setup a unit is.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
+            }
+          },
+          {
+            "name": "contentQualityScore",
+            "description": "Score based on the quality of the content created by the unit (articles, posts, comments, etc).",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
+            }
+          },
+          {
+            "name": "activityScore",
+            "description": "Score based on the frequency that a unit accesses the network.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "minimum": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100,
+                  "readOnly": true
+                },
+                "maximum": {
+                  "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of units",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Units"
+        ],
+        "description": "Create a new unit",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "location"
+                ],
+                "properties": {
+                  "uid": {
+                    "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "$ref": "#/paths/~1locations~1%7BlocationId%7D/get/responses/200/content/application~1json/schema/allOf/0"
+                  },
+                  "networks": {
+                    "description": "Array of network ID's for the networks this unit is a part of.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "longDescription": {
+                    "type": "string"
+                  },
+                  "shortDescription": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "welcomeMessage": {
+                    "type": "string"
+                  },
+                  "logo": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "banner": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/logo"
+                  },
+                  "accessibility": {
+                    "$ref": "#/paths/~1users/get/parameters/1/schema/allOf/0"
+                  },
+                  "vanityUrlPath": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "pattern": "^\\+\\d+ \\d{3}-\\d{3}-\\d{4}$"
+                  },
+                  "website": {
+                    "type": "string"
+                  },
+                  "activityScore": {
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                  },
+                  "freshnessScore": {
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                  },
+                  "qualityScore": {
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                  },
+                  "contentQualityScore": {
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                  },
+                  "effectiveDate": {
+                    "description": "The date and time range for which this information is effective.",
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "description": "Defaults to the current date and time.",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "end": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "default": null
+                      }
+                    }
+                  },
+                  "effectiveRanges": {
+                    "type": "array",
+                    "readOnly": true,
+                    "items": {
+                      "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Unit created",
+            "headers": {
+              "Location": {
+                "description": "The API endpoint to hit to get the created unit.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/units/{unitId}": {
+      "parameters": [
+        {
+          "name": "unitId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "Get a unit",
+        "description": "Get a single unit and its details",
+        "responses": {
+          "200": {
+            "description": "Retrieved unit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "Update a unit",
+        "description": "Update a single unit's details",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "name": "effectiveDateRange",
+            "description": "The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "type": "object",
+              "required": [
+                "start",
+                "end"
+              ],
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "end": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "basic": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
+                  },
+                  "members": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/paths/~1units~1%7BunitId%7D~1members/get/responses/200/content/application~1json/schema/items"
+                    }
+                  },
+                  "teams": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/paths/~1units~1%7BunitId%7D~1teams/post/requestBody/content/application~1json/schema"
+                    }
+                  },
+                  "venues": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "uid": {
+                          "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                        },
+                        "hoursOfOperation": {
+                          "type": "object",
+                          "properties": {
+                            "sunday": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "open": {
+                                    "type": "string",
+                                    "description": "Stored as military time.",
+                                    "pattern": "^\\d{2}:\\d{2}$"
+                                  },
+                                  "close": {
+                                    "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday/items/properties/open"
+                                  }
+                                }
+                              }
+                            },
+                            "monday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
+                            },
+                            "tuesday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
+                            },
+                            "wednesday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
+                            },
+                            "thursday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
+                            },
+                            "friday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
+                            },
+                            "saturday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/sunday"
+                            }
+                          }
+                        },
+                        "location": {
+                          "$ref": "#/paths/~1locations~1%7BlocationId%7D/get/responses/200/content/application~1json/schema/allOf/0"
+                        },
+                        "networks": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "rules": {
+                          "type": "string"
+                        },
+                        "types": {
+                          "description": "Network specific venue types.",
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "upcomingEvents": {
+                          "$ref": "#/paths/~1units~1%7BunitId%7D~1teams/post/requestBody/content/application~1json/schema/properties/upcomingEvents"
+                        },
+                        "effectiveDate": {
+                          "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
+                        },
+                        "effectiveRanges": {
+                          "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Unit found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unit not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "Delete a unit",
+        "description": "Delete a unit and its sub resources for all effective dates.",
+        "responses": {
+          "204": {
+            "description": "Unit deleted"
+          }
+        }
+      }
+    },
+    "/units/{unitId}/members": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Members"
+        ],
+        "description": "Get a list of unit members",
+        "responses": {
+          "200": {
+            "description": "Users who are members of this unit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "allOf": [
+                      {
+                        "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "authorizationRoles": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "memberRole": {
+                            "type": "string"
+                          },
+                          "memberRoleDescription": {
+                            "type": "string"
+                          },
+                          "effectiveDate": {
+                            "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
+                          },
+                          "effectiveRanges": {
+                            "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/units/{unitId}/members/{userId}": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
+        },
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "tags": [
+          "Members"
+        ],
+        "description": "Make a user a member of the unit",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "The unit authorization roles to apply to the user."
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User added"
+          },
+          "404": {
+            "description": "User or unit not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Members"
+        ],
+        "description": "Remove a user from the unit",
+        "responses": {
+          "204": {
+            "description": "User removed from unit"
+          },
+          "404": {
+            "description": "User or unit not found"
+          }
+        }
+      }
+    },
+    "/units/{unitId}/authorizatonRoles/{userId}": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
+        },
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/parameters/1"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Roles"
+        ],
+        "description": "Get the unit authorization roles and permissions",
+        "responses": {
+          "200": {
+            "description": "A list of unit's authorization roles and their permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1units~1%7BunitId%7D~1authorizatonRoles~1%7BuserId%7D/put/requestBody/content/application~1json/schema/items"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Roles"
+        ],
+        "description": "Set the unit authorization roles",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "permissions": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "todo"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A list of unit's authorization roles and their permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1units~1%7BunitId%7D~1authorizatonRoles~1%7BuserId%7D/put/requestBody/content/application~1json/schema/items"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/units/{unitId}/teams": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Teams"
+        ],
+        "summary": "Get a list of teams",
+        "description": "Get a list of teams that belong to the unit.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of teams that belong to the unit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1units~1%7BunitId%7D~1teams/post/requestBody/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Teams"
+        ],
+        "summary": "Create a team",
+        "description": "Create a new team for this unit.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                  },
+                  "networks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "recruiting": {
+                    "type": "boolean"
+                  },
+                  "recruitingMessage": {
+                    "type": "string"
+                  },
+                  "recruitingMinimumAge": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "upcomingEvents": {
+                    "type": "array",
+                    "maxItems": 4,
+                    "readOnly": true,
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "effectiveDate": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
+                  },
+                  "effectiveRanges": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Team created.",
+            "headers": {
+              "Location": {
+                "description": "The API endpoint to hit to get the created team.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1units~1%7BunitId%7D~1teams/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/units/{unitId}/teams/{teamId}": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
+        },
+        {
+          "name": "teamId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Teams"
+        ],
+        "summary": "Get a team",
+        "description": "Get the specified team from the unit.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The specified team from the unit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1units~1%7BunitId%7D~1teams/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Teams"
+        ],
+        "summary": "Update a team",
+        "description": "Update the team for the unit.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1units~1%7BunitId%7D~1teams/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated the team.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1units~1%7BunitId%7D~1teams/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Teams"
+        ],
+        "summary": "Partial update a team",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          }
+        ],
+        "description": "Update one or more properties for a team, potentially over multiple effective dates. This operation is idempotent.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1units~1%7BunitId%7D~1teams/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated the team.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1units~1%7BunitId%7D~1teams/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Teams"
+        ],
+        "summary": "Delete a team",
+        "description": "Delete a team for all effective dates.",
+        "responses": {
+          "204": {
+            "description": "Team deleted"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Get a list of users",
+        "parameters": [
+          {
+            "name": "fieldsets",
+            "description": "Specify which fieldsets to return.",
+            "in": "query",
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "default": [
+                "basic"
+              ],
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "basic",
+                  "personal",
+                  "units"
+                ]
+              }
+            }
+          },
+          {
+            "$ref": "#/paths/~1units/get/parameters/0"
+          },
+          {
+            "name": "freshnessScore",
+            "description": "Filter on freshness score range.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
+            }
+          },
+          {
+            "name": "qualityScore",
+            "description": "Filter on quality score range.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
+            }
+          },
+          {
+            "name": "contentQualityScore",
+            "description": "Filter on content quality score range.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "basic": {
+                      "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema"
+                    },
+                    "personal": {
+                      "type": "object",
+                      "description": "Personal fieldset data",
+                      "properties": {
+                        "uid": {
+                          "description": "Unique identifier (UUID v4)",
+                          "type": "string"
+                        },
+                        "accessibility": {
+                          "$ref": "#/paths/~1users/get/parameters/1/schema/allOf/0"
+                        },
+                        "birthdate": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "birthdateVerified": {
+                          "type": "boolean"
+                        },
+                        "firstName": {
+                          "type": "string"
+                        },
+                        "lastName": {
+                          "type": "string"
+                        },
+                        "nameVerified": {
+                          "type": "boolean"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        "emailVerified": {
+                          "type": "boolean"
+                        },
+                        "location": {
+                          "$ref": "#/paths/~1locations~1%7BlocationId%7D/get/responses/200/content/application~1json/schema/allOf/0"
+                        },
+                        "locationVerified": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "units": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Create a new user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Basic fieldset data",
+                "required": [
+                  "displayName"
+                ],
+                "properties": {
+                  "uid": {
+                    "description": "Unique identifier (UUID v1, date-time and MAC address)",
+                    "type": "string",
+                    "readOnly": true
+                  },
+                  "accessibility": {
+                    "$ref": "#/paths/~1users/get/parameters/1/schema/allOf/0"
+                  },
+                  "avatar": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/logo"
+                  },
+                  "displayName": {
+                    "description": "The publicly displayed name for this user.",
+                    "type": "string"
+                  },
+                  "shortDescription": {
+                    "description": "A short description that a user can add for themself.",
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "longDescription": {
+                    "description": "A longer description that a user can add for themself.",
+                    "type": "string"
+                  },
+                  "networks": {
+                    "description": "The networks that the user currently has an account with.",
+                    "type": "array",
+                    "readOnly": true,
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "vanityUrlPath": {
+                    "description": "The URL to the user's own page within the networks.",
+                    "type": "string"
+                  },
+                  "website": {
+                    "description": "A URL to the user's own external website.",
+                    "type": "string"
+                  },
+                  "freshnessScore": {
+                    "allOf": [
+                      {
+                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                      },
+                      {
+                        "type": "integer",
+                        "description": "How active the user is, how often the log in, how often they interact."
+                      }
+                    ]
+                  },
+                  "qualityScore": {
+                    "allOf": [
+                      {
+                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                      },
+                      {
+                        "type": "integer",
+                        "description": "Quality of a user's identifying data. The more information the unit has filled out (phone, address, logo, about, etc) the higher the quality."
+                      }
+                    ]
+                  },
+                  "contentQualityScore": {
+                    "allOf": [
+                      {
+                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                      },
+                      {
+                        "type": "integer",
+                        "description": "Quality of a units content. Are their posts relevant? Do they have images, how many likes, how many comments. Have posts been reported as bad or inappropriate content."
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Unit created",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1users/get/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Get a single user and its details",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1users/get/parameters/0"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1users/get/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Update a single user's details",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Delete a user",
+        "responses": {
+          "204": {
+            "description": "User deleted"
+          }
+        }
+      }
+    }
+  }
+}
