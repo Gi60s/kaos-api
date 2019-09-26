@@ -2,6 +2,7 @@
   "openapi": "3.0.2",
   "info": {
     "title": "KAOS",
+    "description": "For additional general information on how to use this API please refer to the [additional documentation](./docs.html).",
     "version": "0.0.1"
   },
   "x-tagGroups": [
@@ -268,7 +269,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/paths/~1networks~1%7BnetworkId%7D/put/responses/200/content/application~1json/schema"
+                    "$ref": "#/paths/~1networks~1%7BnetworkId%7D/get/responses/200/content/application~1json/schema"
                   }
                 }
               }
@@ -372,7 +373,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D/put/responses/200/content/application~1json/schema"
+                  "type": "object",
+                  "properties": {
+                    "basic": {
+                      "$ref": "#/paths/~1networks/post/requestBody/content/application~1json/schema"
+                    },
+                    "authorizationAttributes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
+                      }
+                    },
+                    "venuTypes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -399,24 +417,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "basic": {
-                      "$ref": "#/paths/~1networks/post/requestBody/content/application~1json/schema"
-                    },
-                    "authorizationAttributes": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
-                      }
-                    },
-                    "venuTypes": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
-                      }
-                    }
-                  }
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D/get/responses/200/content/application~1json/schema"
                 }
               }
             }
@@ -442,6 +443,14 @@
           },
           {
             "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          },
+          {
+            "name": "authorizationId",
+            "in": "query",
+            "description": "Specify the authorization attribute id to filter results to.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -542,29 +551,15 @@
         "parameters": [
           {
             "$ref": "#/paths/~1units/get/parameters/1"
-          },
-          {
-            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
           }
         ],
         "responses": {
           "200": {
-            "x-summary": "Authorization attribute(s) retrieved.",
-            "description": "If the `effectiveDateRange` query parameter was used then an array of all authorization attributes that fit this range will be returned, otherwise a single authoriztion attribute will be returned.",
+            "description": "Authorization attribute retrieved.",
             "content": {
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
-                      }
-                    }
-                  ]
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1authorizations/post/requestBody/content/application~1json/schema"
                 }
               }
             }
@@ -582,7 +577,13 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+            "name": "effectiveDateRange",
+            "description": "The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter.\nIf the date range specified overlaps existing effective dates for this item then the following will occur:\n1. If an effective dated entry's date range is partially overwritten then the effective date range for that item will be modified to exclude the overwritten portion. 2. If an effective dated entry's date range is completely overwritten then that entry will be deleted. 3. If an effective dated entry's date range exceeds the range specified for update then that entry will be split into two entries that surround the new update.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1/schema"
+            }
           }
         ],
         "requestBody": {
@@ -674,6 +675,14 @@
           },
           {
             "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+          },
+          {
+            "name": "venueId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -777,29 +786,15 @@
         "parameters": [
           {
             "$ref": "#/paths/~1units/get/parameters/1"
-          },
-          {
-            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
           }
         ],
         "responses": {
           "200": {
-            "x-summary": "Venue(s) retrieved.",
-            "description": "If the `effectiveDateRange` query parameter was used then an array of all venus that fit this range will be returned, otherwise a single venue will be returned.",
+            "description": "Venue retrieved.",
             "content": {
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
-                      }
-                    }
-                  ]
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
                 }
               }
             }
@@ -1329,32 +1324,7 @@
         "description": "Get a list of units",
         "parameters": [
           {
-            "name": "accessibility",
-            "description": "Filter based on accessibility",
-            "in": "query",
-            "style": "deepObject",
-            "schema": {
-              "allOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "discoverable": {
-                      "type": "boolean"
-                    },
-                    "public": {
-                      "type": "boolean"
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "default": {
-                    "discoverable": true,
-                    "public": true
-                  }
-                }
-              ]
-            }
+            "$ref": "#/paths/~1users/get/parameters/1"
           },
           {
             "name": "effectiveDate",
@@ -1383,7 +1353,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/6/schema"
+              "$ref": "#/paths/~1users/get/parameters/2/schema"
             }
           },
           {
@@ -1392,7 +1362,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/6/schema"
+              "$ref": "#/paths/~1users/get/parameters/2/schema"
             }
           },
           {
@@ -1401,7 +1371,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/6/schema"
+              "$ref": "#/paths/~1users/get/parameters/2/schema"
             }
           },
           {
@@ -1410,18 +1380,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "type": "object",
-              "properties": {
-                "minimum": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 100,
-                  "readOnly": true
-                },
-                "maximum": {
-                  "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
-                }
-              }
+              "$ref": "#/paths/~1users/get/parameters/2/schema"
             }
           }
         ],
@@ -1507,16 +1466,16 @@
                     "type": "string"
                   },
                   "activityScore": {
-                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
                   },
                   "freshnessScore": {
-                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
                   },
                   "qualityScore": {
-                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
                   },
                   "contentQualityScore": {
-                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
                   },
                   "effectiveDate": {
                     "description": "The date and time range for which this information is effective.",
@@ -1536,6 +1495,7 @@
                     }
                   },
                   "effectiveRanges": {
+                    "description": "Other effective date ranges that exist for this item.",
                     "type": "array",
                     "readOnly": true,
                     "items": {
@@ -2212,7 +2172,32 @@
             }
           },
           {
-            "$ref": "#/paths/~1units/get/parameters/0"
+            "name": "accessibility",
+            "description": "Filter based on accessibility",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "allOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "discoverable": {
+                      "type": "boolean"
+                    },
+                    "public": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "default": {
+                    "discoverable": true,
+                    "public": true
+                  }
+                }
+              ]
+            }
           },
           {
             "name": "freshnessScore",
@@ -2220,7 +2205,18 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/6/schema"
+              "type": "object",
+              "properties": {
+                "minimum": {
+                  "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
+                },
+                "maximum": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100,
+                  "readOnly": true
+                }
+              }
             }
           },
           {
@@ -2229,7 +2225,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/6/schema"
+              "$ref": "#/paths/~1users/get/parameters/2/schema"
             }
           },
           {
@@ -2238,7 +2234,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/6/schema"
+              "$ref": "#/paths/~1users/get/parameters/2/schema"
             }
           }
         ],
@@ -2363,7 +2359,7 @@
                   "freshnessScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
                       },
                       {
                         "type": "integer",
@@ -2374,7 +2370,7 @@
                   "qualityScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
                       },
                       {
                         "type": "integer",
@@ -2385,7 +2381,7 @@
                   "contentQualityScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
                       },
                       {
                         "type": "integer",

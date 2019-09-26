@@ -1,0 +1,58 @@
+<h1>Docs</h1>
+
+<h2>Effective Date Range</h2>
+
+<p>Specifying the effective date range, whether in a query parameter or a
+payload body will have different effects based on the HTTP method being used.</p>
+
+<h3>GET - Query Parameter</h3>
+
+<p>The effectiveDate parameter here says to load only the item that has that date
+    fall within the effective dated items start and end dates.</p>
+
+<p>The effectiveDateRange here says to load all items that fall at least
+  partially within the effective date range. For example, if you have an item with three
+  effective dates &mdash; Jan 1 2000 to Jan 31 2000, Feb 1 2000 to Feb 28 2000, and
+  March 1 onward &mdash; and you query for all items from Jan 15 2000 to Feb 28 2000,
+  then the results would return the first two effective dated entries.</p>
+
+<h3>POST, PUT, PATCH - Body Payload</h3>
+
+<p>The effective date (start and end) provided in the body payload for a POST, PUT,
+  or PATCH will perform an overwrite all of or part of existing effective dated items.</p>
+
+<ol>
+  <li>If an effective dated entry's date range is partially overwritten then the
+    effective date range for that item will be modified to exclude the overwritten
+    portion.</li>
+  <li>If an effective dated entry's date range is completely overwritten then that
+    effective dated item will be deleted.</li>
+  <li>If an effective dated entry's date range exceeds the range specified for
+    update then that entry will be split into two entries that surround the new
+    update.</li>
+</ol>
+
+<p>For example, if you have an item with three
+  effective dates &mdash; Jan 1 2000 to Jan 31 2000, Feb 1 2000 to Feb 28 2000, and
+  March 1 onward &mdash; and you perform a POST or PUT for the effective date from
+  Jan 15 2000 to March 2 2000, then the results would do the following:</p>
+
+<ol>
+  <li>The first effective date range (Jan 1 2000 to Jan 31 2000) would be modified to
+    range from Jan 1 2000 to Jan 14 2000</li>
+  <li>The second effective date range (Feb 1 2000 to Feb 28 2000) would be overwritten
+    entirely.</li>
+  <li>The third effective date range (March 1 onward) would be modified to range from
+    March 3 2000 onward.</li>
+  <li>A new item with the effective date range of Jan 15 2000 to March 2 2000 would be
+    created</li>
+</ol>
+
+<h3>PATCH - Query Parameter</h3>
+
+<p>The query parameter effectiveDate will patch only the item that has that date
+  fall within the effective dated items start and end dates.</p>
+
+<p>The query parameter effectiveDateRange will affect a patch on all items that
+  have the effective date start and end fall anywhere when the query parameter's range.</p>
+
