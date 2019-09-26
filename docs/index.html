@@ -5,7 +5,7 @@
   <!-- needed for adaptive design -->
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="http://localhost:<%= port %>/font.css" rel="stylesheet">
+  <link href="/font.css" rel="stylesheet">
 
   <!--
   ReDoc doesn't change outer page styles
@@ -18,10 +18,10 @@
   </style>
 </head>
 <body>
-  <redoc spec-url='http://localhost:<%= port %>/openapi.json'
+  <redoc spec-url='/openapi.json'
          sort-props-alphabetically="true"
          required-props-first="true"
          expand-responses="200,201"></redoc>
-  <script src="http://localhost:<%= port %>/redoc.js"></script>
+  <script src="/redoc.js"></script>
 </body>
 </html>
