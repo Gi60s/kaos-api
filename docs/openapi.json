@@ -259,6 +259,12 @@
         "parameters": [
           {
             "$ref": "#/paths/~1networks~1%7BnetworkId%7D/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units/get/parameters/2"
           }
         ],
         "responses": {
@@ -307,8 +313,8 @@
                   "effectiveDate": {
                     "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
                   },
-                  "effectiveRanges": {
-                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                  "effectiveDateRanges": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDateRanges"
                   }
                 }
               }
@@ -367,6 +373,11 @@
           "Networks"
         ],
         "description": "Get a single network.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          }
+        ],
         "responses": {
           "200": {
             "description": "A single network.",
@@ -442,7 +453,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           },
           {
             "name": "authorizationId",
@@ -498,8 +509,8 @@
                   "effectiveDate": {
                     "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
                   },
-                  "effectiveRanges": {
-                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                  "effectiveDateRanges": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDateRanges"
                   }
                 }
               }
@@ -605,7 +616,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           }
         ],
         "requestBody": {
@@ -660,7 +671,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           },
           {
             "name": "venueId",
@@ -719,8 +730,8 @@
                   "effectiveDate": {
                     "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
                   },
-                  "effectiveRanges": {
-                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                  "effectiveDateRanges": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDateRanges"
                   }
                 }
               }
@@ -826,7 +837,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           }
         ],
         "requestBody": {
@@ -907,49 +918,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "basic": {
-                        "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema"
-                      },
-                      "members": {
-                        "type": "array",
-                        "description": "A list of up to 100 members. Use the portfolio members service to get other members.",
-                        "readOnly": true,
-                        "items": {
-                          "$ref": "#/paths/~1portfolios~1%7BportfolioId%7D/patch/requestBody/content/application~1json/schema/properties/members/items"
-                        }
-                      },
-                      "parentPortfolio": {
-                        "type": "object",
-                        "description": "The parent portfolio that this is attached to.",
-                        "readOnly": true,
-                        "properties": {
-                          "uid": {
-                            "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
-                          },
-                          "name": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "portfolios": {
-                        "type": "array",
-                        "description": "A list of portfolio basic info for up to 100 sub portfolios.",
-                        "readOnly": true,
-                        "items": {
-                          "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema"
-                        }
-                      },
-                      "units": {
-                        "type": "array",
-                        "description": "A list of up to 100 units. Use the portfolio units service to get other units.",
-                        "readOnly": true,
-                        "items": {
-                          "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
-                        }
-                      }
-                    }
+                    "$ref": "#/paths/~1portfolios~1%7BportfolioId%7D/patch/requestBody/content/application~1json/schema"
                   }
                 }
               }
@@ -981,28 +950,46 @@
                   "effectiveDate": {
                     "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
                   },
-                  "effectiveRanges": {
-                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                  "effectiveDateRanges": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDateRanges"
                   },
                   "members": {
                     "type": "array",
                     "description": "A list of users that are associated with this portfolio.",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "uid": {
-                          "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "uid": {
+                              "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                            },
+                            "avatar": {
+                              "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/logo"
+                            },
+                            "displayName": {
+                              "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/displayName"
+                            }
+                          }
                         },
-                        "displayName": {
-                          "type": "string"
-                        },
-                        "authorizationAttributes": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
+                        {
+                          "type": "object",
+                          "properties": {
+                            "authorizationAttributes": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "contributer",
+                                  "event organizer",
+                                  "moderator",
+                                  "user manager"
+                                ]
+                              }
+                            }
                           }
                         }
-                      }
+                      ]
                     }
                   },
                   "portfolios": {
@@ -1150,7 +1137,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           }
         ],
         "requestBody": {
@@ -1159,6 +1146,40 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "authorizationAttributes": {
+                    "type": "object",
+                    "description": "The authorization attributes for a single effective date.",
+                    "properties": {
+                      "contributers": {
+                        "description": "Users who are able to make posts and edit or delete their own posts.",
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema/properties/members/items/allOf/0"
+                        }
+                      },
+                      "eventOrganizer": {
+                        "description": "Users who are able to create, edit, and delete events.",
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema/properties/members/items/allOf/0"
+                        }
+                      },
+                      "moderator": {
+                        "description": "Users who are able to edit or delete other user's posts.",
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema/properties/members/items/allOf/0"
+                        }
+                      },
+                      "userManager": {
+                        "description": "User's who have access to manage what authorization attributes other users have.",
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema/properties/members/items/allOf/0"
+                        }
+                      }
+                    }
+                  },
                   "basic": {
                     "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema"
                   },
@@ -1168,7 +1189,7 @@
                     "items": {
                       "allOf": [
                         {
-                          "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema"
+                          "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema/properties/members/items/allOf/0"
                         },
                         {
                           "type": "object",
@@ -1185,8 +1206,8 @@
                                   "effectiveDate": {
                                     "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
                                   },
-                                  "effectiveRanges": {
-                                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                                  "effectiveDateRanges": {
+                                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDateRanges"
                                   }
                                 }
                               }
@@ -1198,9 +1219,9 @@
                   },
                   "portfolios": {
                     "type": "array",
-                    "description": "A list of up to 100 sub portfolios basic information.",
+                    "description": "Child portfolios.",
                     "items": {
-                      "$ref": "#/paths/~1portfolios/get/responses/200/content/application~1json/schema"
+                      "$ref": "#/paths/~1portfolios/post/requestBody/content/application~1json/schema"
                     }
                   },
                   "units": {
@@ -1302,7 +1323,32 @@
         "description": "Get a list of units",
         "parameters": [
           {
-            "$ref": "#/paths/~1users/get/parameters/1"
+            "name": "accessibility",
+            "description": "Filter based on accessibility",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "allOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "discoverable": {
+                      "type": "boolean"
+                    },
+                    "public": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "default": {
+                    "discoverable": true,
+                    "public": true
+                  }
+                }
+              ]
+            }
           },
           {
             "name": "effectiveDate",
@@ -1311,6 +1357,29 @@
             "schema": {
               "type": "string",
               "format": "date-time"
+            }
+          },
+          {
+            "name": "effectiveDateRange",
+            "description": "The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter. See the [effectiveDate docs](./docs.html) for more information.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "type": "object",
+              "required": [
+                "start",
+                "end"
+              ],
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "end": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
             }
           },
           {
@@ -1331,7 +1400,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/4/schema"
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           },
           {
@@ -1340,7 +1409,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/4/schema"
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           },
           {
@@ -1349,7 +1418,18 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/4/schema"
+              "type": "object",
+              "properties": {
+                "minimum": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100,
+                  "readOnly": true
+                },
+                "maximum": {
+                  "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
+                }
+              }
             }
           },
           {
@@ -1358,7 +1438,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/4/schema"
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           }
         ],
@@ -1444,16 +1524,16 @@
                     "type": "string"
                   },
                   "activityScore": {
-                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
                   },
                   "freshnessScore": {
-                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
                   },
                   "qualityScore": {
-                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
                   },
                   "contentQualityScore": {
-                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
+                    "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
                   },
                   "effectiveDate": {
                     "description": "The date and time range for which this information is effective.",
@@ -1472,8 +1552,8 @@
                       }
                     }
                   },
-                  "effectiveRanges": {
-                    "description": "Other effective date ranges that exist for this item.",
+                  "effectiveDateRanges": {
+                    "description": "All effective date ranges that exist for this item.",
                     "type": "array",
                     "readOnly": true,
                     "items": {
@@ -1524,6 +1604,11 @@
         ],
         "summary": "Get a unit",
         "description": "Get a single unit and its details",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Retrieved unit",
@@ -1543,40 +1628,57 @@
         ],
         "summary": "Update a unit",
         "description": "Update a single unit's details",
-        "parameters": [
-          {
-            "$ref": "#/paths/~1units/get/parameters/1"
-          },
-          {
-            "name": "effectiveDateRange",
-            "description": "The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter. See the [effectiveDate docs](./docs.html) for more information.",
-            "in": "query",
-            "style": "deepObject",
-            "schema": {
-              "type": "object",
-              "required": [
-                "start",
-                "end"
-              ],
-              "properties": {
-                "start": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "end": {
-                  "type": "string",
-                  "format": "date-time"
-                }
-              }
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
+                  "authorizationAttributes": {
+                    "description": "The authorization attributes applied to the user in the context of the network and portfolio.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "attribute": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "network": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "users": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/uid"
+                              },
+                              "name": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
                   "basic": {
                     "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
                   },
@@ -1604,21 +1706,9 @@
                           "type": "object",
                           "properties": {
                             "sunday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/monday"
                             },
                             "monday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
-                            },
-                            "tuesday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
-                            },
-                            "wednesday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
-                            },
-                            "thursday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
-                            },
-                            "friday": {
                               "type": "array",
                               "items": {
                                 "type": "object",
@@ -1634,8 +1724,20 @@
                                 }
                               }
                             },
+                            "tuesday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/monday"
+                            },
+                            "wednesday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/monday"
+                            },
+                            "thursday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/monday"
+                            },
+                            "friday": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/monday"
+                            },
                             "saturday": {
-                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/friday"
+                              "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema/properties/venues/items/properties/hoursOfOperation/properties/monday"
                             }
                           }
                         },
@@ -1664,8 +1766,8 @@
                         "effectiveDate": {
                           "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
                         },
-                        "effectiveRanges": {
-                          "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                        "effectiveDateRanges": {
+                          "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDateRanges"
                         }
                       }
                     }
@@ -1715,6 +1817,14 @@
           "Members"
         ],
         "description": "Get a list of unit members",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units/get/parameters/2"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Users who are members of this unit",
@@ -1730,23 +1840,17 @@
                       {
                         "type": "object",
                         "properties": {
-                          "authorizationRoles": {
+                          "authorizationAttributes": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             }
                           },
-                          "memberRole": {
-                            "type": "string"
-                          },
-                          "memberRoleDescription": {
-                            "type": "string"
-                          },
                           "effectiveDate": {
                             "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
                           },
-                          "effectiveRanges": {
-                            "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                          "effectiveDateRanges": {
+                            "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDateRanges"
                           }
                         }
                       }
@@ -1830,6 +1934,14 @@
           "Roles"
         ],
         "description": "Get the unit authorization roles and permissions",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units/get/parameters/2"
+          }
+        ],
         "responses": {
           "200": {
             "description": "A list of unit's authorization roles and their permissions",
@@ -1910,6 +2022,9 @@
         "parameters": [
           {
             "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units/get/parameters/2"
           }
         ],
         "responses": {
@@ -1970,8 +2085,8 @@
                   "effectiveDate": {
                     "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDate"
                   },
-                  "effectiveRanges": {
-                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveRanges"
+                  "effectiveDateRanges": {
+                    "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/effectiveDateRanges"
                   }
                 }
               }
@@ -2044,11 +2159,6 @@
         ],
         "summary": "Update a team",
         "description": "Update the team for the unit.",
-        "parameters": [
-          {
-            "$ref": "#/paths/~1units/get/parameters/1"
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -2081,7 +2191,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1units~1%7BunitId%7D/put/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           }
         ],
         "description": "Update one or more properties for a team, potentially over multiple effective dates. This operation is idempotent.",
@@ -2150,32 +2260,7 @@
             }
           },
           {
-            "name": "accessibility",
-            "description": "Filter based on accessibility",
-            "in": "query",
-            "style": "deepObject",
-            "schema": {
-              "allOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "discoverable": {
-                      "type": "boolean"
-                    },
-                    "public": {
-                      "type": "boolean"
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "default": {
-                    "discoverable": true,
-                    "public": true
-                  }
-                }
-              ]
-            }
+            "$ref": "#/paths/~1units/get/parameters/0"
           },
           {
             "name": "freshnessScore",
@@ -2183,7 +2268,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/4/schema"
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           },
           {
@@ -2192,7 +2277,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/4/schema"
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           },
           {
@@ -2201,18 +2286,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "type": "object",
-              "properties": {
-                "minimum": {
-                  "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
-                },
-                "maximum": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 100,
-                  "readOnly": true
-                }
-              }
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           }
         ],
@@ -2337,7 +2411,7 @@
                   "freshnessScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
+                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
                       },
                       {
                         "type": "integer",
@@ -2348,7 +2422,7 @@
                   "qualityScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
+                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
                       },
                       {
                         "type": "integer",
@@ -2359,7 +2433,7 @@
                   "contentQualityScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/maximum"
+                        "$ref": "#/paths/~1users/get/parameters/2/schema/properties/minimum"
                       },
                       {
                         "type": "integer",
