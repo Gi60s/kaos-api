@@ -224,5 +224,14 @@ components:
           $ref: './locations.yml#/components/schemas/Location'
         locationVerified:
           type: boolean
+    UserMicro:
+      type: object
+      properties:
+        uid:
+          $ref: '#/components/schemas/UserBasic/properties/uid'
+        avatar:
+          $ref: '#/components/schemas/UserBasic/properties/avatar'
+        displayName:
+          $ref: '#/components/schemas/UserBasic/properties/displayName'
     UserUnits:
       type: object

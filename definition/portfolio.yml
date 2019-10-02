@@ -14,7 +14,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Portfolios'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Portfolio'
     post:
       tags:
         - Portfolios
@@ -164,57 +166,64 @@ components:
     Portfolio:
       type: object
       properties:
+        authorizationAttributes:
+          $ref: '#/components/schemas/PortfolioAttributes'
         basic:
           $ref: '#/components/schemas/PortfolioBasic'
         members:
           type: array
           description: A list of up to 100 members. Use the portfolio members service to get other members.
           items:
-            $ref: './common.yml#/Member'
+            allOf:
+              - $ref: './users.yml#/components/schemas/UserMicro'
+              - type: object
+                properties:
+                  authorizationAttributes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        attribute:
+                          type: string
+                          description: The name of an attribute from the network meta.
+                        effectiveDate:
+                          $ref: './common.yml#/EffectiveDate'
+                        effectiveDateRanges:
+                          $ref: './common.yml#/EffectiveDateRanges'
         portfolios:
           type: array
-          description: A list of up to 100 sub portfolios basic information.
+          description: Child portfolios.
           items:
-            $ref: '#/components/schemas/Portfolios'
+            $ref: '#/components/schemas/PortfolioBasic'
         units:
           type: array
           description: A list of up to 100 units. Use the portfolio units service to get other units.
           items:
             $ref: './units.yml#/components/schemas/UnitBasic'
-    Portfolios:
-      type: array
-      items:
-        type: object
-        properties:
-          basic:
-            $ref: '#/components/schemas/PortfolioBasic'
-          members:
-            type: array
-            description: A list of up to 100 members. Use the portfolio members service to get other members.
-            readOnly: true
-            items:
-              $ref: './common.yml#/Member'
-          parentPortfolio:
-            type: object
-            description: The parent portfolio that this is attached to.
-            readOnly: true
-            properties:
-              uid:
-                $ref: './common.yml#/Uid2'
-              name:
-                type: string
-          portfolios:
-            type: array
-            description: A list of portfolio basic info for up to 100 sub portfolios.
-            readOnly: true
-            items:
-              $ref: '#/components/schemas/PortfolioBasic'
-          units:
-            type: array
-            description: A list of up to 100 units. Use the portfolio units service to get other units.
-            readOnly: true
-            items:
-              $ref: './units.yml#/components/schemas/UnitBasic'
+    PortfolioAttributes:
+      type: object
+      description: The authorization attributes for a single effective date.
+      properties:
+        contributers:
+          description: Users who are able to make posts and edit or delete their own posts.
+          type: array
+          items:
+            $ref: './users.yml#/components/schemas/UserMicro'
+        eventOrganizer:
+          description: Users who are able to create, edit, and delete events.
+          type: array
+          items:
+            $ref: './users.yml#/components/schemas/UserMicro'
+        moderator:
+          description: Users who are able to edit or delete other user's posts.
+          type: array
+          items:
+            $ref: './users.yml#/components/schemas/UserMicro'
+        userManager:
+          description: User's who have access to manage what authorization attributes other users have.
+          type: array
+          items:
+            $ref: './users.yml#/components/schemas/UserMicro'
     PortfolioBasic:
       type: object
       required:
@@ -226,22 +235,25 @@ components:
           type: string
         effectiveDate:
           $ref: './common.yml#/EffectiveDate'
-        effectiveRanges:
-          $ref: './common.yml#/EffectiveRanges'
+        effectiveDateRanges:
+          $ref: './common.yml#/EffectiveDateRanges'
         members:
           type: array
           description: A list of users that are associated with this portfolio.
           items:
-            type: object
-            properties:
-              uid:
-                $ref: './common.yml#/Uid2'
-              displayName:
-                type: string
-              authorizationAttributes:
-                type: array
-                items:
-                  type: string
+            allOf:
+              - $ref: './users.yml#/components/schemas/UserMicro'
+              - type: object
+                properties:
+                  authorizationAttributes:
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                        - contributer
+                        - event organizer
+                        - moderator
+                        - user manager
         portfolios:
           type: array
           description: A list of portfolios that are associated with this portfolio.

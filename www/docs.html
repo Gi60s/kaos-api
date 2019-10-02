@@ -1,10 +1,12 @@
 <h1>Docs</h1>
 
+<a name='effective-date-range'></a>
 <h2>Effective Date Range</h2>
 
 <p>Specifying the effective date range, whether in a query parameter or a
 payload body will have different effects based on the HTTP method being used.</p>
 
+<a name='effective-date-range-get-query'></a>
 <h3>GET - Query Parameter</h3>
 
 <p>The effectiveDate parameter here says to load only the item that has that date
@@ -16,6 +18,11 @@ payload body will have different effects based on the HTTP method being used.</p
   March 1 onward &mdash; and you query for all items from Jan 15 2000 to Feb 28 2000,
   then the results would return the first two effective dated entries.</p>
 
+<p>The effectiveDateRange query parameter will not be available on GET requests that
+  return a single resource. It will be available for GET requests that return a
+  collection of resources.</p>
+
+<a name='effective-date-range-payload'></a>
 <h3>POST, PUT, PATCH - Body Payload</h3>
 
 <p>The effective date (start and end) provided in the body payload for a POST, PUT,
@@ -48,6 +55,7 @@ payload body will have different effects based on the HTTP method being used.</p
     created</li>
 </ol>
 
+<a name='effective-date-range-query-patch'></a>
 <h3>PATCH - Query Parameter</h3>
 
 <p>The query parameter effectiveDate will patch only the item that has that date
@@ -55,4 +63,8 @@ payload body will have different effects based on the HTTP method being used.</p
 
 <p>The query parameter effectiveDateRange will affect a patch on all items that
   have the effective date start and end fall anywhere when the query parameter's range.</p>
+
+<p>Note that if the effective date range is specified in the body and the query parameter
+  then the query parameter will be ignored, using the
+  <a href='#effective-date-range-payload'>payload instead</a>.</p>
 
