@@ -165,6 +165,22 @@ parameterEffectiveDateRange:
       end:
         type: string
         format: date-time
+parameterQueryEffectiveDateSetter:
+  name: effectiveDate
+  in: query
+  description: The effective date start and end to apply.
+  style: deepObject
+  schema:
+    type: object
+    required:
+      - start
+    properties:
+      start:
+        type: string
+        format: date-time
+      end:
+        type: string
+        format: date-time
 parameterQueryAccessibility:
   name: accessibility
   description: Filter based on accessibility

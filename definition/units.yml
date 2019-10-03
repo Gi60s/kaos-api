@@ -112,56 +112,56 @@ paths:
       responses:
         204:
           description: Unit deleted
-  unitMembers:
-    parameters:
-      - $ref: '#/components/parameters/pathUnitId'
-    get:
-      tags:
-        - Members
-      description: Get a list of unit members
-      parameters:
-        - $ref: './common.yml#/parameterEffectiveDate'
-        - $ref: './common.yml#/parameterEffectiveDateRange'
-      responses:
-        200:
-          description: Users who are members of this unit
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UnitMembers'
-  unitMember:
-    parameters:
-      - $ref: '#/components/parameters/pathUnitId'
-      - $ref: './users.yml#/components/parameters/pathUserId'
-    put:
-      tags:
-        - Members
-      description: Make a user a member of the unit
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: string
-                description: The unit authorization roles to apply to the user.
-      responses:
-        200:
-          description: User added
-        404:
-          description: User or unit not found
-    delete:
-      tags:
-        - Members
-      description: Remove a user from the unit
-      responses:
-        204:
-          description: User removed from unit
-        404:
-          description: User or unit not found
+  # unitMembers:
+  #   parameters:
+  #     - $ref: '#/components/parameters/pathUnitId'
+  #   get:
+  #     tags:
+  #       - Members
+  #     description: Get a list of unit members
+  #     parameters:
+  #       - $ref: './common.yml#/parameterEffectiveDate'
+  #       - $ref: './common.yml#/parameterEffectiveDateRange'
+  #     responses:
+  #       200:
+  #         description: Users who are members of this unit
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/UnitMembers'
+  # unitMember:
+  #   parameters:
+  #     - $ref: '#/components/parameters/pathUnitId'
+  #     - $ref: './users.yml#/components/parameters/pathUserId'
+  #   put:
+  #     tags:
+  #       - Members
+  #     description: Make a user a member of the unit
+  #     requestBody:
+  #       required: false
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: array
+  #             items:
+  #               type: string
+  #               description: The unit authorization roles to apply to the user.
+  #     responses:
+  #       200:
+  #         description: User added
+  #       404:
+  #         description: User or unit not found
+  #   delete:
+  #     tags:
+  #       - Members
+  #     description: Remove a user from the unit
+  #     responses:
+  #       204:
+  #         description: User removed from unit
+  #       404:
+  #         description: User or unit not found
   unitTeams:
     parameters:
       - $ref: './units.yml#/components/parameters/pathUnitId'
@@ -336,7 +336,7 @@ components:
           type: string
           enum:
             - basic
-            - members
+            # - members
             - roles
             - teams
             - venues
@@ -359,10 +359,10 @@ components:
           $ref: './common.yml#/AuthorizationAttributes'
         basic:
           $ref: '#/components/schemas/UnitBasic'
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/UnitMembers'
+        # members:
+        #   type: array
+        #   items:
+        #     $ref: '#/components/schemas/UnitMembers'
         teams:
           type: array
           items:
@@ -421,19 +421,27 @@ components:
           $ref: './common.yml#/EffectiveDate'
         effectiveDateRanges:
           $ref: './common.yml#/EffectiveDateRanges'
-    UnitMembers:
-      allOf:
-        - $ref: './users.yml#/components/schemas/UserBasic'
-        - type: object
-          properties:
-            authorizationAttributes:
-              type: array
-              items:
-                type: string
-            effectiveDate:
-              $ref: './common.yml#/EffectiveDate'
-            effectiveDateRanges:
-              $ref: './common.yml#/EffectiveDateRanges'
+    # UnitMembers:
+    #   allOf:
+    #     - $ref: './users.yml#/components/schemas/UserBasic'
+    #     - type: object
+    #       properties:
+    #         authorizationAttributes:
+    #           type: array
+    #           items:
+    #             type: string
+    #         effectiveDate:
+    #           $ref: './common.yml#/EffectiveDate'
+    #         effectiveDateRanges:
+    #           $ref: './common.yml#/EffectiveDateRanges'
+    UnitMicro:
+      type: object
+      properties:
+        uid:
+          $ref: './common.yml#/Uid2'
+        name:
+          type: string
+
     UnitRetailers:
       type: object
       properties:

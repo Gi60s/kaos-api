@@ -16,10 +16,10 @@ x-tagGroups:
     tags:
       - Portfolios
       - Child Portfolios
+      - Members
   - name: Unit Management
     tags:
       - Locations
-      - Members
       - Roles
       - Teams
       - Units
@@ -47,15 +47,19 @@ paths:
   /portfolios/{portfolioId}:
     $ref: './portfolio.yml#/paths/portfolio'
   /portfolios/{portfolioId}/child-portfolios/{childPortfolioId}:
-    $ref: './portfolio.yml#/paths/childPortfolios'
+    $ref: './portfolio.yml#/paths/childPortfolio'
+  /portfolios/{portfolioId}/members:
+    $ref: './portfolio.yml#/paths/portfolioMembers'
+  /portfolios/{portfolioId}/members/{userId}:
+    $ref: './portfolio.yml#/paths/portfolioMember'
   /units:
     $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/units'
   /units/{unitId}:
     $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unit'
-  /units/{unitId}/members:
-    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitMembers'
-  /units/{unitId}/members/{userId}:
-    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitMember'
+  # /units/{unitId}/members:
+  #   $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitMembers'
+  # /units/{unitId}/members/{userId}:
+  #   $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitMember'
   /units/{unitId}/authorizatonRoles/{userId}:
     $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitAuthorizationRoles'
   /units/{unitId}/teams:

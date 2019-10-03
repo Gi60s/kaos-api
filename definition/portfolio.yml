@@ -7,7 +7,17 @@ paths:
       description: Get a list of the portfolios that you have access to.
       parameters:
         - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
         - $ref: '#/components/parameters/queryFieldSet'
+        - name: portfolio
+          in: query
+          description: Specify one or more portfolio id's to limit results to.
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         200:
           description: A list of portfolios.
@@ -62,8 +72,6 @@ paths:
         - Portfolios
       summary: Set basic info
       description: Set basic information for a portfolio.
-      parameters:
-        - $ref: './common.yml#/parameterEffectiveDate'
       requestBody:
         content:
           application/json:
@@ -104,7 +112,7 @@ paths:
       responses:
         204:
           description: Portfolio deleted
-  childPortfolios:
+  childPortfolio:
     parameters:
       - $ref: '#/components/parameters/pathPortfolioId'
       - in: path
@@ -112,6 +120,7 @@ paths:
         required: true
         schema:
           type: string
+      - $ref: './common.yml#/parameterQueryEffectiveDateSetter'
     put:
       tags:
         - Child Portfolios
@@ -136,7 +145,127 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PortfolioBasic'
-
+  portfolioMembers:
+    parameters:
+      - $ref: '#/components/parameters/pathPortfolioId'
+    get:
+      tags:
+        - Members
+      summary: Get members
+      description: Get all portfolio members.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+        - $ref: '#/components/parameters/queryFilterUserId'
+      responses:
+        200:
+          description: A list of portfolio members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PortfolioMember'
+    put:
+      tags:
+        - Members
+      summary: Batch assign attributes
+      description: Attach one or more members to a portfolio with the specified attributes. If a member is attached without attributes then they will have basic read access.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/requestBodies/putMembersAttributes'
+      responses:
+        200:
+          description: Membership attributes set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioMember'
+    patch:
+      tags:
+        - Members
+      summary: Batch partial assign attributes
+      description: Partial update some attributes for one or more members.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/patchMembersAttributes'
+      responses:
+        200:
+          description: Membership attributes set.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PortfolioMember'
+    delete:
+      tags:
+        - Members
+      summary: Batch remove members
+      description: Remove one or more members from the portfolio.
+      parameters:
+        - $ref: '#/components/parameters/queryFilterUserId'
+      responses:
+        204:
+          description: Members removed
+  portfolioMember:
+    parameters:
+      - $ref: '#/components/parameters/pathPortfolioId'
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Members
+      summary: Assign a member attributes
+      description: Attach a members to a portfolio with the specified attributes. If a member is attached without attributes then they will have basic read access.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/requestBodies/putMemberAttributes'
+      responses:
+        200:
+          description: Membership attributes set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioMember'
+    patch:
+      tags:
+        - Members
+      summary: Partial assign a member attributes
+      description: Update some attributes for existing members or potentially add a member with set attributes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/patchMemberAttributes'
+      responses:
+        200:
+          description: Membership attributes set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioMember'
+    delete:
+      tags:
+        - Members
+      summary: Remove a member
+      description: Remove a members from the portfolio.
+      responses:
+        204:
+          description: Members removed
 components:
   parameters:
     pathPortfolioId:
@@ -162,6 +291,69 @@ components:
             - members
             - portfolios
             - units
+    queryFilterUserId:
+      name: userId
+      in: query
+      style: form
+      explode: false
+      description: Comma separated list of user IDs.
+      schema:
+        type: array
+        items:
+          $ref: './common.yml#/Uid2'
+  requestBodies:
+    patchMemberAttributes:
+      type: object
+      properties:
+        set:
+          type: array
+          items:
+            $ref: '#/components/schemas/PortfolioAttribute'
+        remove:
+          type: array
+          items:
+            $ref: '#/components/schemas/PortfolioAttribute'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+    patchMembersAttributes:
+      type: array
+      items:
+        type: object
+        properties:
+          set:
+            type: array
+            items:
+              $ref: '#/components/schemas/PortfolioAttribute'
+          remove:
+            type: array
+            items:
+              $ref: '#/components/schemas/PortfolioAttribute'
+          effectiveDate:
+            $ref: './common.yml#/EffectiveDate'
+          userId:
+            $ref: './common.yml#/Uid2'
+    putMemberAttributes:
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/PortfolioAttribute'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+    putMembersAttributes:
+      type: array
+      items:
+        type: object
+        properties:
+          attributes:
+            type: array
+            items:
+              $ref: '#/components/schemas/PortfolioAttribute'
+          effectiveDate:
+            $ref: './common.yml#/EffectiveDate'
+          userId:
+            $ref: './common.yml#/Uid2'
   schemas:
     Portfolio:
       type: object
@@ -172,34 +364,26 @@ components:
           $ref: '#/components/schemas/PortfolioBasic'
         members:
           type: array
-          description: A list of up to 100 members. Use the portfolio members service to get other members.
+          description: A list of members attached to this portfolio.
           items:
-            allOf:
-              - $ref: './users.yml#/components/schemas/UserMicro'
-              - type: object
-                properties:
-                  authorizationAttributes:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        attribute:
-                          type: string
-                          description: The name of an attribute from the network meta.
-                        effectiveDate:
-                          $ref: './common.yml#/EffectiveDate'
-                        effectiveDateRanges:
-                          $ref: './common.yml#/EffectiveDateRanges'
+            $ref: '#/components/schemas/PortfolioMember'
         portfolios:
           type: array
-          description: Child portfolios.
+          description: A list of portfolios attached to this portfolio.
           items:
-            $ref: '#/components/schemas/PortfolioBasic'
+            $ref: '#/components/schemas/PortfolioMicro'
         units:
           type: array
-          description: A list of up to 100 units. Use the portfolio units service to get other units.
+          description: A list units that are attached to this portfolio.
           items:
-            $ref: './units.yml#/components/schemas/UnitBasic'
+            $ref: './units.yml#/components/schemas/UnitMicro'
+    PortfolioAttribute:
+      type: string
+      enum:
+        - contributer
+        - event organizer
+        - moderator
+        - user manager
     PortfolioAttributes:
       type: object
       description: The authorization attributes for a single effective date.
@@ -237,46 +421,43 @@ components:
           $ref: './common.yml#/EffectiveDate'
         effectiveDateRanges:
           $ref: './common.yml#/EffectiveDateRanges'
-        members:
-          type: array
-          description: A list of users that are associated with this portfolio.
-          items:
-            allOf:
-              - $ref: './users.yml#/components/schemas/UserMicro'
-              - type: object
+        parentPortfolio:
+          allOf:
+            - $ref: '#/components/schemas/PortfolioMicro'
+            - type: object
+              properties:
+                effectiveDate:
+                  $ref: './common.yml#/EffectiveDate'
+                effectiveDateRanges:
+                  $ref: './common.yml#/EffectiveDateRanges'
+    PortfolioMember:
+      allOf:
+        - $ref: './users.yml#/components/schemas/UserMicro'
+        - type: object
+          properties:
+            authorizationAttributes:
+              type: array
+              items:
+                type: object
                 properties:
-                  authorizationAttributes:
-                    type: array
-                    items:
-                      type: string
-                      enum:
-                        - contributer
-                        - event organizer
-                        - moderator
-                        - user manager
-        portfolios:
-          type: array
-          description: A list of portfolios that are associated with this portfolio.
-          items:
-            type: object
-            required:
-              - name
-            properties:
-              uid:
-                $ref: './common.yml#/Uid2'
-              name:
-                type: string
-        units:
-          type: array
-          description: A list of units that are associated with this portfolio.
-          items:
-            type: object
-            properties:
-              uid:
-                $ref: './common.yml#/Uid2'
-              name:
-                $ref: './units.yml#/components/schemas/UnitBasic/properties/name'
-              shortDescription:
-                $ref: './units.yml#/components/schemas/UnitBasic/properties/shortDescription'
-
+                  attribute:
+                    $ref: '#/components/schemas/PortfolioAttribute'
+                  effectiveDate:
+                    $ref: './common.yml#/EffectiveDate'
+                  effectiveDateRanges:
+                    $ref: './common.yml#/EffectiveDateRanges'
+                  inheritedFromPortfolio:
+                    type: object
+                    properties:
+                      uid:
+                        $ref: './common.yml#/Uid2'
+                      name:
+                        type: string
+    PortfolioMicro:
+      type: object
+      properties:
+        uid:
+          $ref: './common.yml#/Uid2'
+        name:
+          type: string
 
