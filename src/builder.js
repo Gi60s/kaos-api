@@ -15,7 +15,12 @@ function Builder (source) {
   factory.build = async function () {
     console.log('\n--- BUILDING ' + (new Date()).toLocaleString() + ' ---\n')
     const openapiDoc = await RefParser.bundle(source)
-    const [ , err, warn ] = await Enforcer(openapiDoc, { fullResult: true })
+    const [ , err, warn ] = await Enforcer(openapiDoc, {
+      fullResult: true,
+      componentOptions: {
+        // requestBodyAllowedMethods: { delete: true }
+      }
+    })
     if (err) {
       console.log(err.toString())
       console.log('\nBuild failed\n')
