@@ -5,7 +5,17 @@ paths:
         - Users
       description: Get a list of users
       parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
         - $ref: '#/components/parameters/queryFieldSet'
+        - name: 'userId'
+          in: query
+          description: Filter results to the specific user ids.
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
         - $ref: './common.yml#/parameterQueryAccessibility'
         - name: freshnessScore
           description: Filter on freshness score range.
@@ -62,8 +72,10 @@ paths:
     get:
       tags:
         - Users
+      summary: Get a user
       description: Get a single user and its details
       parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
         - $ref: '#/components/parameters/queryFieldSet'
       responses:
         200:
@@ -75,7 +87,8 @@ paths:
     put:
       tags:
         - Users
-      description: Update a single user's details
+      summary: Set a user's basic data
+      description: Update a single user's basic data.
       requestBody:
         content:
           application/json:
@@ -89,10 +102,81 @@ paths:
     delete:
       tags:
         - Users
-      description: Delete a user
+      summary: Delete a user
+      description: Delete a user for all effective dates.
       responses:
         204:
           description: User deleted
+  userPersonal:
+    parameters:
+      - $ref: '#/components/parameters/pathUserId'
+    get:
+      tags:
+        - User Personal
+      summary: Get user's personal info
+      responses:
+        200:
+          description: Retrieved user's personal info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPersonal'
+    put:
+      tags:
+        - User Personal
+      summary: Set user's personal info
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPersonal'
+      responses:
+        200:
+          description: Set user's personal info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPersonal'
+    patch:
+      tags:
+        - User Personal
+      summary: Partial update a user's personal info
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPersonal'
+      responses:
+        200:
+          description: Set user's personal info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPersonal'
+    delete:
+      tags:
+        - User Personal
+      summary: Remove user's personal info
+      responses:
+        204:
+          description: Personal info removed
+  userPortfolios:
+    parameters:
+      - $ref: '#/components/parameters/pathUserId'
+    get:
+      tags:
+        - User Portfolios
+      summary: Get user portfolios
+      description: Get user portfolio and authorization attributes.
+      responses:
+        200:
+          description: Retrieved user portfolios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserPortfolioAttribute'
 components:
   parameters:
     pathUserId:
@@ -116,7 +200,7 @@ components:
           enum:
             - basic
             - personal
-            - units
+            - portfolio
   schemas:
     Credentials:
       type: object
@@ -141,8 +225,14 @@ components:
           $ref: '#/components/schemas/UserBasic'
         personal:
           $ref: '#/components/schemas/UserPersonal'
-        units:
-          $ref: '#/components/schemas/UserUnits'
+        portfolios:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserPortfolioAttribute'
+    UserActivity:
+      type: object
+      property:
+
     UserBasic:
       type: object
       description: Basic fieldset data
@@ -158,6 +248,10 @@ components:
         displayName:
           description: The publicly displayed name for this user.
           type: string
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveDateRanges:
+          $ref: './common.yml#/EffectiveDateRanges'
         shortDescription:
           description: A short description that a user can add for themself.
           type: string
@@ -233,5 +327,26 @@ components:
           $ref: '#/components/schemas/UserBasic/properties/avatar'
         displayName:
           $ref: '#/components/schemas/UserBasic/properties/displayName'
-    UserUnits:
+    UserPortfolioAttribute:
       type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: './portfolio.yml#/components/schemas/PortfolioAttribute'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveDateRanges:
+          $ref: './common.yml#/EffectiveDateRanges'
+        portfolio:
+          type: object
+          description: The portfolio that granted this attribute.
+          properties:
+            uid:
+              $ref: './common.yml#/Uid2'
+            name:
+              type: string
+            units:
+              type: array
+              items:
+                $ref: './units.yml#/components/schemas/UnitMicro'

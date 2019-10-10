@@ -8,8 +8,9 @@ paths:
         - $ref: './common.yml#/parameterQueryAccessibility'
         - $ref: './common.yml#/parameterEffectiveDate'
         - $ref: './common.yml#/parameterEffectiveDateRange'
+        - $ref: '#/components/parameters/queryFieldSet'
         - name: networks
-          description: The networks to limit returned units and fieldsets to.
+          description: The networks to limit returned units to.
           in: query
           explode: false
           schema:
@@ -40,6 +41,26 @@ paths:
           style: deepObject
           schema:
             $ref: './common.yml#/SocialScoreRange'
+        - name: uid
+          description: A comma seperated list of unit ids to limit results to.
+          in: query
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                $ref: '#/components/schemas/UnitTypeEnumValues'
+        - name: unitType
+          description: A comma seperated list of unit types to limit results to.
+          in: query
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                $ref: '#/components/schemas/UnitTypeEnumValues'
       responses:
         200:
           description: A list of units
@@ -50,12 +71,13 @@ paths:
     post:
       tags:
         - Units
-      description: Create a new unit
+      summary: Create a new unit
+      description: Create a new unit of a specified type
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UnitBasic'
+              $ref: '#/components/schemas/Unit'
       responses:
         201:
           description: Unit created
@@ -67,7 +89,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnitBasic'
+                type: object
+                properties:
+                  basic:
+                    $ref: '#/components/schemas/UnitBasic'
+                  meta:
+                    $ref: '#/components/schemas/UnitMeta'
   unit:
     parameters:
       - $ref: '#/components/parameters/pathUnitId'
@@ -89,7 +116,7 @@ paths:
       tags:
         - Units
       summary: Update a unit
-      description: Update a single unit's details
+      description: Update a single unit's basic info
       requestBody:
         content:
           application/json:
@@ -104,210 +131,34 @@ paths:
                 $ref: '#/components/schemas/Unit'
         404:
           description: Unit not found
+    patch:
+      tags:
+        - Units
+      summary: Partial update a unit
+      description: Update parts of a single unit's basic info
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit'
+      responses:
+        200:
+          description: Unit updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
     delete:
       tags:
         - Units
       summary: Delete a unit
-      description: Delete a unit and its sub resources for all effective dates.
+      description: Delete all data about a unit and its sub units for all effective dates.
       responses:
         204:
           description: Unit deleted
-  # unitMembers:
-  #   parameters:
-  #     - $ref: '#/components/parameters/pathUnitId'
-  #   get:
-  #     tags:
-  #       - Members
-  #     description: Get a list of unit members
-  #     parameters:
-  #       - $ref: './common.yml#/parameterEffectiveDate'
-  #       - $ref: './common.yml#/parameterEffectiveDateRange'
-  #     responses:
-  #       200:
-  #         description: Users who are members of this unit
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: array
-  #               items:
-  #                 $ref: '#/components/schemas/UnitMembers'
-  # unitMember:
-  #   parameters:
-  #     - $ref: '#/components/parameters/pathUnitId'
-  #     - $ref: './users.yml#/components/parameters/pathUserId'
-  #   put:
-  #     tags:
-  #       - Members
-  #     description: Make a user a member of the unit
-  #     requestBody:
-  #       required: false
-  #       content:
-  #         application/json:
-  #           schema:
-  #             type: array
-  #             items:
-  #               type: string
-  #               description: The unit authorization roles to apply to the user.
-  #     responses:
-  #       200:
-  #         description: User added
-  #       404:
-  #         description: User or unit not found
-  #   delete:
-  #     tags:
-  #       - Members
-  #     description: Remove a user from the unit
-  #     responses:
-  #       204:
-  #         description: User removed from unit
-  #       404:
-  #         description: User or unit not found
-  unitTeams:
-    parameters:
-      - $ref: './units.yml#/components/parameters/pathUnitId'
-    get:
-      tags:
-        - Teams
-      summary: Get a list of teams
-      description: Get a list of teams that belong to the unit.
-      parameters:
-        - $ref: './common.yml#/parameterEffectiveDate'
-        - $ref: './common.yml#/parameterEffectiveDateRange'
-      responses:
-        200:
-          description: A list of teams that belong to the unit.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UnitTeams'
-    post:
-      tags:
-        - Teams
-      summary: Create a team
-      description: Create a new team for this unit.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UnitTeams'
-      responses:
-        201:
-          description: Team created.
-          headers:
-            Location:
-              description: The API endpoint to hit to get the created team.
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnitTeams'
-  unitTeam:
-    parameters:
-      - $ref: './units.yml#/components/parameters/pathUnitId'
-      - $ref: './units.yml#/components/parameters/pathTeamId'
-    get:
-      tags:
-        - Teams
-      summary: Get a team
-      description: Get the specified team from the unit.
-      parameters:
-        - $ref: './common.yml#/parameterEffectiveDate'
-      responses:
-        200:
-          description: The specified team from the unit.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnitTeams'
-    put:
-      tags:
-        - Teams
-      summary: Update a team
-      description: Update the team for the unit.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UnitTeams'
-      responses:
-        200:
-          description: Updated the team.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnitTeams'
-    patch:
-      tags:
-        - Teams
-      summary: Partial update a team
-      parameters:
-        - $ref: './common.yml#/parameterEffectiveDate'
-        - $ref: './common.yml#/parameterEffectiveDateRange'
-      description: Update one or more properties for a team, potentially over multiple effective dates. This operation is idempotent.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UnitTeams'
-      responses:
-        200:
-          description: Updated the team.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnitTeams'
-    delete:
-      tags:
-        - Teams
-      summary: Delete a team
-      description: Delete a team for all effective dates.
-      responses:
-        204:
-          description: Team deleted
-  unitAuthorizationRoles:
-    parameters:
-      - $ref: '#/components/parameters/pathUnitId'
-      - $ref: './users.yml#/components/parameters/pathUserId'
-    get:
-      tags:
-        - Roles
-      description: Get the unit authorization roles and permissions
-      parameters:
-        - $ref: './common.yml#/parameterEffectiveDate'
-        - $ref: './common.yml#/parameterEffectiveDateRange'
-      responses:
-        200:
-          description: A list of unit's authorization roles and their permissions
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AuthorizationRole'
-    put:
-      tags:
-        - Roles
-      description: Set the unit authorization roles
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/AuthorizationRole'
-      responses:
-        200:
-          description: A list of unit's authorization roles and their permissions
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AuthorizationRole'
 components:
   parameters:
     pathUnitId:
@@ -336,125 +187,164 @@ components:
           type: string
           enum:
             - basic
-            # - members
-            - roles
-            - teams
-            - venues
+            - members
+            - units
   schemas:
-    AuthorizationRole:
-      type: object
-      properties:
-        name:
-          type: string
-        permissions:
-          type: array
-          items:
-            type: string
-            enum:
-              - todo
     Unit:
       type: object
+      required:
+        - basic
       properties:
-        authorizationAttributes:
-          $ref: './common.yml#/AuthorizationAttributes'
         basic:
           $ref: '#/components/schemas/UnitBasic'
-        # members:
-        #   type: array
-        #   items:
-        #     $ref: '#/components/schemas/UnitMembers'
-        teams:
+        members:
           type: array
+          readOnly: true
           items:
-            $ref: '#/components/schemas/UnitTeams'
-        venues:
+            $ref: '#/components/schemas/UnitMembers'
+        units:
           type: array
+          readOnly: true
+          description: Items that are sub units of this unit.
           items:
-            $ref: '#/components/schemas/UnitVenue'
+            $ref: '#/components/schemas/UnitMicro'
     UnitBasic:
       type: object
       required:
         - name
+        - meta
         - location
       properties:
         uid:
           $ref: './common.yml#/Uid2'
-        name:
+        accessibility:
+          $ref: './common.yml#/Accessibility'
+        activityScore:
+          $ref: './common.yml#/SocialScore'
+        banner:
+          $ref: './common.yml#/Image'
+        contentQualityScore:
+          $ref: './common.yml#/SocialScore'
+        email:
           type: string
+        freshnessScore:
+          $ref: './common.yml#/SocialScore'
         location:
           $ref: './locations.yml#/components/schemas/Location'
+        logo:
+          $ref: './common.yml#/Image'
+        longDescription:
+          type: string
+        meta:
+          $ref: '#/components/schemas/UnitMeta'
+        name:
+          type: string
         networks:
           description: Array of network ID's for the networks this unit is a part of.
           type: array
           items:
             type: string
-        longDescription:
-          type: string
+        parentUnit:
+          type: object
+          nullable: true
+          properties:
+            uid:
+              $ref: './common.yml#/Uid2Write'
+            name:
+              type: string
+              readOnly: true
+        phoneNumber:
+          $ref: './common.yml#/PhoneNumber'
+        qualityScore:
+          $ref: './common.yml#/SocialScore'
         shortDescription:
           type: string
           maxLength: 500
-        welcomeMessage:
-          type: string
-        logo:
-          $ref: './common.yml#/Image'
-        banner:
-          $ref: './common.yml#/Image'
-        accessibility:
-          $ref: './common.yml#/Accessibility'
         vanityUrlPath:
           type: string
-        email:
+        welcomeMessage:
           type: string
-        phoneNumber:
-          $ref: './common.yml#/PhoneNumber'
         website:
           type: string
-        activityScore:
-          $ref: './common.yml#/SocialScore'
-        freshnessScore:
-          $ref: './common.yml#/SocialScore'
-        qualityScore:
-          $ref: './common.yml#/SocialScore'
-        contentQualityScore:
-          $ref: './common.yml#/SocialScore'
         effectiveDate:
           $ref: './common.yml#/EffectiveDate'
         effectiveDateRanges:
           $ref: './common.yml#/EffectiveDateRanges'
-    # UnitMembers:
-    #   allOf:
-    #     - $ref: './users.yml#/components/schemas/UserBasic'
-    #     - type: object
-    #       properties:
-    #         authorizationAttributes:
-    #           type: array
-    #           items:
-    #             type: string
-    #         effectiveDate:
-    #           $ref: './common.yml#/EffectiveDate'
-    #         effectiveDateRanges:
-    #           $ref: './common.yml#/EffectiveDateRanges'
+    UnitMembers:
+      allOf:
+        - $ref: './users.yml#/components/schemas/UserMicro'
+        - type: object
+          properties:
+            authorizationAttributes:
+              type: array
+              description: The authorization attributes that apply to this user for this unit within the unit's networks.
+              items:
+                type: object
+                properties:
+                  uid:
+                    $ref: './common.yml#/Uid2'
+                  name:
+                    type: string
+                    description: The attribute name.
+                  effectiveDate:
+                    $ref: './common.yml#/EffectiveDate'
+                  effectiveDateRanges:
+                    $ref: './common.yml#/EffectiveDateRanges'
+    UnitMeta:
+      oneOf:
+        - $ref: '#/components/schemas/UnitTypeRetailer'
+        - $ref: '#/components/schemas/UnitTypeTeam'
+        - $ref: '#/components/schemas/UnitTypeVenue'
+      discriminator:
+        propertyName: unitType
+        mapping:
+          retailer: '#/components/schemas/UnitTypeRetailer'
+          team: '#/components/schemas/UnitTypeTeam'
+          venue: '#/components/schemas/UnitTypeVenue'
     UnitMicro:
       type: object
       properties:
         uid:
           $ref: './common.yml#/Uid2'
         name:
+          description: The name of the unit.
           type: string
-
-    UnitRetailers:
+    UnitPost:
       type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveDateRanges:
+          $ref: './common.yml#/EffectiveDateRanges'
+    UnitTypeEnumValues:
+      - retailer
+      - team
+      - venue
+    UnitTypeRetailer:
+      type: object
+      required:
+        - unitType
       properties:
         hasOnlineStore:
           type: boolean
         hasPhysicalStore:
           type: boolean
+        unitType:
+          type: string
+          enum:
+            - retailer
         effectiveDate:
           $ref: './common.yml#/EffectiveDate'
         effectiveDateRanges:
           $ref: './common.yml#/EffectiveDateRanges'
-    UnitTeams:
+    UnitTypeTeam:
       type: object
+      required:
+        - unitType
       properties:
         uid:
           $ref: './common.yml#/Uid2'
@@ -471,12 +361,18 @@ components:
           minimum: 0
         upcomingEvents:
           $ref: './events.yml#/components/schemas/UpcomingEvents'
+        unitType:
+          type: string
+          enum:
+            - team
         effectiveDate:
           $ref: './common.yml#/EffectiveDate'
         effectiveDateRanges:
           $ref: './common.yml#/EffectiveDateRanges'
-    UnitVenue:
+    UnitTypeVenue:
       type: object
+      required:
+        - unitType
       properties:
         uid:
           $ref: './common.yml#/Uid2'
@@ -497,6 +393,10 @@ components:
             type: string
         upcomingEvents:
           $ref: './events.yml#/components/schemas/UpcomingEvents'
+        unitType:
+          type: string
+          enum:
+            - venue
         effectiveDate:
           $ref: './common.yml#/EffectiveDate'
         effectiveDateRanges:

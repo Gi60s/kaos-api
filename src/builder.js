@@ -15,6 +15,7 @@ function Builder (source) {
   factory.build = async function () {
     console.log('\n--- BUILDING ' + (new Date()).toLocaleString() + ' ---\n')
     const openapiDoc = await RefParser.bundle(source)
+    // console.log(JSON.stringify(openapiDoc))
     const [ , err, warn ] = await Enforcer(openapiDoc, {
       fullResult: true,
       componentOptions: {

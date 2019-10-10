@@ -136,6 +136,9 @@ Uid2:
   description: Unique identifier (UUID v1, date-time and MAC address)
   type: string
   readOnly: true
+Uid2Write:
+  description: Unique identifier (UUID v1, date-time and MAC address)
+  type: string
 Uid4:
   description: Unique identifier (UUID v4, random)
   type: string

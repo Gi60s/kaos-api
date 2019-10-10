@@ -66,120 +66,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Network'
-  authorizationAttributes:
-    parameters:
-      - $ref: '#/components/parameters/pathNetworkId'
-    get:
-      tags:
-        - Network Authorizations
-      summary: Get a list of authorizations
-      description: Get a single network's athorization attributes.
-      parameters:
-        - $ref: './common.yml#/parameterEffectiveDate'
-        - $ref: './common.yml#/parameterEffectiveDateRange'
-        - name: authorizationId
-          in: query
-          description: Specify the authorization attribute id to filter results to.
-          schema:
-              type: string
-      responses:
-        200:
-          description: A single network's athorization attributes.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AuthorizationAttribute'
-    post:
-      tags:
-        - Network Authorizations
-      summary: Create an authorization
-      description: Create an authorization attribute for the network.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthorizationAttribute'
-      responses:
-        201:
-          description: Authorization attribute created.
-          headers:
-            Location:
-              description: The API endpoint to hit to get the created authorization attribute.
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthorizationAttribute'
-  authorizationAttribute:
-    parameters:
-      - $ref: '#/components/parameters/pathNetworkId'
-      - name: authorizationId
-        in: path
-        required: true
-        schema:
-          type: string
-    get:
-      tags:
-        - Network Authorizations
-      summary: Get an authorization
-      description: Get an authorization attribute within a network.
-      parameters:
-        - $ref: './common.yml#/parameterEffectiveDate'
-      responses:
-        200:
-          description: Authorization attribute retrieved.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthorizationAttribute'
-    put:
-      tags:
-        - Network Authorizations
-      summary: Update an authorization
-      description: Update a single an authorization attribute's information. Using the effective date range query parameter can be used to overwrite (delete) other effective dates.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthorizationAttribute'
-      responses:
-        200:
-          description: Authorization attribute updated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthorizationAttribute'
-    patch:
-      tags:
-        - Network Authorizations
-      summary: Partial update an authorization
-      description: Update parts of an authorization attribute for one or more effective dates.
-      parameters:
-        - $ref: './common.yml#/parameterEffectiveDate'
-        - $ref: './common.yml#/parameterEffectiveDateRange'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthorizationAttribute'
-      responses:
-        200:
-          description: Authorization attribute updated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthorizationAttribute'
-    delete:
-      tags:
-        - Network Authorizations
-      summary: Delete an authorization
-      description: Delete a single authorization attribute for all effective dates.
-      responses:
-        204:
-          description: Authorization attribute deleted.
   venueTypes:
     parameters:
       - $ref: '#/components/parameters/pathNetworkId'
@@ -317,35 +203,13 @@ components:
           type: string
           enum:
             - basic
-            - authorizationAttributes
             - venueTypes
   schemas:
-    AuthorizationAttribute:
-      type: object
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          minLength: 1
-        shortDescription:
-          type: string
-          maxLength: 250
-        description:
-          type: string
-        effectiveDate:
-          $ref: './common.yml#/EffectiveDate'
-        effectiveDateRanges:
-          $ref: './common.yml#/EffectiveDateRanges'
     Network:
       type: object
       properties:
         basic:
           $ref: '#/components/schemas/NetworkBasic'
-        authorizationAttributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/AuthorizationAttribute'
         venuTypes:
           type: array
           items:
@@ -368,6 +232,16 @@ components:
           $ref: './common.yml#/EffectiveDate'
         effectiveDateRanges:
           $ref: './common.yml#/EffectiveDateRanges'
+        uid:
+          $ref: './common.yml#/Uid2'
+    NetworkMicro:
+      type: object
+      properties:
+        name:
+          description: The network name.
+          type: string
+        uid:
+          $ref: './common.yml#/Uid2'
     VenueType:
       type: object
       required:

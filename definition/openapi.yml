@@ -12,61 +12,44 @@ x-tagGroups:
   - name: User Management
     tags:
       - Users
-  - name: Portfolio Management
-    tags:
-      - Portfolios
-      - Child Portfolios
-      - Members
+      - User Personal
+      - User Portfolios
   - name: Unit Management
     tags:
       - Locations
-      - Roles
-      - Teams
       - Units
 paths:
   /locations:
-    $ref: '/home/james/Code/kaos/openapi/definition/locations.yml#/paths/locations'
+    $ref: './locations.yml#/paths/locations'
   /locations/{locationId}:
-    $ref: '/home/james/Code/kaos/openapi/definition/locations.yml#/paths/location'
+    $ref: './locations.yml#/paths/location'
   /locations/{locationId}/units:
-    $ref: '/home/james/Code/kaos/openapi/definition/locations.yml#/paths/locationUnits'
+    $ref: './locations.yml#/paths/locationUnits'
   /networks:
-    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/networks'
+    $ref: './networks.yml#/paths/networks'
   /networks/{networkId}:
-    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/network'
-  /networks/{networkId}/authorizations:
-    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/authorizationAttributes'
-  /networks/{networkId}/authorizations/{authorizationId}:
-    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/authorizationAttribute'
+    $ref: './networks.yml#/paths/network'
   /networks/{networkId}/venues:
-    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/venueTypes'
+    $ref: './networks.yml#/paths/venueTypes'
   /networks/{networkId}/venues/{venueId}:
-    $ref: '/home/james/Code/kaos/openapi/definition/networks.yml#/paths/venueType'
-  /portfolios:
-    $ref: './portfolio.yml#/paths/portfolios'
-  /portfolios/{portfolioId}:
-    $ref: './portfolio.yml#/paths/portfolio'
-  /portfolios/{portfolioId}/child-portfolios/{childPortfolioId}:
-    $ref: './portfolio.yml#/paths/childPortfolio'
-  /portfolios/{portfolioId}/members:
-    $ref: './portfolio.yml#/paths/portfolioMembers'
-  /portfolios/{portfolioId}/members/{userId}:
-    $ref: './portfolio.yml#/paths/portfolioMember'
+    $ref: './networks.yml#/paths/venueType'
   /units:
-    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/units'
+    $ref: './units.yml#/paths/units'
   /units/{unitId}:
-    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unit'
-  # /units/{unitId}/members:
-  #   $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitMembers'
-  # /units/{unitId}/members/{userId}:
-  #   $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitMember'
-  /units/{unitId}/authorizatonRoles/{userId}:
-    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitAuthorizationRoles'
-  /units/{unitId}/teams:
-    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitTeams'
-  /units/{unitId}/teams/{teamId}:
-    $ref: '/home/james/Code/kaos/openapi/definition/units.yml#/paths/unitTeam'
+    $ref: './units.yml#/paths/unit'
   /users:
-    $ref: '/home/james/Code/kaos/openapi/definition/users.yml#/paths/users'
+    $ref: './users.yml#/paths/users'
   /users/{userId}:
-    $ref: '/home/james/Code/kaos/openapi/definition/users.yml#/paths/user'
+    $ref: './users.yml#/paths/user'
+  /users/{userId}/personal:
+    $ref: './users.yml#/paths/userPersonal'
+  /users/{userId}/portfolios:
+    $ref: './users.yml#/paths/userPortfolios'
+components:
+  schemas:
+    UnitTypeRetailer:
+      $ref: './units.yml#/components/schemas/UnitTypeRetailer'
+    UnitTypeTeam:
+      $ref: './units.yml#/components/schemas/UnitTypeTeam'
+    UnitTypeVenue:
+      $ref: './units.yml#/components/schemas/UnitTypeVenue'
