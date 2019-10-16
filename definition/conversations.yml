@@ -1,0 +1,86 @@
+components:
+  schemas:
+    Channel:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        members:
+          type: array
+          items:
+            $ref: './users.yml#/components/schemas/UserMicro'
+        pins:
+          type: array
+          items:
+            type: string
+            description: TODO
+        recentPosts:
+          type: array
+          items:
+            type: string
+            description: TODO
+    Conversation:
+      type: object
+    Post:
+      type: object
+      properties:
+        uid:
+          $ref: './common.yml#/Uid2'
+        unit:
+          $ref: './units.yml#/components/schemas/UnitMicro'
+        user:
+          $ref: './units.yml#/components/schemas/UserMicro'
+        title:
+          type: string
+        body:
+          type: object
+          properties:
+            richText:
+              type: string
+            plainText:
+              type: string
+        media:
+          type: array
+          maxItems: 6
+          items:
+            oneOf:
+              - $ref: './common.yml#/Image'
+              - $ref: './common.yml#/Video'
+        reactions:
+          $ref: './common.yml#/Reactions'
+        distributionCount:
+          type: integer
+        sharesCount:
+          type: integer
+        hashTags:
+          type: array
+          items:
+            type: string
+        mentions:
+          type: array
+          items:
+            oneOf:
+              - $ref: './users.yml#/components/schemas/UserMicro'
+              - $ref: './units.yml#/components/schemas/UnitMicro'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveDateRange:
+          $ref: './common.yml#/EffectiveDateRanges'
+    MarketplacePost:
+      allOf:
+        - $ref: './components/schemas/Post'
+        - type: object
+          properties:
+            brand:
+              type: string
+            price:
+              type: number
+              minimum: 0
+            tags:
+              type: array
+              items:
+                type: string
+
+

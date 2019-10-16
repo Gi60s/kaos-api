@@ -94,7 +94,18 @@ HoursOfOperationWeek:
 Image:
   type: object
   properties:
-    url:
+    small:
+      description: The URL to the small image.
+      type: string
+    medium:
+      description: The URL to the medium image.
+      type: string
+    large:
+      description: The URL to the large image.
+      type: string
+    title:
+      type: string
+    description:
       type: string
 Member:
   allOf:
@@ -116,6 +127,23 @@ Member:
 PhoneNumber:
   type: string
   pattern: ^\+\d+ \d{3}-\d{3}-\d{4}$
+Reactions:
+  type: object
+  properties:
+    total:
+      type: integer
+    like:
+      type: integer
+    lol:
+      type: integer
+    mad:
+      type: integer
+    sad:
+      type: integer
+    wow:
+      type: integer
+    love:
+      type: integer
 SocialScore:
   type: integer
   minimum: 1
@@ -143,6 +171,18 @@ Uid4:
   description: Unique identifier (UUID v4, random)
   type: string
   readOnly: true
+Video:
+  type: object
+  properties:
+    id:
+      description: The video ID
+    provider:
+      type: string
+      enum:
+        - YouTube
+        - Vimeo
+    url:
+      description: The embed URL.
 
 parameterEffectiveDate:
   name: effectiveDate

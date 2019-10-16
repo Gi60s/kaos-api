@@ -4,6 +4,9 @@ info:
   description: For additional general information on how to use this API please refer to the [additional documentation](./docs.html).
   version: '0.0.1'
 x-tagGroups:
+  - name: Locations
+    tags:
+      - Locations
   - name: Network Management
     tags:
       - Networks
@@ -13,18 +16,17 @@ x-tagGroups:
     tags:
       - Users
       - User Personal
-      - User Portfolios
+      - User Units
   - name: Unit Management
     tags:
-      - Locations
       - Units
+      - Unit Members
+      - Sub Units
 paths:
   /locations:
     $ref: './locations.yml#/paths/locations'
   /locations/{locationId}:
     $ref: './locations.yml#/paths/location'
-  /locations/{locationId}/units:
-    $ref: './locations.yml#/paths/locationUnits'
   /networks:
     $ref: './networks.yml#/paths/networks'
   /networks/{networkId}:
@@ -37,14 +39,18 @@ paths:
     $ref: './units.yml#/paths/units'
   /units/{unitId}:
     $ref: './units.yml#/paths/unit'
+  /units/{unitId}/members:
+    $ref: './units.yml#/paths/unitMembers'
+  /units/{unitId}/members/{userId}:
+    $ref: './units.yml#/paths/unitMember'
+  /units/{unitId}/subUnits/{subUnitId}:
+    $ref: './units.yml#/paths/subUnits'
   /users:
     $ref: './users.yml#/paths/users'
   /users/{userId}:
     $ref: './users.yml#/paths/user'
   /users/{userId}/personal:
     $ref: './users.yml#/paths/userPersonal'
-  /users/{userId}/portfolios:
-    $ref: './users.yml#/paths/userPortfolios'
 components:
   schemas:
     UnitTypeRetailer:

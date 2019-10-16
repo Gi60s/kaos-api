@@ -33,6 +33,10 @@ paths:
             Location:
               schema:
                 type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkBasic'
   network:
     parameters:
       - $ref: '#/components/parameters/pathNetworkId'

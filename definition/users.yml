@@ -61,7 +61,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserBasic'
   user:
     parameters:
       - name: 'userId'
@@ -160,23 +160,6 @@ paths:
       responses:
         204:
           description: Personal info removed
-  userPortfolios:
-    parameters:
-      - $ref: '#/components/parameters/pathUserId'
-    get:
-      tags:
-        - User Portfolios
-      summary: Get user portfolios
-      description: Get user portfolio and authorization attributes.
-      responses:
-        200:
-          description: Retrieved user portfolios
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UserPortfolioAttribute'
 components:
   parameters:
     pathUserId:
@@ -199,8 +182,13 @@ components:
           type: string
           enum:
             - basic
+            - activity
+            - follows
+            - media
+            - notifications
             - personal
-            - portfolio
+            - posts
+            - units
   schemas:
     Credentials:
       type: object
@@ -225,14 +213,10 @@ components:
           $ref: '#/components/schemas/UserBasic'
         personal:
           $ref: '#/components/schemas/UserPersonal'
-        portfolios:
+        units:
           type: array
           items:
-            $ref: '#/components/schemas/UserPortfolioAttribute'
-    UserActivity:
-      type: object
-      property:
-
+            $ref: '#/components/schemas/UserUnits'
     UserBasic:
       type: object
       description: Basic fieldset data
@@ -327,26 +311,26 @@ components:
           $ref: '#/components/schemas/UserBasic/properties/avatar'
         displayName:
           $ref: '#/components/schemas/UserBasic/properties/displayName'
-    UserPortfolioAttribute:
+    UserUnits:
       type: object
       properties:
         attributes:
           type: array
           items:
-            $ref: './portfolio.yml#/components/schemas/PortfolioAttribute'
+            $ref: './units.yml#/components/schemas/AuthorizationAttribute'
         effectiveDate:
           $ref: './common.yml#/EffectiveDate'
         effectiveDateRanges:
           $ref: './common.yml#/EffectiveDateRanges'
-        portfolio:
+        unit:
           type: object
-          description: The portfolio that granted this attribute.
+          description: The unit that granted this membership and attributes attribute.
           properties:
             uid:
               $ref: './common.yml#/Uid2'
             name:
               type: string
-            units:
-              type: array
-              items:
-                $ref: './units.yml#/components/schemas/UnitMicro'
+            unitType:
+              type: string
+              enum:
+                $ref: './units.yml#/components/schemas/UnitTypeEnumValues'

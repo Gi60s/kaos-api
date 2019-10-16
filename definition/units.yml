@@ -49,8 +49,6 @@ paths:
             type: array
             items:
               type: string
-              enum:
-                $ref: '#/components/schemas/UnitTypeEnumValues'
         - name: unitType
           description: A comma seperated list of unit types to limit results to.
           in: query
@@ -105,6 +103,7 @@ paths:
       description: Get a single unit and its details
       parameters:
         - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: '#/components/parameters/queryFieldSet'
       responses:
         200:
           description: Retrieved unit
@@ -117,6 +116,8 @@ paths:
         - Units
       summary: Update a unit
       description: Update a single unit's basic info
+      parameters:
+        - $ref: '#/components/parameters/queryFieldSet'
       requestBody:
         content:
           application/json:
@@ -139,6 +140,7 @@ paths:
       parameters:
         - $ref: './common.yml#/parameterEffectiveDate'
         - $ref: './common.yml#/parameterEffectiveDateRange'
+        - $ref: '#/components/parameters/queryFieldSet'
       requestBody:
         content:
           application/json:
@@ -159,6 +161,151 @@ paths:
       responses:
         204:
           description: Unit deleted
+  unitMembers:
+    parameters:
+      - $ref: '#/components/parameters/pathUnitId'
+    get:
+      tags:
+        - Unit Members
+      summary: Get members
+      description: Get all unit members.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+        - $ref: '#/components/parameters/queryFilterUserId'
+      responses:
+        200:
+          description: A list of unit members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnitMembers'
+    put:
+      tags:
+        - Unit Members
+      summary: Batch assign attributes
+      description: Attach one or more members to a unit with the specified attributes. If a member is attached without attributes then they will have basic read access.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/putMembersAttributes'
+      responses:
+        200:
+          description: Membership attributes set.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnitMembers'
+    patch:
+      tags:
+        - Unit Members
+      summary: Batch partial assign attributes
+      description: Partial update some attributes for one or more members.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/patchMembersAttributes'
+      responses:
+        200:
+          description: Membership attributes set.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnitMembers'
+    delete:
+      tags:
+        - Unit Members
+      summary: Batch remove members
+      description: Remove one or more members from the unit.
+      parameters:
+        - $ref: '#/components/parameters/queryFilterUserId'
+      responses:
+        204:
+          description: Members removed
+  unitMember:
+    parameters:
+      - $ref: '#/components/parameters/pathUnitId'
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Unit Members
+      summary: Assign a member attributes
+      description: Attach a members to a unit with the specified attributes. If a member is attached without attributes then they will have basic read access.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/requestBodies/putMemberAttributes'
+      responses:
+        200:
+          description: Membership attributes set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitMembers'
+    patch:
+      tags:
+        - Unit Members
+      summary: Partial assign a member attributes
+      description: Update some attributes for existing members or potentially add a member with set attributes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/patchMemberAttributes'
+      responses:
+        200:
+          description: Membership attributes set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitMembers'
+    delete:
+      tags:
+        - Unit Members
+      summary: Remove a member
+      description: Remove a members from the unit.
+      responses:
+        204:
+          description: Members removed
+  subUnits:
+    parameters:
+      - $ref: '#/components/parameters/pathUnitId'
+      - name: subUnitId
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      summary: Link sub unit
+      description: Set a unit as a sub unit to a parent unit. A unit cannot be a sub unit to two different parent units. Placing a unit as a sub unit of a parent when the sub unit already has a parent will unlink the previous parent and link to the new parent.
+      tags:
+        - Sub Units
+      responses:
+        200:
+          description: Sub unit linked
+    delete:
+      summary: Unlink sub unit
+      description: Unlink a sub unit from a parent unit.
+      tags:
+        - Sub Units
+      responses:
+        200:
+          description: Sub unit unlinked
 components:
   parameters:
     pathUnitId:
@@ -189,7 +336,90 @@ components:
             - basic
             - members
             - units
+    queryFilterUserId:
+      name: userId
+      in: query
+      style: form
+      explode: false
+      description: Comma separated list of user IDs to filter results to.
+      schema:
+        type: array
+        items:
+          $ref: './common.yml#/Uid2'
+  requestBodies:
+    patchMemberAttributes:
+      type: object
+      properties:
+        set:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizationAttribute'
+        remove:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizationAttribute'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+    patchMembersAttributes:
+      type: array
+      items:
+        type: object
+        properties:
+          set:
+            type: array
+            items:
+              $ref: '#/components/schemas/AuthorizationAttribute'
+          remove:
+            type: array
+            items:
+              $ref: '#/components/schemas/AuthorizationAttribute'
+          effectiveDate:
+            $ref: './common.yml#/EffectiveDate'
+          userId:
+            $ref: './common.yml#/Uid2Write'
+    putMemberAttributes:
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizationAttribute'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+    putMembersAttributes:
+      type: array
+      items:
+        type: object
+        properties:
+          attributes:
+            type: array
+            items:
+              $ref: '#/components/schemas/AuthorizationAttribute'
+          effectiveDate:
+            $ref: './common.yml#/EffectiveDate'
+          userId:
+            $ref: './common.yml#/Uid2Write'
   schemas:
+    AuthorizationAttribute:
+      type: string
+      description: "Authorization attributes may be one of the following values:
+
+        - **contributer** - Can make posts as well as edit and delete own posts.
+
+        - **channel manager** - Coming soon
+
+        - **event manager** - Coming soon
+
+        - **moderator** - Can make posts as well as edit or delete any posts.
+
+        - **user manager** - Can add or remove users and set authorization attributes to other users.
+        "
+      enum:
+        - contributer
+        - channel manager
+        - event manager
+        - moderator
+        - user manager
     Unit:
       type: object
       required:
@@ -281,11 +511,17 @@ components:
               items:
                 type: object
                 properties:
-                  uid:
-                    $ref: './common.yml#/Uid2'
                   name:
                     type: string
                     description: The attribute name.
+                    enum:
+                      $ref: '#/components/schemas/AuthorizationAttribute/enum'
+                  inherited:
+                    type: boolean
+                    description: "If the authorization attribute comes from a parent unit then `true`, if it comes from this unit then `false`."
+                  unitId:
+                    type: string
+                    description: The unit id where this attribute was assigned.
                   effectiveDate:
                     $ref: './common.yml#/EffectiveDate'
                   effectiveDateRanges:
