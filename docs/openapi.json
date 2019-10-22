@@ -7,6 +7,20 @@
   },
   "x-tagGroups": [
     {
+      "name": "Communications",
+      "tags": [
+        "Channels",
+        "Channel Members",
+        "Posts"
+      ]
+    },
+    {
+      "name": "Locations",
+      "tags": [
+        "Locations"
+      ]
+    },
+    {
       "name": "Network Management",
       "tags": [
         "Networks",
@@ -19,24 +33,616 @@
       "tags": [
         "Users",
         "User Personal",
-        "User Portfolios"
+        "User Units"
       ]
     },
     {
       "name": "Unit Management",
       "tags": [
-        "Locations",
-        "Units"
+        "Units",
+        "Unit Members",
+        "Sub Units"
       ]
     }
   ],
   "paths": {
+    "/channels": {
+      "get": {
+        "tags": [
+          "Channels"
+        ],
+        "summary": "List channels",
+        "description": "Get a list of channels.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1users/get/parameters/1"
+          },
+          {
+            "name": "unitId",
+            "description": "A comma seperated list of unit IDs to filter results to.",
+            "in": "query",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "fieldsets",
+            "description": "Specify which fieldsets to return.",
+            "in": "query",
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "default": [
+                "basic"
+              ],
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "basic",
+                  "members",
+                  "pins",
+                  "posts"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of channels.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1channels~1%7BchannelId%7D/put/requestBody/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Channels"
+        ],
+        "summary": "Create a channel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/components/schemas/ChannelPost/properties/uid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "private": {
+                    "type": "boolean"
+                  },
+                  "unit": {
+                    "allOf": [
+                      {
+                        "type": "object",
+                        "description": "The unit this channel belongs to"
+                      },
+                      {
+                        "$ref": "#/components/schemas/ChannelPost/properties/mentions/items/oneOf/1"
+                      }
+                    ]
+                  },
+                  "effectiveDate": {
+                    "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
+                  },
+                  "effectiveDateRanges": {
+                    "$ref": "#/components/schemas/ChannelPost/properties/effectiveDateRange"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Channel created",
+            "headers": {
+              "Location": {
+                "description": "The API endpoint to hit to get the created channel.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1channels/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channels/{channelId}": {
+      "parameters": [
+        {
+          "name": "channelId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/ChannelPost/properties/uid"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Channels"
+        ],
+        "summary": "Get a channel",
+        "description": "Get a single channel.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1channels/get/parameters/3"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A channel.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1channels~1%7BchannelId%7D/put/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Channels"
+        ],
+        "summary": "Update a channel",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1channels/get/parameters/3"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "basic": {
+                    "$ref": "#/paths/~1channels/post/requestBody/content/application~1json/schema"
+                  },
+                  "members": {
+                    "type": "array",
+                    "description": "All members of this channel",
+                    "items": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/user/allOf/1"
+                    }
+                  },
+                  "pins": {
+                    "description": "Most recently pinned posts",
+                    "type": "array",
+                    "maxItems": 50,
+                    "items": {
+                      "$ref": "#/paths/~1channels~1%7BchannelId%7D~1posts/post/requestBody/content/application~1json/schema"
+                    }
+                  },
+                  "posts": {
+                    "type": "array",
+                    "maxItems": 50,
+                    "description": "Latest posts",
+                    "items": {
+                      "$ref": "#/paths/~1channels~1%7BchannelId%7D~1posts/post/requestBody/content/application~1json/schema"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Channel updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1channels~1%7BchannelId%7D/put/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Channels"
+        ],
+        "summary": "Partial update a channel",
+        "description": "Update parts of a channel's basic info",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1users/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1channels/get/parameters/3"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1channels/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Unit updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1channels~1%7BchannelId%7D/put/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Channels"
+        ],
+        "summary": "Archive a channel",
+        "description": "Archive all data about a channel",
+        "responses": {
+          "204": {
+            "description": "Channel archived"
+          }
+        }
+      }
+    },
+    "/channels/{channelId}/posts": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1channels~1%7BchannelId%7D/parameters/0"
+        }
+      ],
+      "get": {
+        "summary": "Get posts",
+        "description": "Get posted messages for a channel",
+        "tags": [
+          "Posts"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1users/get/parameters/1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1channels~1%7BchannelId%7D~1posts/post/requestBody/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Make a post",
+        "tags": [
+          "Posts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/ChannelPost"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ChannelMarketplacePost"
+                  }
+                ],
+                "discriminator": {
+                  "propertyName": "postType",
+                  "mapping": {
+                    "post": "#/components/schemas/ChannelPost",
+                    "marketplace": "#/components/schemas/ChannelMarketplacePost"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Post created",
+            "headers": {
+              "Location": {
+                "description": "The API endpoint to hit to get the created post.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelPost"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channels/{channelId}/posts/{postId}": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1channels~1%7BchannelId%7D/parameters/0"
+        },
+        {
+          "name": "postId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a post",
+        "tags": [
+          "Posts"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1channels~1%7BchannelId%7D~1posts/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a post",
+        "tags": [
+          "Posts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1channels~1%7BchannelId%7D~1posts/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1channels~1%7BchannelId%7D~1posts/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partial update a post",
+        "tags": [
+          "Posts"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1users/get/parameters/1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1channels~1%7BchannelId%7D~1posts/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove a post",
+        "tags": [
+          "Posts"
+        ],
+        "responses": {
+          "204": {
+            "description": "Post removed"
+          }
+        }
+      }
+    },
+    "/channels/{channelId}/members/{userId}": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1channels~1%7BchannelId%7D/parameters/0"
+        },
+        {
+          "name": "userId",
+          "description": "List of comma seperated user ids.",
+          "in": "path",
+          "required": true,
+          "explode": false,
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      ],
+      "put": {
+        "summary": "Add members to channel",
+        "tags": [
+          "Channel Members"
+        ],
+        "responses": {
+          "204": {
+            "description": "Members added"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove members from channel",
+        "tags": [
+          "Channel Members"
+        ],
+        "responses": {
+          "204": {
+            "description": "Members removed"
+          }
+        }
+      }
+    },
     "/locations": {
       "get": {
         "tags": [
           "Locations"
         ],
-        "description": "Get a list of all locations.",
+        "summary": "List locations",
+        "description": "Get a list of all locations. The users and units returned in the results will be limited to the access you have.",
+        "parameters": [
+          {
+            "name": "fieldsets",
+            "description": "Specify which fieldsets to return.",
+            "in": "query",
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "default": [
+                "basic"
+              ],
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "basic",
+                  "units",
+                  "users"
+                ]
+              }
+            }
+          },
+          {
+            "name": "area",
+            "in": "query",
+            "description": "The area to limit results to.",
+            "style": "deepObject",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "northLatitude": {
+                  "$ref": "#/paths/~1locations/get/parameters/1/schema/properties/southLatitude"
+                },
+                "eastLongitude": {
+                  "type": "number",
+                  "minimum": -180,
+                  "maximum": 180
+                },
+                "southLatitude": {
+                  "type": "number",
+                  "minimum": -90,
+                  "maximum": 90
+                },
+                "westLongitude": {
+                  "$ref": "#/paths/~1locations/get/parameters/1/schema/properties/eastLongitude"
+                }
+              }
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "description": "The country to limit results to.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "postalCode",
+            "in": "query",
+            "description": "The postal code to limit results to.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "province",
+            "in": "query",
+            "description": "The province to limit results to.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "All locations.",
@@ -45,62 +651,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/UnitTypeVenue/properties/location"
-                      },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "units": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "uid": {
-                                  "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
-                                },
-                                "name": {
-                                  "$ref": "#/paths/~1units/post/responses/201/content/application~1json/schema/properties/basic/properties/name"
-                                },
-                                "shortDescription": {
-                                  "$ref": "#/paths/~1units/post/responses/201/content/application~1json/schema/properties/basic/properties/shortDescription"
-                                },
-                                "logo": {
-                                  "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/avatar"
-                                }
-                              }
-                            }
-                          },
-                          "users": {
-                            "type": "array",
-                            "items": {
-                              "type": "array",
-                              "items": {
-                                "type": "object",
-                                "properties": {
-                                  "uid": {
-                                    "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
-                                  },
-                                  "displayName": {
-                                    "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/displayName"
-                                  },
-                                  "avatar": {
-                                    "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/avatar"
-                                  },
-                                  "firstName": {
-                                    "$ref": "#/paths/~1users~1%7BuserId%7D~1personal/put/requestBody/content/application~1json/schema/properties/firstName"
-                                  },
-                                  "lastName": {
-                                    "$ref": "#/paths/~1users~1%7BuserId%7D~1personal/put/requestBody/content/application~1json/schema/properties/lastName"
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
+                    "$ref": "#/components/schemas/UnitTypeVenue/properties/location"
                   }
                 }
               }
@@ -124,65 +675,20 @@
         "tags": [
           "Locations"
         ],
-        "description": "Get a specific location.",
+        "summary": "Get a location",
+        "description": "Get a specific location. The users and units returned in the results will be limited to the access you have.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1locations/get/parameters/0"
+          }
+        ],
         "responses": {
           "200": {
             "description": "A single location.",
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/UnitTypeVenue/properties/location"
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "units": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/paths/~1units/post/responses/201/content/application~1json/schema/properties/basic"
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/locations/{locationId}/units": {
-      "parameters": [
-        {
-          "$ref": "#/paths/~1locations~1%7BlocationId%7D/parameters/0"
-        }
-      ],
-      "get": {
-        "tags": [
-          "Locations"
-        ],
-        "description": "Get the units at a specific location.",
-        "responses": {
-          "200": {
-            "description": "A single location and its units.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "location": {
-                      "$ref": "#/components/schemas/UnitTypeVenue/properties/location"
-                    },
-                    "units": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/UnitTypeVenue/properties/location"
                 }
               }
             }
@@ -204,7 +710,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1units/get/parameters/2"
+            "$ref": "#/paths/~1users/get/parameters/1"
           }
         ],
         "responses": {
@@ -251,13 +757,13 @@
                     "type": "string"
                   },
                   "effectiveDate": {
-                    "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDate"
+                    "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
                   },
                   "effectiveDateRanges": {
-                    "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDateRanges"
+                    "$ref": "#/components/schemas/ChannelPost/properties/effectiveDateRange"
                   },
                   "uid": {
-                    "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
+                    "$ref": "#/components/schemas/ChannelPost/properties/uid"
                   }
                 }
               }
@@ -271,6 +777,13 @@
               "Location": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1networks/post/requestBody/content/application~1json/schema"
                 }
               }
             }
@@ -389,7 +902,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1units/get/parameters/2"
+            "$ref": "#/paths/~1users/get/parameters/1"
           },
           {
             "name": "venueId",
@@ -433,7 +946,7 @@
                 ],
                 "properties": {
                   "uid": {
-                    "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
+                    "$ref": "#/components/schemas/ChannelPost/properties/uid"
                   },
                   "type": {
                     "type": "string"
@@ -446,10 +959,10 @@
                     "type": "string"
                   },
                   "effectiveDate": {
-                    "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDate"
+                    "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
                   },
                   "effectiveDateRanges": {
-                    "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDateRanges"
+                    "$ref": "#/components/schemas/ChannelPost/properties/effectiveDateRange"
                   }
                 }
               }
@@ -555,7 +1068,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1units/get/parameters/2"
+            "$ref": "#/paths/~1users/get/parameters/1"
           }
         ],
         "requestBody": {
@@ -613,27 +1126,7 @@
             }
           },
           {
-            "name": "effectiveDateRange",
-            "description": "The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter. See the [effectiveDate docs](./docs.html) for more information.",
-            "in": "query",
-            "style": "deepObject",
-            "schema": {
-              "type": "object",
-              "required": [
-                "start",
-                "end"
-              ],
-              "properties": {
-                "start": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "end": {
-                  "type": "string",
-                  "format": "date-time"
-                }
-              }
-            }
+            "$ref": "#/paths/~1users/get/parameters/1"
           },
           {
             "name": "fieldsets",
@@ -675,7 +1168,18 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/7/schema"
+              "type": "object",
+              "properties": {
+                "minimum": {
+                  "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
+                },
+                "maximum": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100,
+                  "readOnly": true
+                }
+              }
             }
           },
           {
@@ -684,7 +1188,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/7/schema"
+              "$ref": "#/paths/~1units/get/parameters/5/schema"
             }
           },
           {
@@ -693,7 +1197,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/7/schema"
+              "$ref": "#/paths/~1units/get/parameters/5/schema"
             }
           },
           {
@@ -702,7 +1206,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/7/schema"
+              "$ref": "#/paths/~1units/get/parameters/5/schema"
             }
           },
           {
@@ -713,12 +1217,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "string",
-                "enum": [
-                  "retailer",
-                  "team",
-                  "venue"
-                ]
+                "type": "string"
               }
             }
           },
@@ -731,9 +1230,11 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": {
-                  "$ref": "#/paths/~1units/get/parameters/9/schema/items/enum"
-                }
+                "enum": [
+                  "retailer",
+                  "team",
+                  "venue"
+                ]
               }
             }
           }
@@ -769,70 +1270,23 @@
                   "basic": {
                     "$ref": "#/paths/~1units/post/responses/201/content/application~1json/schema/properties/basic"
                   },
+                  "channels": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/paths/~1channels~1%7BchannelId%7D/put/requestBody/content/application~1json/schema"
+                    }
+                  },
                   "members": {
                     "type": "array",
-                    "readOnly": true,
                     "items": {
-                      "allOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "uid": {
-                              "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
-                            },
-                            "avatar": {
-                              "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/avatar"
-                            },
-                            "displayName": {
-                              "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/displayName"
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "authorizationAttributes": {
-                              "type": "array",
-                              "description": "The authorization attributes that apply to this user for this unit within the unit's networks.",
-                              "items": {
-                                "type": "object",
-                                "properties": {
-                                  "uid": {
-                                    "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
-                                  },
-                                  "name": {
-                                    "type": "string",
-                                    "description": "The attribute name."
-                                  },
-                                  "effectiveDate": {
-                                    "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDate"
-                                  },
-                                  "effectiveDateRanges": {
-                                    "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDateRanges"
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      ]
+                      "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/put/responses/200/content/application~1json/schema"
                     }
                   },
                   "units": {
                     "type": "array",
-                    "readOnly": true,
                     "description": "Items that are sub units of this unit.",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "uid": {
-                          "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
-                        },
-                        "name": {
-                          "description": "The name of the unit.",
-                          "type": "string"
-                        }
-                      }
+                      "$ref": "#/components/schemas/ChannelPost/properties/mentions/items/oneOf/1"
                     }
                   }
                 }
@@ -865,31 +1319,31 @@
                       ],
                       "properties": {
                         "uid": {
-                          "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
+                          "$ref": "#/components/schemas/ChannelPost/properties/uid"
                         },
                         "accessibility": {
                           "$ref": "#/paths/~1units/get/parameters/0/schema/allOf/0"
                         },
                         "activityScore": {
-                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/minimum"
+                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
                         },
                         "banner": {
-                          "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/avatar"
+                          "$ref": "#/components/schemas/ChannelPost/properties/media/items/oneOf/0"
                         },
                         "contentQualityScore": {
-                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/minimum"
+                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
                         },
                         "email": {
                           "type": "string"
                         },
                         "freshnessScore": {
-                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/minimum"
+                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
                         },
                         "location": {
                           "$ref": "#/components/schemas/UnitTypeVenue/properties/location"
                         },
                         "logo": {
-                          "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/avatar"
+                          "$ref": "#/components/schemas/ChannelPost/properties/media/items/oneOf/0"
                         },
                         "longDescription": {
                           "type": "string"
@@ -912,8 +1366,7 @@
                           "nullable": true,
                           "properties": {
                             "uid": {
-                              "description": "Unique identifier (UUID v1, date-time and MAC address)",
-                              "type": "string"
+                              "$ref": "#/components/schemas/ChannelPost/properties/mentions/items/oneOf/1/properties/uid"
                             },
                             "name": {
                               "type": "string",
@@ -926,7 +1379,7 @@
                           "pattern": "^\\+\\d+ \\d{3}-\\d{3}-\\d{4}$"
                         },
                         "qualityScore": {
-                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/minimum"
+                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
                         },
                         "shortDescription": {
                           "type": "string",
@@ -942,10 +1395,10 @@
                           "type": "string"
                         },
                         "effectiveDate": {
-                          "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDate"
+                          "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
                         },
                         "effectiveDateRanges": {
-                          "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDateRanges"
+                          "$ref": "#/components/schemas/ChannelPost/properties/effectiveDateRange"
                         }
                       }
                     },
@@ -998,6 +1451,9 @@
         "parameters": [
           {
             "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units/get/parameters/3"
           }
         ],
         "responses": {
@@ -1019,43 +1475,9 @@
         ],
         "summary": "Update a unit",
         "description": "Update a single unit's basic info",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Unit found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unit not found"
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Units"
-        ],
-        "summary": "Partial update a unit",
-        "description": "Update parts of a single unit's basic info",
         "parameters": [
           {
-            "$ref": "#/paths/~1units/get/parameters/1"
-          },
-          {
-            "$ref": "#/paths/~1units/get/parameters/2"
+            "$ref": "#/paths/~1units/get/parameters/3"
           }
         ],
         "requestBody": {
@@ -1080,6 +1502,38 @@
           }
         }
       },
+      "patch": {
+        "tags": [
+          "Units"
+        ],
+        "summary": "Partial update a unit",
+        "description": "Update parts of a single unit's basic info",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1users/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units/get/parameters/3"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Updated"
+          }
+        }
+      },
       "delete": {
         "tags": [
           "Units"
@@ -1089,6 +1543,380 @@
         "responses": {
           "204": {
             "description": "Unit deleted"
+          }
+        }
+      }
+    },
+    "/units/{unitId}/members": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Unit Members"
+        ],
+        "summary": "Get members",
+        "description": "Get all unit members.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1users/get/parameters/1"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "style": "form",
+            "explode": false,
+            "description": "Comma separated list of user IDs to filter results to.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ChannelPost/properties/uid"
+              }
+            }
+          },
+          {
+            "name": "includeInherited",
+            "description": "Whether to include inherited members.",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of unit members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/put/responses/200/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Unit Members"
+        ],
+        "summary": "Batch assign attributes",
+        "description": "Attach one or more members to a unit with the specified attributes. If a member is attached without attributes then they will have basic read access.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "attributes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/patch/requestBody/content/application~1json/schema/properties/set/items"
+                      }
+                    },
+                    "effectiveDate": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
+                    },
+                    "userId": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/mentions/items/oneOf/1/properties/uid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Membership attributes set.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/put/responses/200/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Unit Members"
+        ],
+        "summary": "Batch partial assign attributes",
+        "description": "Partial update some attributes for one or more members.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "set": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/patch/requestBody/content/application~1json/schema/properties/set/items"
+                      }
+                    },
+                    "remove": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/patch/requestBody/content/application~1json/schema/properties/set/items"
+                      }
+                    },
+                    "effectiveDate": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
+                    },
+                    "userId": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/mentions/items/oneOf/1/properties/uid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Membership attributes set.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/put/responses/200/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Unit Members"
+        ],
+        "summary": "Batch remove members",
+        "description": "Remove one or more members from the unit.",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D~1members/get/parameters/2"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Members removed"
+          }
+        }
+      }
+    },
+    "/units/{unitId}/members/{userId}": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
+        },
+        {
+          "in": "path",
+          "name": "userId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "tags": [
+          "Unit Members"
+        ],
+        "summary": "Assign a member attributes",
+        "description": "Attach a members to a unit with the specified attributes. If a member is attached without attributes then they will have basic read access.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "attributes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/patch/requestBody/content/application~1json/schema/properties/set/items"
+                      }
+                    },
+                    "effectiveDate": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Membership attributes set.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ChannelPost/properties/user/allOf/1"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "authorizationAttributes": {
+                          "type": "array",
+                          "description": "The authorization attributes that apply to this user for this unit within the unit's networks.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/patch/requestBody/content/application~1json/schema/properties/set/items"
+                              },
+                              "inherited": {
+                                "type": "boolean",
+                                "description": "If the authorization attribute comes from a parent unit then `true`, if it comes from this unit then `false`."
+                              },
+                              "unitId": {
+                                "type": "string",
+                                "description": "The unit id where this attribute was assigned."
+                              },
+                              "effectiveDate": {
+                                "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
+                              },
+                              "effectiveDateRanges": {
+                                "$ref": "#/components/schemas/ChannelPost/properties/effectiveDateRange"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Unit Members"
+        ],
+        "summary": "Partial assign a member attributes",
+        "description": "Update some attributes for existing members or potentially add a member with set attributes.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "set": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "Authorization attributes may be one of the following values:\n- **contributer** - Can make posts as well as edit and delete own posts.\n- **channel manager** - Can create, edit, and delete channel. Can see all channels and their posts. Can modify channel membership for any channel.\n- **event manager** - Coming soon\n- **moderator** - Can make posts as well as edit or delete any posts.\n- **user manager** - Can add or remove users and set authorization attributes to other users. ",
+                      "enum": [
+                        "contributer",
+                        "channel manager",
+                        "event manager",
+                        "moderator",
+                        "user manager"
+                      ]
+                    }
+                  },
+                  "remove": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/patch/requestBody/content/application~1json/schema/properties/set/items"
+                    }
+                  },
+                  "effectiveDate": {
+                    "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Membership attributes set.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/put/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Unit Members"
+        ],
+        "summary": "Remove a member",
+        "description": "Remove a members from the unit.",
+        "responses": {
+          "204": {
+            "description": "Members removed"
+          }
+        }
+      }
+    },
+    "/units/{unitId}/subUnits/{subUnitId}": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
+        },
+        {
+          "name": "subUnitId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "summary": "Link sub unit",
+        "description": "Set a unit as a sub unit to a parent unit. A unit cannot be a sub unit to two different parent units. Placing a unit as a sub unit of a parent when the sub unit already has a parent will unlink the previous parent and link to the new parent.",
+        "tags": [
+          "Sub Units"
+        ],
+        "responses": {
+          "200": {
+            "description": "Sub unit linked"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Unlink sub unit",
+        "description": "Unlink a sub unit from a parent unit.",
+        "tags": [
+          "Sub Units"
+        ],
+        "responses": {
+          "200": {
+            "description": "Sub unit unlinked"
           }
         }
       }
@@ -1104,7 +1932,27 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1units/get/parameters/2"
+            "name": "effectiveDateRange",
+            "description": "The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter. See the [effectiveDate docs](./docs.html) for more information.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "type": "object",
+              "required": [
+                "start",
+                "end"
+              ],
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "end": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
           },
           {
             "name": "fieldsets",
@@ -1122,8 +1970,13 @@
                 "type": "string",
                 "enum": [
                   "basic",
+                  "activity",
+                  "follows",
+                  "media",
+                  "notifications",
                   "personal",
-                  "portfolio"
+                  "posts",
+                  "units"
                 ]
               }
             }
@@ -1174,7 +2027,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/7/schema"
+              "$ref": "#/paths/~1units/get/parameters/5/schema"
             }
           },
           {
@@ -1183,7 +2036,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1users/get/parameters/7/schema"
+              "$ref": "#/paths/~1units/get/parameters/5/schema"
             }
           },
           {
@@ -1192,18 +2045,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "type": "object",
-              "properties": {
-                "minimum": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 100,
-                  "readOnly": true
-                },
-                "maximum": {
-                  "$ref": "#/paths/~1units/get/parameters/5/schema/properties/minimum"
-                }
-              }
+              "$ref": "#/paths/~1units/get/parameters/5/schema"
             }
           }
         ],
@@ -1221,10 +2063,42 @@
                     "personal": {
                       "$ref": "#/paths/~1users~1%7BuserId%7D~1personal/put/requestBody/content/application~1json/schema"
                     },
-                    "portfolios": {
+                    "units": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/paths/~1users~1%7BuserId%7D~1portfolios/get/responses/200/content/application~1json/schema/items"
+                        "type": "object",
+                        "properties": {
+                          "attributes": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/patch/requestBody/content/application~1json/schema/properties/set/items"
+                            }
+                          },
+                          "effectiveDate": {
+                            "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
+                          },
+                          "effectiveDateRanges": {
+                            "$ref": "#/components/schemas/ChannelPost/properties/effectiveDateRange"
+                          },
+                          "unit": {
+                            "type": "object",
+                            "description": "The unit that granted this membership and attributes attribute.",
+                            "properties": {
+                              "uid": {
+                                "$ref": "#/components/schemas/ChannelPost/properties/uid"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "unitType": {
+                                "type": "string",
+                                "enum": {
+                                  "$ref": "#/paths/~1units/get/parameters/10/schema/items/enum"
+                                }
+                              }
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -1250,28 +2124,23 @@
                 ],
                 "properties": {
                   "uid": {
-                    "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
+                    "$ref": "#/components/schemas/ChannelPost/properties/uid"
                   },
                   "accessibility": {
                     "$ref": "#/paths/~1units/get/parameters/0/schema/allOf/0"
                   },
                   "avatar": {
-                    "type": "object",
-                    "properties": {
-                      "url": {
-                        "type": "string"
-                      }
-                    }
+                    "$ref": "#/components/schemas/ChannelPost/properties/media/items/oneOf/0"
                   },
                   "displayName": {
                     "description": "The publicly displayed name for this user.",
                     "type": "string"
                   },
                   "effectiveDate": {
-                    "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDate"
+                    "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
                   },
                   "effectiveDateRanges": {
-                    "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDateRanges"
+                    "$ref": "#/components/schemas/ChannelPost/properties/effectiveDateRange"
                   },
                   "shortDescription": {
                     "description": "A short description that a user can add for themself.",
@@ -1301,7 +2170,7 @@
                   "freshnessScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1units/get/parameters/5/schema/properties/minimum"
+                        "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
                       },
                       {
                         "type": "integer",
@@ -1312,7 +2181,7 @@
                   "qualityScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1units/get/parameters/5/schema/properties/minimum"
+                        "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
                       },
                       {
                         "type": "integer",
@@ -1323,7 +2192,7 @@
                   "contentQualityScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1units/get/parameters/5/schema/properties/minimum"
+                        "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
                       },
                       {
                         "type": "integer",
@@ -1349,7 +2218,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1users/get/responses/200/content/application~1json/schema"
+                  "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema"
                 }
               }
             }
@@ -1565,79 +2434,311 @@
           }
         }
       }
-    },
-    "/users/{userId}/portfolios": {
-      "parameters": [
-        {
-          "$ref": "#/paths/~1users~1%7BuserId%7D~1personal/parameters/0"
-        }
-      ],
-      "get": {
-        "tags": [
-          "User Portfolios"
-        ],
-        "summary": "Get user portfolios",
-        "description": "Get user portfolio and authorization attributes.",
-        "responses": {
-          "200": {
-            "description": "Retrieved user portfolios",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "attributes": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "description": "Authorization attributes may be one of the following values:\n- **contributer** - Can make posts as well as edit and delete own posts.\n- **channel manager** - Coming soon\n- **event manager** - Coming soon\n- **moderator** - Can make posts as well as edit or delete any posts.\n- **user manager** - Can add or remove users and set authorization attributes to other users. ",
-                          "enum": [
-                            "contributer",
-                            "channel manager",
-                            "event manager",
-                            "moderator",
-                            "user manager"
-                          ]
-                        }
-                      },
-                      "effectiveDate": {
-                        "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDate"
-                      },
-                      "effectiveDateRanges": {
-                        "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDateRanges"
-                      },
-                      "portfolio": {
-                        "type": "object",
-                        "description": "The portfolio that granted this attribute.",
-                        "properties": {
-                          "uid": {
-                            "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "units": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema/properties/units/items"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
     "schemas": {
+      "ChannelPost": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "description": "Unique identifier (UUID v1, date-time and MAC address)",
+            "type": "string",
+            "readOnly": true
+          },
+          "allowComments": {
+            "type": "boolean",
+            "description": "Set to `false` to disable future comments and hide current comments."
+          },
+          "body": {
+            "type": "object",
+            "properties": {
+              "richText": {
+                "type": "string"
+              },
+              "plainText": {
+                "type": "string"
+              }
+            }
+          },
+          "channels": {
+            "type": "array",
+            "description": "The channels that the post was made to.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "$ref": "#/components/schemas/ChannelPost/properties/uid"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "comments": {
+            "type": "array",
+            "description": "Comments on this post.",
+            "readOnly": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "uid": {
+                  "$ref": "#/components/schemas/ChannelPost/properties/uid"
+                },
+                "body": {
+                  "description": "Plain text",
+                  "type": "string"
+                },
+                "deleted": {
+                  "type": "boolean",
+                  "description": "Whether this comment has been deleted."
+                },
+                "post": {
+                  "type": "string",
+                  "description": "The ID of the post that this comment is attached to."
+                },
+                "reactions": {
+                  "$ref": "#/components/schemas/ChannelPost/properties/reactions"
+                },
+                "user": {
+                  "description": "The user who made the comment.",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ChannelPost/properties/user/allOf/1"
+                    }
+                  ]
+                },
+                "effectiveDate": {
+                  "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
+                },
+                "effectiveDateRange": {
+                  "$ref": "#/components/schemas/ChannelPost/properties/effectiveDateRange"
+                }
+              }
+            }
+          },
+          "deleted": {
+            "type": "boolean",
+            "description": "Whether this post has been deleted.",
+            "readOnly": true
+          },
+          "media": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/uid"
+                    },
+                    "small": {
+                      "description": "The URL to the small image.",
+                      "type": "string"
+                    },
+                    "medium": {
+                      "description": "The URL to the medium image.",
+                      "type": "string"
+                    },
+                    "large": {
+                      "description": "The URL to the large image.",
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/uid"
+                    },
+                    "provider": {
+                      "type": "string",
+                      "enum": [
+                        "YouTube",
+                        "Vimeo"
+                      ]
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The embed URL."
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "reactions": {
+            "type": "object",
+            "readOnly": true,
+            "properties": {
+              "total": {
+                "type": "integer"
+              },
+              "like": {
+                "type": "integer"
+              },
+              "lol": {
+                "type": "integer"
+              },
+              "mad": {
+                "type": "integer"
+              },
+              "sad": {
+                "type": "integer"
+              },
+              "wow": {
+                "type": "integer"
+              },
+              "love": {
+                "type": "integer"
+              }
+            }
+          },
+          "distributionCount": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "sharesCount": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "hashTags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "mentions": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ChannelPost/properties/user/allOf/1"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "uid": {
+                      "description": "Unique identifier (UUID v1, date-time and MAC address)",
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the unit.",
+                      "readOnly": true
+                    }
+                  }
+                }
+              ]
+            },
+            "readOnly": true
+          },
+          "pinned": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "effectiveDate": {
+                "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
+              },
+              "pinnedBy": {
+                "$ref": "#/components/schemas/ChannelPost/properties/user/allOf/1"
+              }
+            }
+          },
+          "postType": {
+            "type": "string",
+            "enum": [
+              "post",
+              "marketplace"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "user": {
+            "allOf": [
+              {
+                "type": "object",
+                "description": "The user who made the post."
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "$ref": "#/components/schemas/ChannelPost/properties/uid"
+                  },
+                  "avatar": {
+                    "$ref": "#/components/schemas/ChannelPost/properties/media/items/oneOf/0"
+                  },
+                  "displayName": {
+                    "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/displayName"
+                  }
+                }
+              }
+            ]
+          },
+          "effectiveDate": {
+            "description": "The date and time range for which this information is effective.",
+            "type": "object",
+            "properties": {
+              "start": {
+                "description": "Defaults to the current date and time.",
+                "type": "string",
+                "format": "date-time"
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true,
+                "default": null
+              }
+            }
+          },
+          "effectiveDateRange": {
+            "description": "All effective date ranges that exist for this item.",
+            "type": "array",
+            "readOnly": true,
+            "items": {
+              "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
+            }
+          }
+        }
+      },
+      "ChannelMarketplacePost": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ChannelPost"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "brand": {
+                "type": "string"
+              },
+              "price": {
+                "type": "number",
+                "minimum": 0
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
       "UnitTypeRetailer": {
         "type": "object",
         "required": [
@@ -1657,10 +2758,10 @@
             ]
           },
           "effectiveDate": {
-            "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDate"
+            "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
           },
           "effectiveDateRanges": {
-            "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDateRanges"
+            "$ref": "#/components/schemas/ChannelPost/properties/effectiveDateRange"
           }
         }
       },
@@ -1671,9 +2772,7 @@
         ],
         "properties": {
           "uid": {
-            "description": "Unique identifier (UUID v1, date-time and MAC address)",
-            "type": "string",
-            "readOnly": true
+            "$ref": "#/components/schemas/ChannelPost/properties/uid"
           },
           "networks": {
             "type": "array",
@@ -1706,29 +2805,10 @@
             ]
           },
           "effectiveDate": {
-            "description": "The date and time range for which this information is effective.",
-            "type": "object",
-            "properties": {
-              "start": {
-                "description": "Defaults to the current date and time.",
-                "type": "string",
-                "format": "date-time"
-              },
-              "end": {
-                "type": "string",
-                "format": "date-time",
-                "nullable": true,
-                "default": null
-              }
-            }
+            "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
           },
           "effectiveDateRanges": {
-            "description": "All effective date ranges that exist for this item.",
-            "type": "array",
-            "readOnly": true,
-            "items": {
-              "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDate"
-            }
+            "$ref": "#/components/schemas/ChannelPost/properties/effectiveDateRange"
           }
         }
       },
@@ -1739,12 +2819,27 @@
         ],
         "properties": {
           "uid": {
-            "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
+            "$ref": "#/components/schemas/ChannelPost/properties/uid"
           },
           "hoursOfOperation": {
             "type": "object",
             "properties": {
               "sunday": {
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
+              },
+              "monday": {
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
+              },
+              "tuesday": {
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
+              },
+              "wednesday": {
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
+              },
+              "thursday": {
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
+              },
+              "friday": {
                 "type": "array",
                 "items": {
                   "type": "object",
@@ -1760,78 +2855,103 @@
                   }
                 }
               },
-              "monday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
-              },
-              "tuesday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
-              },
-              "wednesday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
-              },
-              "thursday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
-              },
-              "friday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
-              },
               "saturday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
               }
             }
           },
           "location": {
             "type": "object",
-            "required": [
-              "locationId",
-              "latitude",
-              "longitude"
-            ],
             "properties": {
-              "uid": {
-                "$ref": "#/components/schemas/UnitTypeTeam/properties/uid"
+              "basic": {
+                "type": "object",
+                "required": [
+                  "locationId",
+                  "latitude",
+                  "longitude"
+                ],
+                "properties": {
+                  "uid": {
+                    "$ref": "#/components/schemas/ChannelPost/properties/uid"
+                  },
+                  "addressLine1": {
+                    "type": "string",
+                    "example": "1234 Mountain St"
+                  },
+                  "addressLine2": {
+                    "type": "string"
+                  },
+                  "addressLine4": {
+                    "type": "string"
+                  },
+                  "addressLine5": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string",
+                    "description": "The name of the country."
+                  },
+                  "latitude": {
+                    "$ref": "#/paths/~1locations/get/parameters/1/schema/properties/southLatitude"
+                  },
+                  "locality": {
+                    "type": "string",
+                    "description": "The name of the city or town."
+                  },
+                  "longitude": {
+                    "$ref": "#/paths/~1locations/get/parameters/1/schema/properties/eastLongitude"
+                  },
+                  "postalCode": {
+                    "type": "string"
+                  },
+                  "province": {
+                    "type": "string",
+                    "description": "The name of the province or state."
+                  }
+                }
               },
-              "addressLine1": {
-                "type": "string",
-                "example": "1234 Mountain St"
+              "units": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "uid": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/uid"
+                    },
+                    "name": {
+                      "$ref": "#/paths/~1units/post/responses/201/content/application~1json/schema/properties/basic/properties/name"
+                    },
+                    "shortDescription": {
+                      "$ref": "#/paths/~1units/post/responses/201/content/application~1json/schema/properties/basic/properties/shortDescription"
+                    },
+                    "logo": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/media/items/oneOf/0"
+                    }
+                  }
+                }
               },
-              "addressLine2": {
-                "type": "string"
-              },
-              "addressLine4": {
-                "type": "string"
-              },
-              "addressLine5": {
-                "type": "string"
-              },
-              "country": {
-                "type": "string",
-                "example": "USA"
-              },
-              "displayName": {
-                "type": "string"
-              },
-              "latitude": {
-                "type": "number",
-                "minimum": -90,
-                "maximum": 90
-              },
-              "locality": {
-                "type": "string",
-                "example": "Provo"
-              },
-              "longitude": {
-                "type": "number",
-                "minimum": -180,
-                "maximum": 180
-              },
-              "postalCode": {
-                "type": "string",
-                "example": "84606"
-              },
-              "province": {
-                "type": "string",
-                "example": "UT"
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "uid": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/uid"
+                    },
+                    "displayName": {
+                      "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema/properties/displayName"
+                    },
+                    "avatar": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/media/items/oneOf/0"
+                    },
+                    "firstName": {
+                      "$ref": "#/paths/~1users~1%7BuserId%7D~1personal/put/requestBody/content/application~1json/schema/properties/firstName"
+                    },
+                    "lastName": {
+                      "$ref": "#/paths/~1users~1%7BuserId%7D~1personal/put/requestBody/content/application~1json/schema/properties/lastName"
+                    }
+                  }
+                }
               }
             }
           },
@@ -1861,10 +2981,10 @@
             ]
           },
           "effectiveDate": {
-            "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDate"
+            "$ref": "#/components/schemas/ChannelPost/properties/effectiveDate"
           },
           "effectiveDateRanges": {
-            "$ref": "#/components/schemas/UnitTypeTeam/properties/effectiveDateRanges"
+            "$ref": "#/components/schemas/ChannelPost/properties/effectiveDateRange"
           }
         }
       }
