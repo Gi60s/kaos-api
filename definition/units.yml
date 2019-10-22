@@ -125,13 +125,11 @@ paths:
               $ref: '#/components/schemas/Unit'
       responses:
         200:
-          description: Unit found
+          description: Unit updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Unit'
-        404:
-          description: Unit not found
     patch:
       tags:
         - Units
@@ -147,12 +145,8 @@ paths:
             schema:
               $ref: '#/components/schemas/Unit'
       responses:
-        200:
-          description: Unit updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Unit'
+        204:
+          description: Updated
     delete:
       tags:
         - Units
@@ -173,6 +167,12 @@ paths:
         - $ref: './common.yml#/parameterEffectiveDate'
         - $ref: './common.yml#/parameterEffectiveDateRange'
         - $ref: '#/components/parameters/queryFilterUserId'
+        - name: includeInherited
+          description: Whether to include inherited members.
+          in: query
+          schema:
+            type: boolean
+            default: false
       responses:
         200:
           description: A list of unit members
@@ -314,12 +314,6 @@ components:
       required: true
       schema:
         type: string
-    pathTeamId:
-      name: 'teamId'
-      in: path
-      required: true
-      schema:
-        type: string
     queryFieldSet:
       name: fieldsets
       description: Specify which fieldsets to return.
@@ -406,7 +400,7 @@ components:
 
         - **contributer** - Can make posts as well as edit and delete own posts.
 
-        - **channel manager** - Coming soon
+        - **channel manager** - Can create, edit, and delete channel. Can see all channels and their posts. Can modify channel membership for any channel.
 
         - **event manager** - Coming soon
 
@@ -427,14 +421,16 @@ components:
       properties:
         basic:
           $ref: '#/components/schemas/UnitBasic'
+        channels:
+          type: array
+          items:
+            $ref: './communications.yml#/components/schemas/Channel'
         members:
           type: array
-          readOnly: true
           items:
             $ref: '#/components/schemas/UnitMembers'
         units:
           type: array
-          readOnly: true
           description: Items that are sub units of this unit.
           items:
             $ref: '#/components/schemas/UnitMicro'
@@ -512,10 +508,7 @@ components:
                 type: object
                 properties:
                   name:
-                    type: string
-                    description: The attribute name.
-                    enum:
-                      $ref: '#/components/schemas/AuthorizationAttribute/enum'
+                    $ref: '#/components/schemas/AuthorizationAttribute'
                   inherited:
                     type: boolean
                     description: "If the authorization attribute comes from a parent unit then `true`, if it comes from this unit then `false`."
@@ -541,10 +534,11 @@ components:
       type: object
       properties:
         uid:
-          $ref: './common.yml#/Uid2'
+          $ref: './common.yml#/Uid2Write'
         name:
-          description: The name of the unit.
           type: string
+          description: The name of the unit.
+          readOnly: true
     UnitPost:
       type: object
       properties:

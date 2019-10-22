@@ -4,6 +4,11 @@ info:
   description: For additional general information on how to use this API please refer to the [additional documentation](./docs.html).
   version: '0.0.1'
 x-tagGroups:
+  - name: Communications
+    tags:
+      - Channels
+      - Channel Members
+      - Posts
   - name: Locations
     tags:
       - Locations
@@ -23,6 +28,16 @@ x-tagGroups:
       - Unit Members
       - Sub Units
 paths:
+  /channels:
+    $ref: './communications.yml#/paths/channels'
+  /channels/{channelId}:
+    $ref: './communications.yml#/paths/channel'
+  /channels/{channelId}/posts:
+    $ref: './communications.yml#/paths/channelPosts'
+  /channels/{channelId}/posts/{postId}:
+    $ref: './communications.yml#/paths/channelPost'
+  /channels/{channelId}/members/{userId}:
+    $ref: './communications.yml#/paths/channelMembers'
   /locations:
     $ref: './locations.yml#/paths/locations'
   /locations/{locationId}:
@@ -53,6 +68,10 @@ paths:
     $ref: './users.yml#/paths/userPersonal'
 components:
   schemas:
+    ChannelPost:
+      $ref: './communications.yml#/components/schemas/Post'
+    ChannelMarketplacePost:
+      $ref: './communications.yml#/components/schemas/MarketplacePost'
     UnitTypeRetailer:
       $ref: './units.yml#/components/schemas/UnitTypeRetailer'
     UnitTypeTeam:

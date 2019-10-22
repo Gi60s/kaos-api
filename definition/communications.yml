@@ -1,0 +1,461 @@
+paths:
+  channels:
+    get:
+      tags:
+        - Channels
+      summary: List channels
+      description: Get a list of channels.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+        - $ref: '#/components/parameters/queryUnitIds'
+        - $ref: '#/components/parameters/queryFieldSet'
+      responses:
+        200:
+          description: A list of channels.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Channel'
+    post:
+      tags:
+        - Channels
+      summary: Create a channel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelBasic'
+      responses:
+        201:
+          description: Channel created
+          headers:
+            Location:
+              description: The API endpoint to hit to get the created channel.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelBasic'
+  channel:
+    parameters:
+      - $ref: '#/components/parameters/pathChannelId'
+    get:
+      tags:
+        - Channels
+      summary: Get a channel
+      description: Get a single channel.
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: '#/components/parameters/queryFieldSet'
+      responses:
+        200:
+          description: A channel.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+    put:
+      tags:
+        - Channels
+      summary: Update a channel
+      parameters:
+        - $ref: '#/components/parameters/queryFieldSet'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+      responses:
+        200:
+          description: Channel updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+    patch:
+      tags:
+        - Channels
+      summary: Partial update a channel
+      description: Update parts of a channel's basic info
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+        - $ref: '#/components/parameters/queryFieldSet'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelBasic'
+      responses:
+        200:
+          description: Unit updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+    delete:
+      tags:
+        - Channels
+      summary: Archive a channel
+      description: Archive all data about a channel
+      responses:
+        204:
+          description: Channel archived
+  channelMembers:
+    parameters:
+      - $ref: '#/components/parameters/pathChannelId'
+      - $ref: '#/components/parameters/pathUserIds'
+    put:
+      summary: Add members to channel
+      tags:
+        - Channel Members
+      responses:
+        204:
+          description: Members added
+    delete:
+      summary: Remove members from channel
+      tags:
+        - Channel Members
+      responses:
+        204:
+          description: Members removed
+  channelPosts:
+    parameters:
+      - $ref: '#/components/parameters/pathChannelId'
+    get:
+      summary: Get posts
+      description: Get posted messages for a channel
+      tags:
+        - Posts
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      responses:
+        200:
+          description: List of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostTypes'
+    post:
+      summary: Make a post
+      tags:
+        - Posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostTypes'
+      responses:
+        201:
+          description: Post created
+          headers:
+            Location:
+              description: The API endpoint to hit to get the created post.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+  channelPost:
+    parameters:
+      - $ref: '#/components/parameters/pathChannelId'
+      - $ref: '#/components/parameters/pathPostId'
+    get:
+      summary: Get a post
+      tags:
+        - Posts
+      parameters:
+          - $ref: './common.yml#/parameterEffectiveDate'
+      responses:
+        200:
+          description: A posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostTypes'
+    put:
+      summary: Update a post
+      tags:
+        - Posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostTypes'
+      responses:
+        200:
+          description: A posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostTypes'
+    patch:
+      summary: Partial update a post
+      tags:
+        - Posts
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostTypes'
+      responses:
+        204:
+          description: Updated
+    delete:
+      summary: Remove a post
+      tags:
+        - Posts
+      responses:
+        204:
+          description: Post removed
+
+components:
+  parameters:
+    pathChannelId:
+      name: channelId
+      in: path
+      required: true
+      schema:
+        $ref: './common.yml#/Uid2'
+    pathPostId:
+      name: postId
+      in: path
+      required: true
+      schema:
+        type: string
+    pathUserIds:
+      name: userId
+      description: List of comma seperated user ids.
+      in: path
+      required: true
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+    queryFieldSet:
+      name: fieldsets
+      description: Specify which fieldsets to return.
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        default: ['basic']
+        minItems: 1
+        items:
+          type: string
+          enum:
+            - basic
+            - members
+            - pins
+            - posts
+    queryUnitIds:
+      name: unitId
+      description: A comma seperated list of unit IDs to filter results to.
+      in: query
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+    queryUserIds:
+      name: userId
+      description: A comma seperated list of unit IDs to filter results to.
+      in: query
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+  schemas:
+    Channel:
+      type: object
+      properties:
+        basic:
+          $ref: '#/components/schemas/ChannelBasic'
+        members:
+          type: array
+          description: All members of this channel
+          items:
+            $ref: './users.yml#/components/schemas/UserMicro'
+        pins:
+          description: Most recently pinned posts
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/PostTypes'
+        posts:
+          type: array
+          maxItems: 50
+          description: Latest posts
+          items:
+            $ref: '#/components/schemas/PostTypes'
+    ChannelBasic:
+      type: object
+      properties:
+        id:
+          $ref: './common.yml#/Uid2'
+        name:
+          type: string
+        description:
+          type: string
+        private:
+          type: boolean
+        unit:
+          allOf:
+            - type: object
+              description: The unit this channel belongs to
+            - $ref: './units.yml#/components/schemas/UnitMicro'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveDateRanges:
+          $ref: './common.yml#/EffectiveDateRanges'
+    ChannelMicro:
+      type: object
+      properties:
+        id:
+          $ref: './common.yml#/Uid2'
+        name:
+          type: string
+    Comment:
+      type: object
+      properties:
+        uid:
+          $ref: './common.yml#/Uid2'
+        body:
+          description: Plain text
+          type: string
+        deleted:
+          type: boolean
+          description: Whether this comment has been deleted.
+        post:
+          type: string
+          description: The ID of the post that this comment is attached to.
+        reactions:
+          $ref: './common.yml#/Reactions'
+        user:
+          description: The user who made the comment.
+          allOf:
+            - $ref: './users.yml#/components/schemas/UserMicro'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveDateRange:
+          $ref: './common.yml#/EffectiveDateRanges'
+    Post:
+      type: object
+      properties:
+        uid:
+          $ref: './common.yml#/Uid2'
+        allowComments:
+          type: boolean
+          description: Set to `false` to disable future comments and hide current comments.
+        body:
+          type: object
+          properties:
+            richText:
+              type: string
+            plainText:
+              type: string
+        channels:
+          type: array
+          description: The channels that the post was made to.
+          items:
+            $ref: '#/components/schemas/ChannelMicro'
+        comments:
+          type: array
+          description: Comments on this post.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Comment'
+        deleted:
+          type: boolean
+          description: Whether this post has been deleted.
+          readOnly: true
+        media:
+          type: array
+          maxItems: 6
+          items:
+            oneOf:
+              - $ref: './common.yml#/Image'
+              - $ref: './common.yml#/Video'
+        reactions:
+          $ref: './common.yml#/Reactions'
+        distributionCount:
+          type: integer
+          readOnly: true
+        sharesCount:
+          type: integer
+          readOnly: true
+        hashTags:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        mentions:
+          type: array
+          items:
+            oneOf:
+              - $ref: './users.yml#/components/schemas/UserMicro'
+              - $ref: './units.yml#/components/schemas/UnitMicro'
+          readOnly: true
+        pinned:
+          type: object
+          nullable: true
+          properties:
+            effectiveDate:
+              $ref: './common.yml#/EffectiveDate'
+            pinnedBy:
+              $ref: './users.yml#/components/schemas/UserMicro'
+        postType:
+          type: string
+          enum:
+            - post
+            - marketplace
+        title:
+          type: string
+        user:
+          allOf:
+            - type: object
+              description: The user who made the post.
+            - $ref: './users.yml#/components/schemas/UserMicro'
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveDateRange:
+          $ref: './common.yml#/EffectiveDateRanges'
+    PostTypes:
+      oneOf:
+        - $ref: '#/components/schemas/Post'
+        - $ref: '#/components/schemas/MarketplacePost'
+      discriminator:
+        propertyName: postType
+        mapping:
+          post: '#/components/schemas/ChannelPost'
+          marketplace: '#/components/schemas/ChannelMarketplacePost'
+    MarketplacePost:
+      allOf:
+        - $ref: '#/components/schemas/Post'
+        - type: object
+          properties:
+            brand:
+              type: string
+            price:
+              type: number
+              minimum: 0
+            tags:
+              type: array
+              items:
+                type: string
+
+

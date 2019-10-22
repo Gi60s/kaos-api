@@ -62,14 +62,14 @@ function Builder (source) {
 
     if (!watcher) watcher = chokidar.watch([])
 
-    updateWatchedPaths()
+    await updateWatchedPaths()
 
     watcher.on('all', (event, filePath) => {
       switch (event) {
         case 'add':
         case 'change':
         case 'unlink':
-          cached = false
+          cache = false
           debounce(async () => {
             if (!skipNext) {
               skipNext = await updateWatchedPaths()
@@ -88,6 +88,11 @@ function Builder (source) {
 
   return factory
 
+  /**
+   * Call the provided callback function with a debounce of the specified delay amount.
+   * @param {function} callback
+   * @param {number} delay
+   */
   function debounce(callback, delay) {
     clearTimeout(debounceTimeoutId)
     debounceTimeoutId = setTimeout(callback, delay)

@@ -94,6 +94,8 @@ HoursOfOperationWeek:
 Image:
   type: object
   properties:
+    id:
+      $ref: '#/Uid2'
     small:
       description: The URL to the small image.
       type: string
@@ -129,6 +131,7 @@ PhoneNumber:
   pattern: ^\+\d+ \d{3}-\d{3}-\d{4}$
 Reactions:
   type: object
+  readOnly: true
   properties:
     total:
       type: integer
@@ -175,13 +178,14 @@ Video:
   type: object
   properties:
     id:
-      description: The video ID
+      $ref: '#/Uid2'
     provider:
       type: string
       enum:
         - YouTube
         - Vimeo
     url:
+      type: string
       description: The embed URL.
 
 parameterEffectiveDate:
