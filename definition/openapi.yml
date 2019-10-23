@@ -16,6 +16,8 @@ x-tagGroups:
     tags:
       - Networks
       - Network Authorizations
+      - Network Hash Tags
+      - Network Mentions
       - Network Venues
   - name: User Management
     tags:
@@ -46,6 +48,14 @@ paths:
     $ref: './networks.yml#/paths/networks'
   /networks/{networkId}:
     $ref: './networks.yml#/paths/network'
+  /networks/{networkId}/hashTags:
+    $ref: './networks.yml#/paths/networkHashTags'
+  /networks/{networkId}/hashTags/{hashTag}:
+    $ref: './networks.yml#/paths/networkHashTag'
+  /networks/{networkId}/mentions:
+    $ref: './networks.yml#/paths/networkMentions'
+  /networks/{networkId}/mentions/{userId}:
+    $ref: './networks.yml#/paths/networkMention'
   /networks/{networkId}/venues:
     $ref: './networks.yml#/paths/venueTypes'
   /networks/{networkId}/venues/{venueId}:

@@ -70,6 +70,107 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Network'
+  networkHashTags:
+    get:
+      description: Get a list of hash tags on the network.
+      tags:
+        - Network Hash Tags
+      parameters:
+        - $ref: '#/components/parameters/pathNetworkId'
+      responses:
+        200:
+          description: List of hash tags on the network.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    hashTag:
+                      type: string
+                    count:
+                      type: integer
+  networkHashTag:
+    get:
+      description: Get the posts linked to a specific hash tag.
+      tags:
+        - Network Hash Tags
+      parameters:
+        - $ref: '#/components/parameters/pathNetworkId'
+        - name: hashTag
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: beforeDate
+          description: Get posts for a specific hash tag that happened before the specific date.
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        200:
+          description: A list of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 50
+                items:
+                  $ref: './communications.yml#/components/schemas/Post'
+  networkMentions:
+    get:
+      summary: Summarize mentions
+      description: Get a list of users mentioned on the network and the number of mentions per user.
+      tags:
+        - Network Mentions
+      parameters:
+        - $ref: '#/components/parameters/pathNetworkId'
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+      responses:
+        200:
+          description: List of mentions on the network.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: './users.yml#/components/schemas/UserMicro'
+                    - type: object
+                      properties:
+                        count:
+                          type: integer
+  networkMention:
+    get:
+      description: Get the posts linked to a specific user.
+      tags:
+        - Network Mentions
+      parameters:
+        - $ref: '#/components/parameters/pathNetworkId'
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: beforeDate
+          description: Get posts for a specific mention that happened before the specific date.
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        200:
+          description: A list of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 50
+                items:
+                  $ref: './communications.yml#/components/schemas/Post'
   venueTypes:
     parameters:
       - $ref: '#/components/parameters/pathNetworkId'

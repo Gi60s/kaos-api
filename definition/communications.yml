@@ -134,6 +134,17 @@ paths:
       parameters:
         - $ref: './common.yml#/parameterEffectiveDate'
         - $ref: './common.yml#/parameterEffectiveDateRange'
+        - name: postType
+          description: Limit returned results to a specific post type or types using a comma seperated list.
+          in: query
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - post
+                - marketplacePost
       responses:
         200:
           description: List of posts
@@ -335,8 +346,12 @@ components:
         uid:
           $ref: './common.yml#/Uid2'
         body:
-          description: Plain text
-          type: string
+          type: object
+          properties:
+            richText:
+              type: string
+            plainText:
+              type: string
         deleted:
           type: boolean
           description: Whether this comment has been deleted.
@@ -455,6 +470,7 @@ components:
               minimum: 0
             tags:
               type: array
+              description: Categorization information, such as make and model of an item.
               items:
                 type: string
 

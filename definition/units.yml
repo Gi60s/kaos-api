@@ -75,7 +75,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Unit'
+              type: array
+              items:
+                $ref: '#/components/schemas/Unit'
       responses:
         201:
           description: Unit created
@@ -328,6 +330,8 @@ components:
           type: string
           enum:
             - basic
+            - activityFeed
+            - channels
             - members
             - units
     queryFilterUserId:
@@ -421,8 +425,25 @@ components:
       properties:
         basic:
           $ref: '#/components/schemas/UnitBasic'
+        activityFeed:
+          type: object
+          description: Social media style posts.
+          properties:
+            pins:
+              type: array
+              description: Pinned posts
+              maxItems: 5
+              items:
+                $ref: './communications.yml#/components/schemas/PostTypes'
+        posts:
+          type: array
+          maxItems: 50
+          description: Latest posts
+          items:
+            $ref: './communications.yml#/components/schemas/PostTypes'
         channels:
           type: array
+          description: Conversational channels that are part of the unit.
           items:
             $ref: './communications.yml#/components/schemas/Channel'
         members:
