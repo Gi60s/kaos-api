@@ -157,6 +157,65 @@ paths:
       responses:
         204:
           description: Unit deleted
+  unitActivityFeed:
+    parameters:
+      - $ref: '#/components/parameters/pathUnitId'
+    get:
+      tags:
+        - Unit Activity Feed
+      summary: Get activity feed
+      parameters:
+        - $ref: './common.yml#/parameterEffectiveDate'
+        - $ref: './common.yml#/parameterEffectiveDateRange'
+        - $ref: './communications.yml#/components/parameters/queryPostType'
+        - $ref: './common.yml#/parameterQueryBeforeDate'
+        - name: includePins
+          description: Whether to include pins object in the result.
+          in: query
+          schema:
+            type: boolean
+            default: true
+      responses:
+        200:
+          description: A list of posts made to the feed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitActivityFeed'
+  unitChannels:
+    parameters:
+      - $ref: '#/components/parameters/pathUnitId'
+    get:
+      tags:
+        - Unit Channels
+      summary: Get a list of channels
+      responses:
+        200:
+          description: List of channels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './communications.yml#/components/schemas/ChannelBasic'
+  unitChannelsUser:
+    parameters:
+      - $ref: '#/components/parameters/pathUnitId'
+      - $ref: '#/components/parameters/pathUserId'
+    get:
+      tags:
+        - Unit Channels
+      summary: Get a list of user's channels
+      description: Get a list of channels that this user is a member of.
+      responses:
+        200:
+          description: List of channels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './communications.yml#/components/schemas/ChannelBasic'
   unitMembers:
     parameters:
       - $ref: '#/components/parameters/pathUnitId'
@@ -235,11 +294,7 @@ paths:
   unitMember:
     parameters:
       - $ref: '#/components/parameters/pathUnitId'
-      - in: path
-        name: userId
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/pathUserId'
     put:
       tags:
         - Unit Members
@@ -312,6 +367,12 @@ components:
   parameters:
     pathUnitId:
       name: 'unitId'
+      in: path
+      required: true
+      schema:
+        type: string
+    pathUserId:
+      name: 'userId'
       in: path
       required: true
       schema:
@@ -426,26 +487,12 @@ components:
         basic:
           $ref: '#/components/schemas/UnitBasic'
         activityFeed:
-          type: object
-          description: Social media style posts.
-          properties:
-            pins:
-              type: array
-              description: Pinned posts
-              maxItems: 5
-              items:
-                $ref: './communications.yml#/components/schemas/PostTypes'
-        posts:
-          type: array
-          maxItems: 50
-          description: Latest posts
-          items:
-            $ref: './communications.yml#/components/schemas/PostTypes'
+          $ref: '#/components/schemas/UnitActivityFeed'
         channels:
           type: array
           description: Conversational channels that are part of the unit.
           items:
-            $ref: './communications.yml#/components/schemas/Channel'
+            $ref: './communications.yml#/components/schemas/ChannelBasic'
         members:
           type: array
           items:
@@ -455,6 +502,20 @@ components:
           description: Items that are sub units of this unit.
           items:
             $ref: '#/components/schemas/UnitMicro'
+    UnitActivityFeed:
+      type: object
+      description: Social media style posts.
+      properties:
+        channel:
+          $ref: './communications.yml#/components/schemas/ChannelBasic'
+        pins:
+          type: array
+          description: Pinned posts
+          maxItems: 5
+          items:
+            $ref: './communications.yml#/components/schemas/PostTypes'
+        posts:
+          $ref: '#/components/schemas/UnitPosts'
     UnitBasic:
       type: object
       required:
@@ -560,17 +621,12 @@ components:
           type: string
           description: The name of the unit.
           readOnly: true
-    UnitPost:
-      type: object
-      properties:
-        title:
-          type: string
-        content:
-          type: string
-        effectiveDate:
-          $ref: './common.yml#/EffectiveDate'
-        effectiveDateRanges:
-          $ref: './common.yml#/EffectiveDateRanges'
+    UnitPosts:
+      type: array
+      description: All types of posts
+      maxItems: 50
+      items:
+        $ref: './communications.yml#/components/schemas/PostTypes'
     UnitTypeEnumValues:
       - retailer
       - team

@@ -27,6 +27,8 @@ x-tagGroups:
   - name: Unit Management
     tags:
       - Units
+      - Unit Activity Feed
+      - Unit Channels
       - Unit Members
       - Sub Units
 paths:
@@ -64,6 +66,12 @@ paths:
     $ref: './units.yml#/paths/units'
   /units/{unitId}:
     $ref: './units.yml#/paths/unit'
+  /units/{unitId}/activityFeed:
+    $ref: './units.yml#/paths/unitActivityFeed'
+  /units/{unitId}/channels:
+    $ref: './units.yml#/paths/unitChannels'
+  /units/{unitId}/channels/{userId}:
+    $ref: './units.yml#/paths/unitChannelsUser'
   /units/{unitId}/members:
     $ref: './units.yml#/paths/unitMembers'
   /units/{unitId}/members/{userId}:

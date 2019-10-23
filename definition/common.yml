@@ -188,6 +188,13 @@ Video:
       type: string
       description: The embed URL.
 
+parameterQueryBeforeDate:
+  name: beforeDate
+  description: Limit results to those that occur before this date.
+  in: query
+  schema:
+    type: string
+    format: date-time
 parameterEffectiveDate:
   name: effectiveDate
   description: The date and time to use as the effective date identifier. Defaults to the current date and time.  See the [effectiveDate docs](./docs.html) for more information.

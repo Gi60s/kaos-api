@@ -98,17 +98,12 @@ paths:
         - Network Hash Tags
       parameters:
         - $ref: '#/components/parameters/pathNetworkId'
+        - $ref: './common.yml#/parameterQueryBeforeDate'
         - name: hashTag
           in: path
           required: true
           schema:
             type: string
-        - name: beforeDate
-          description: Get posts for a specific hash tag that happened before the specific date.
-          in: query
-          schema:
-            type: string
-            format: date-time
       responses:
         200:
           description: A list of posts
@@ -150,17 +145,12 @@ paths:
         - Network Mentions
       parameters:
         - $ref: '#/components/parameters/pathNetworkId'
+        - $ref: './common.yml#/parameterQueryBeforeDate'
         - name: userId
           in: path
           required: true
           schema:
             type: string
-        - name: beforeDate
-          description: Get posts for a specific mention that happened before the specific date.
-          in: query
-          schema:
-            type: string
-            format: date-time
       responses:
         200:
           description: A list of posts

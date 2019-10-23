@@ -134,17 +134,7 @@ paths:
       parameters:
         - $ref: './common.yml#/parameterEffectiveDate'
         - $ref: './common.yml#/parameterEffectiveDateRange'
-        - name: postType
-          description: Limit returned results to a specific post type or types using a comma seperated list.
-          in: query
-          explode: false
-          schema:
-            type: array
-            items:
-              type: string
-              enum:
-                - post
-                - marketplacePost
+        - $ref: '#/components/parameters/queryPostType'
       responses:
         200:
           description: List of posts
@@ -272,6 +262,18 @@ components:
             - members
             - pins
             - posts
+    queryPostType:
+      name: postType
+      description: Limit returned results to a specific post type or types using a comma seperated list.
+      in: query
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - post
+            - marketplacePost
     queryUnitIds:
       name: unitId
       description: A comma seperated list of unit IDs to filter results to.
