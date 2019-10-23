@@ -25,6 +25,8 @@
       "tags": [
         "Networks",
         "Network Authorizations",
+        "Network Hash Tags",
+        "Network Mentions",
         "Network Venues"
       ]
     },
@@ -40,6 +42,8 @@
       "name": "Unit Management",
       "tags": [
         "Units",
+        "Unit Activity Feed",
+        "Unit Channels",
         "Unit Members",
         "Sub Units"
       ]
@@ -58,7 +62,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1users/get/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           },
           {
             "name": "unitId",
@@ -288,7 +292,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1users/get/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           },
           {
             "$ref": "#/paths/~1channels/get/parameters/3"
@@ -346,7 +350,23 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1users/get/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
+          },
+          {
+            "name": "postType",
+            "description": "Limit returned results to a specific post type or types using a comma seperated list.",
+            "in": "query",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "post",
+                  "marketplacePost"
+                ]
+              }
+            }
           }
         ],
         "responses": {
@@ -489,7 +509,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1users/get/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           }
         ],
         "requestBody": {
@@ -710,7 +730,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1users/get/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           }
         ],
         "responses": {
@@ -721,7 +741,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/paths/~1networks~1%7BnetworkId%7D/get/responses/200/content/application~1json/schema"
+                    "$ref": "#/paths/~1networks~1%7BnetworkId%7D/put/responses/200/content/application~1json/schema"
                   }
                 }
               }
@@ -744,7 +764,7 @@
                 ],
                 "properties": {
                   "accessibility": {
-                    "$ref": "#/paths/~1units/get/parameters/0/schema/allOf/0"
+                    "$ref": "#/paths/~1users/get/parameters/4/schema/allOf/0"
                   },
                   "name": {
                     "type": "string"
@@ -839,18 +859,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "basic": {
-                      "$ref": "#/paths/~1networks/post/requestBody/content/application~1json/schema"
-                    },
-                    "venuTypes": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
-                      }
-                    }
-                  }
+                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D/put/responses/200/content/application~1json/schema"
                 }
               }
             }
@@ -877,7 +886,181 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1networks~1%7BnetworkId%7D/get/responses/200/content/application~1json/schema"
+                  "type": "object",
+                  "properties": {
+                    "basic": {
+                      "$ref": "#/paths/~1networks/post/requestBody/content/application~1json/schema"
+                    },
+                    "venuTypes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1networks~1%7BnetworkId%7D~1venues/post/requestBody/content/application~1json/schema"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/networks/{networkId}/hashTags": {
+      "get": {
+        "description": "Get a list of hash tags on the network.",
+        "tags": [
+          "Network Hash Tags"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/paths/~1networks~1%7BnetworkId%7D/parameters/0"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of hash tags on the network.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "hashTag": {
+                        "type": "string"
+                      },
+                      "count": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/networks/{networkId}/hashTags/{hashTag}": {
+      "get": {
+        "description": "Get the posts linked to a specific hash tag.",
+        "tags": [
+          "Network Hash Tags"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/paths/~1networks~1%7BnetworkId%7D/parameters/0"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D~1activityFeed/get/parameters/3"
+          },
+          {
+            "name": "hashTag",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "$ref": "#/components/schemas/ChannelPost"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/networks/{networkId}/mentions": {
+      "get": {
+        "summary": "Summarize mentions",
+        "description": "Get a list of users mentioned on the network and the number of mentions per user.",
+        "tags": [
+          "Network Mentions"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/paths/~1networks~1%7BnetworkId%7D/parameters/0"
+          },
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units/get/parameters/2"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of mentions on the network.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ChannelPost/properties/user/allOf/1"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "count": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/networks/{networkId}/mentions/{userId}": {
+      "get": {
+        "description": "Get the posts linked to a specific user.",
+        "tags": [
+          "Network Mentions"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/paths/~1networks~1%7BnetworkId%7D/parameters/0"
+          },
+          {
+            "$ref": "#/paths/~1units~1%7BunitId%7D~1activityFeed/get/parameters/3"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "$ref": "#/components/schemas/ChannelPost"
+                  }
                 }
               }
             }
@@ -902,7 +1085,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1users/get/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           },
           {
             "name": "venueId",
@@ -1068,7 +1251,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1users/get/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           }
         ],
         "requestBody": {
@@ -1126,7 +1309,27 @@
             }
           },
           {
-            "$ref": "#/paths/~1users/get/parameters/1"
+            "name": "effectiveDateRange",
+            "description": "The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter. See the [effectiveDate docs](./docs.html) for more information.",
+            "in": "query",
+            "style": "deepObject",
+            "schema": {
+              "type": "object",
+              "required": [
+                "start",
+                "end"
+              ],
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "end": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
           },
           {
             "name": "fieldsets",
@@ -1144,6 +1347,8 @@
                 "type": "string",
                 "enum": [
                   "basic",
+                  "activityFeed",
+                  "channels",
                   "members",
                   "units"
                 ]
@@ -1168,18 +1373,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "type": "object",
-              "properties": {
-                "minimum": {
-                  "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
-                },
-                "maximum": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 100,
-                  "readOnly": true
-                }
-              }
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           },
           {
@@ -1188,7 +1382,18 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/5/schema"
+              "type": "object",
+              "properties": {
+                "minimum": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100,
+                  "readOnly": true
+                },
+                "maximum": {
+                  "$ref": "#/paths/~1users/get/parameters/5/schema/properties/minimum"
+                }
+              }
             }
           },
           {
@@ -1197,7 +1402,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/5/schema"
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           },
           {
@@ -1206,7 +1411,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/5/schema"
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           },
           {
@@ -1245,7 +1450,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
+                  "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema"
                 }
               }
             }
@@ -1262,33 +1467,9 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "required": [
-                  "basic"
-                ],
-                "properties": {
-                  "basic": {
-                    "$ref": "#/paths/~1units/post/responses/201/content/application~1json/schema/properties/basic"
-                  },
-                  "channels": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/paths/~1channels~1%7BchannelId%7D/put/requestBody/content/application~1json/schema"
-                    }
-                  },
-                  "members": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/put/responses/200/content/application~1json/schema"
-                    }
-                  },
-                  "units": {
-                    "type": "array",
-                    "description": "Items that are sub units of this unit.",
-                    "items": {
-                      "$ref": "#/components/schemas/ChannelPost/properties/mentions/items/oneOf/1"
-                    }
-                  }
+                "type": "array",
+                "items": {
+                  "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema"
                 }
               }
             }
@@ -1322,22 +1503,22 @@
                           "$ref": "#/components/schemas/ChannelPost/properties/uid"
                         },
                         "accessibility": {
-                          "$ref": "#/paths/~1units/get/parameters/0/schema/allOf/0"
+                          "$ref": "#/paths/~1users/get/parameters/4/schema/allOf/0"
                         },
                         "activityScore": {
-                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
+                          "$ref": "#/paths/~1users/get/parameters/5/schema/properties/minimum"
                         },
                         "banner": {
                           "$ref": "#/components/schemas/ChannelPost/properties/media/items/oneOf/0"
                         },
                         "contentQualityScore": {
-                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
+                          "$ref": "#/paths/~1users/get/parameters/5/schema/properties/minimum"
                         },
                         "email": {
                           "type": "string"
                         },
                         "freshnessScore": {
-                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
+                          "$ref": "#/paths/~1users/get/parameters/5/schema/properties/minimum"
                         },
                         "location": {
                           "$ref": "#/components/schemas/UnitTypeVenue/properties/location"
@@ -1379,7 +1560,7 @@
                           "pattern": "^\\+\\d+ \\d{3}-\\d{3}-\\d{4}$"
                         },
                         "qualityScore": {
-                          "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
+                          "$ref": "#/paths/~1users/get/parameters/5/schema/properties/minimum"
                         },
                         "shortDescription": {
                           "type": "string",
@@ -1462,7 +1643,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
+                  "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema"
                 }
               }
             }
@@ -1484,7 +1665,38 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
+                "type": "object",
+                "required": [
+                  "basic"
+                ],
+                "properties": {
+                  "basic": {
+                    "$ref": "#/paths/~1units/post/responses/201/content/application~1json/schema/properties/basic"
+                  },
+                  "activityFeed": {
+                    "$ref": "#/paths/~1units~1%7BunitId%7D~1activityFeed/get/responses/200/content/application~1json/schema"
+                  },
+                  "channels": {
+                    "type": "array",
+                    "description": "Conversational channels that are part of the unit.",
+                    "items": {
+                      "$ref": "#/paths/~1channels/post/requestBody/content/application~1json/schema"
+                    }
+                  },
+                  "members": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/put/responses/200/content/application~1json/schema"
+                    }
+                  },
+                  "units": {
+                    "type": "array",
+                    "description": "Items that are sub units of this unit.",
+                    "items": {
+                      "$ref": "#/components/schemas/ChannelPost/properties/mentions/items/oneOf/1"
+                    }
+                  }
+                }
               }
             }
           }
@@ -1495,7 +1707,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
+                  "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema"
                 }
               }
             }
@@ -1513,7 +1725,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1users/get/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           },
           {
             "$ref": "#/paths/~1units/get/parameters/3"
@@ -1523,7 +1735,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/paths/~1units/post/requestBody/content/application~1json/schema"
+                "$ref": "#/paths/~1units~1%7BunitId%7D/put/requestBody/content/application~1json/schema"
               }
             }
           }
@@ -1547,6 +1759,142 @@
         }
       }
     },
+    "/units/{unitId}/activityFeed": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Unit Activity Feed"
+        ],
+        "summary": "Get activity feed",
+        "parameters": [
+          {
+            "$ref": "#/paths/~1units/get/parameters/1"
+          },
+          {
+            "$ref": "#/paths/~1units/get/parameters/2"
+          },
+          {
+            "$ref": "#/paths/~1channels~1%7BchannelId%7D~1posts/get/parameters/2"
+          },
+          {
+            "name": "beforeDate",
+            "description": "Limit results to those that occur before this date.",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "includePins",
+            "description": "Whether to include pins object in the result.",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of posts made to the feed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Social media style posts.",
+                  "properties": {
+                    "channel": {
+                      "$ref": "#/paths/~1channels/post/requestBody/content/application~1json/schema"
+                    },
+                    "pins": {
+                      "type": "array",
+                      "description": "Pinned posts",
+                      "maxItems": 5,
+                      "items": {
+                        "$ref": "#/paths/~1channels~1%7BchannelId%7D~1posts/post/requestBody/content/application~1json/schema"
+                      }
+                    },
+                    "posts": {
+                      "type": "array",
+                      "description": "All types of posts",
+                      "maxItems": 50,
+                      "items": {
+                        "$ref": "#/paths/~1channels~1%7BchannelId%7D~1posts/post/requestBody/content/application~1json/schema"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/units/{unitId}/channels": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Unit Channels"
+        ],
+        "summary": "Get a list of channels",
+        "responses": {
+          "200": {
+            "description": "List of channels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1channels/post/requestBody/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/units/{unitId}/channels/{userId}": {
+      "parameters": [
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
+        },
+        {
+          "$ref": "#/paths/~1units~1%7BunitId%7D~1members~1%7BuserId%7D/parameters/1"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Unit Channels"
+        ],
+        "summary": "Get a list of user's channels",
+        "description": "Get a list of channels that this user is a member of.",
+        "responses": {
+          "200": {
+            "description": "List of channels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1channels/post/requestBody/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/units/{unitId}/members": {
       "parameters": [
         {
@@ -1564,7 +1912,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "$ref": "#/paths/~1users/get/parameters/1"
+            "$ref": "#/paths/~1units/get/parameters/2"
           },
           {
             "name": "userId",
@@ -1731,8 +2079,8 @@
           "$ref": "#/paths/~1units~1%7BunitId%7D/parameters/0"
         },
         {
-          "in": "path",
           "name": "userId",
+          "in": "path",
           "required": true,
           "schema": {
             "type": "string"
@@ -1932,27 +2280,7 @@
             "$ref": "#/paths/~1units/get/parameters/1"
           },
           {
-            "name": "effectiveDateRange",
-            "description": "The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter. See the [effectiveDate docs](./docs.html) for more information.",
-            "in": "query",
-            "style": "deepObject",
-            "schema": {
-              "type": "object",
-              "required": [
-                "start",
-                "end"
-              ],
-              "properties": {
-                "start": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "end": {
-                  "type": "string",
-                  "format": "date-time"
-                }
-              }
-            }
+            "$ref": "#/paths/~1units/get/parameters/2"
           },
           {
             "name": "fieldsets",
@@ -2027,7 +2355,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/5/schema"
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           },
           {
@@ -2036,7 +2364,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/5/schema"
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           },
           {
@@ -2045,7 +2373,7 @@
             "in": "query",
             "style": "deepObject",
             "schema": {
-              "$ref": "#/paths/~1units/get/parameters/5/schema"
+              "$ref": "#/paths/~1units/get/parameters/6/schema"
             }
           }
         ],
@@ -2127,7 +2455,7 @@
                     "$ref": "#/components/schemas/ChannelPost/properties/uid"
                   },
                   "accessibility": {
-                    "$ref": "#/paths/~1units/get/parameters/0/schema/allOf/0"
+                    "$ref": "#/paths/~1users/get/parameters/4/schema/allOf/0"
                   },
                   "avatar": {
                     "$ref": "#/components/schemas/ChannelPost/properties/media/items/oneOf/0"
@@ -2170,7 +2498,7 @@
                   "freshnessScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
+                        "$ref": "#/paths/~1users/get/parameters/5/schema/properties/minimum"
                       },
                       {
                         "type": "integer",
@@ -2181,7 +2509,7 @@
                   "qualityScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
+                        "$ref": "#/paths/~1users/get/parameters/5/schema/properties/minimum"
                       },
                       {
                         "type": "integer",
@@ -2192,7 +2520,7 @@
                   "contentQualityScore": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1units/get/parameters/5/schema/properties/maximum"
+                        "$ref": "#/paths/~1users/get/parameters/5/schema/properties/minimum"
                       },
                       {
                         "type": "integer",
@@ -2347,7 +2675,7 @@
                     "type": "string"
                   },
                   "accessibility": {
-                    "$ref": "#/paths/~1units/get/parameters/0/schema/allOf/0"
+                    "$ref": "#/paths/~1users/get/parameters/4/schema/allOf/0"
                   },
                   "birthdate": {
                     "type": "string",
@@ -2487,8 +2815,15 @@
                   "$ref": "#/components/schemas/ChannelPost/properties/uid"
                 },
                 "body": {
-                  "description": "Plain text",
-                  "type": "string"
+                  "type": "object",
+                  "properties": {
+                    "richText": {
+                      "type": "string"
+                    },
+                    "plainText": {
+                      "type": "string"
+                    }
+                  }
                 },
                 "deleted": {
                   "type": "boolean",
@@ -2731,6 +3066,7 @@
               },
               "tags": {
                 "type": "array",
+                "description": "Categorization information, such as make and model of an item.",
                 "items": {
                   "type": "string"
                 }
@@ -2825,21 +3161,6 @@
             "type": "object",
             "properties": {
               "sunday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
-              },
-              "monday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
-              },
-              "tuesday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
-              },
-              "wednesday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
-              },
-              "thursday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
-              },
-              "friday": {
                 "type": "array",
                 "items": {
                   "type": "object",
@@ -2855,8 +3176,23 @@
                   }
                 }
               },
+              "monday": {
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
+              },
+              "tuesday": {
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
+              },
+              "wednesday": {
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
+              },
+              "thursday": {
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
+              },
+              "friday": {
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
+              },
               "saturday": {
-                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/friday"
+                "$ref": "#/components/schemas/UnitTypeVenue/properties/hoursOfOperation/properties/sunday"
               }
             }
           },
