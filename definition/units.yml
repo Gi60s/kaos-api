@@ -228,6 +228,9 @@ paths:
         - $ref: './common.yml#/parameterEffectiveDate'
         - $ref: './common.yml#/parameterEffectiveDateRange'
         - $ref: '#/components/parameters/queryFilterUserId'
+        - $ref: './users.yml#/components/parameters/queryFreshnessScore'
+        - $ref: './users.yml#/components/parameters/queryQualityScore'
+        - $ref: './users.yml#/components/parameters/queryContentQualityScore'
         - name: includeInherited
           description: Whether to include inherited members.
           in: query
@@ -425,13 +428,9 @@ components:
         type: object
         properties:
           set:
-            type: array
-            items:
-              $ref: '#/components/schemas/AuthorizationAttribute'
+            $ref: '#/components/schemas/AuthorizationAttributes'
           remove:
-            type: array
-            items:
-              $ref: '#/components/schemas/AuthorizationAttribute'
+            $ref: '#/components/schemas/AuthorizationAttributes'
           effectiveDate:
             $ref: './common.yml#/EffectiveDate'
           userId:
@@ -440,9 +439,7 @@ components:
       type: object
       properties:
         attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/AuthorizationAttribute'
+          $ref: '#/components/schemas/AuthorizationAttributes'
         effectiveDate:
           $ref: './common.yml#/EffectiveDate'
     putMembersAttributes:
@@ -451,9 +448,7 @@ components:
         type: object
         properties:
           attributes:
-            type: array
-            items:
-              $ref: '#/components/schemas/AuthorizationAttribute'
+            $ref: '#/components/schemas/AuthorizationAttributes'
           effectiveDate:
             $ref: './common.yml#/EffectiveDate'
           userId:
@@ -461,11 +456,21 @@ components:
   schemas:
     AuthorizationAttribute:
       type: string
+      enum:
+        - contributer
+        - channel manager
+        - event manager
+        - moderator
+        - user manager
+    AuthorizationAttributes:
+      type: array
       description: "Authorization attributes may be one of the following values:
 
-        - **contributer** - Can make posts as well as edit and delete own posts.
+        - **channel creator** - Can create channels and edit or delete own channels.
 
-        - **channel manager** - Can create, edit, and delete channel. Can see all channels and their posts. Can modify channel membership for any channel.
+        - **channel manager** - Can create, edit, and delete channels. Can set channel membership for any channel.
+          Not a member of every channel nor authorized to do anything within a channel unless given additional
+          authorization attributes within that channel, which the manager can give to themselves.
 
         - **event manager** - Coming soon
 
@@ -473,12 +478,8 @@ components:
 
         - **user manager** - Can add or remove users and set authorization attributes to other users.
         "
-      enum:
-        - contributer
-        - channel manager
-        - event manager
-        - moderator
-        - user manager
+      items:
+        $ref: '#/components/schemas/AuthorizationAttribute'
     Unit:
       type: object
       required:
@@ -487,7 +488,12 @@ components:
         basic:
           $ref: '#/components/schemas/UnitBasic'
         activityFeed:
-          $ref: '#/components/schemas/UnitActivityFeed'
+          allOf:
+            - $ref: '#/components/schemas/UnitActivityFeed'
+            - type: object
+              description: "All unit members have follower access to the activity
+                feed channel. If marked as private then users who are not members
+                of the unit cannot follow the unit's activity feed."
         channels:
           type: array
           description: Conversational channels that are part of the unit.

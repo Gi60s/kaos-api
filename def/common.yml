@@ -1,0 +1,82 @@
+parameters:
+  Accessibility:
+    name: accessibility
+    description: Filter based on accessibility
+    in: query
+    style: deepObject
+    schema:
+      allOf:
+        - $ref: './common.yml#/Accessibility'
+        - type: object
+          default:
+            discoverable: true
+            public: true
+  EffectiveDate:
+    name: effectiveDate
+    description: The date and time to use as the effective date identifier. Defaults to the current date and time.  See the [effectiveDate docs](./docs.html) for more information.
+    in: query
+    schema:
+      type: string
+      format: date-time
+  EffectiveDateRange:
+    name: effectiveDateRange
+    description: The start date-time and end date-time to use for the effective date identifier. Specifying this parameter will overwrite the effectiveDate query parameter. See the [effectiveDate docs](./docs.html) for more information.
+    in: query
+    style: deepObject
+    schema:
+      type: object
+      required:
+        - start
+        - end
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+schemas:
+  Accessibility:
+    description: How accessible the data is.
+    type: object
+    properties:
+      discoverable:
+        description: Whether the data can be found through a public search.
+        type: boolean
+      public:
+        description: Wehter the value is public when addressed directly.
+        type: boolean
+  Image:
+    type: object
+    properties:
+      id:
+        $ref: '#/Uid/ReadOnly'
+      description:
+        type: string
+      mediaType:
+        type: string
+        enum:
+          - image
+      small:
+        description: The URL to the small image.
+        type: string
+      medium:
+        description: The URL to the medium image.
+        type: string
+      large:
+        description: The URL to the large image.
+        type: string
+      title:
+        type: string
+  Uid:
+    ReadOnly:
+      description: Unique identifier (UUID v1, date-time and MAC address)
+      type: string
+      readOnly: true
+    ReadWrite:
+      description: Unique identifier (UUID v1, date-time and MAC address)
+      type: string
+    WriteOnly:
+      description: Unique identifier (UUID v1, date-time and MAC address)
+      type: string
+      writeOnly: true

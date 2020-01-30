@@ -9,6 +9,7 @@ x-tagGroups:
       - Channels
       - Channel Members
       - Posts
+      - Pins
   - name: Locations
     tags:
       - Locations
@@ -38,10 +39,12 @@ paths:
     $ref: './communications.yml#/paths/channel'
   /channels/{channelId}/posts:
     $ref: './communications.yml#/paths/channelPosts'
+  /channels/{channelId}/members:
+    $ref: './communications.yml#/paths/channelMembers'
+  /channels/{channelId}/pins/{postId}:
+    $ref: './communications.yml#/paths/channelPins'
   /channels/{channelId}/posts/{postId}:
     $ref: './communications.yml#/paths/channelPost'
-  /channels/{channelId}/members/{userId}:
-    $ref: './communications.yml#/paths/channelMembers'
   /locations:
     $ref: './locations.yml#/paths/locations'
   /locations/{locationId}:
@@ -90,6 +93,10 @@ components:
       $ref: './communications.yml#/components/schemas/Post'
     ChannelMarketplacePost:
       $ref: './communications.yml#/components/schemas/MarketplacePost'
+    MediaImage:
+      $ref: './common.yml#/Image'
+    MediaVideo:
+      $ref: './common.yml#/Video'
     UnitTypeRetailer:
       $ref: './units.yml#/components/schemas/UnitTypeRetailer'
     UnitTypeTeam:

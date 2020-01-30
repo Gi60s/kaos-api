@@ -17,24 +17,9 @@ paths:
             items:
               type: string
         - $ref: './common.yml#/parameterQueryAccessibility'
-        - name: freshnessScore
-          description: Filter on freshness score range.
-          in: query
-          style: deepObject
-          schema:
-            $ref: './common.yml#/SocialScoreRange'
-        - name: qualityScore
-          description: Filter on quality score range.
-          in: query
-          style: deepObject
-          schema:
-            $ref: './common.yml#/SocialScoreRange'
-        - name: contentQualityScore
-          description: Filter on content quality score range.
-          in: query
-          style: deepObject
-          schema:
-            $ref: './common.yml#/SocialScoreRange'
+        - $ref: '#/components/parameters/queryFreshnessScore'
+        - $ref: '#/components/parameters/queryQualityScore'
+        - $ref: '#/components/parameters/queryContentQualityScore'
       responses:
         200:
           description: A list of users
@@ -189,6 +174,27 @@ components:
             - personal
             - posts
             - units
+    queryFreshnessScore:
+      name: freshnessScore
+      description: Filter on freshness score range.
+      in: query
+      style: deepObject
+      schema:
+        $ref: './common.yml#/SocialScoreRange'
+    queryQualityScore:
+      name: qualityScore
+      description: Filter on quality score range.
+      in: query
+      style: deepObject
+      schema:
+        $ref: './common.yml#/SocialScoreRange'
+    queryContentQualityScore:
+      name: contentQualityScore
+      description: Filter on content quality score range.
+      in: query
+      style: deepObject
+      schema:
+        $ref: './common.yml#/SocialScoreRange'
   schemas:
     Credentials:
       type: object

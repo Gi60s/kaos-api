@@ -1,0 +1,46 @@
+Discoverable:
+  x-field-name: discoverable
+  description: Whether the value can be found through a public search.
+  type: boolean
+
+ContentQualityScore:
+  allOf:
+    - $ref: './common.yml#/SocialScore'
+    - x-field-name: contentQualityScore
+      type: object
+      description: How active and up to date content is and how well it is responded to.
+
+FreshnessScore:
+  allOf:
+    - $ref: './common.yml#/SocialScore'
+    - x-field-name: freshnessScore
+      type: object
+      description: How active and up to date content is.
+
+PhoneNumber:
+  x-field-name: phoneNumber
+  description: An internationally formatted telephone number.
+  type: string
+  pattern: ^\+\d+ \d{3}-\d{3}-\d{4}$
+
+Public:
+  x-field-name: public
+  description: Whether the value is public when addressed directly.
+  type: boolean
+
+QualityScore:
+  allOf:
+    - $ref: './common.yml#/SocialScore'
+    - x-field-name: qualityScore
+      type: object
+      description: The quality of identifying data, representing the confidence in the accuracy of the identifying data.
+
+Uid1:
+  description: Unique identifier (UUID v1, date-time and MAC address)
+  type: string
+
+VanityUrl:
+  x-field-name: vanityUrl
+  description: A unique custom URL identifier for a resource. Allowed characters include letters, numbers, dashes, and underscores.
+  type: string
+  pattern: ^[a-zA-Z_-]+$

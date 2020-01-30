@@ -1,0 +1,200 @@
+openapi: 3.0.2
+info:
+  title: K.A.O.S. Users API
+  version: v1
+paths:
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get a list of users.
+      parameters:
+        - $ref: './common.yml#/parameters/EffectiveDate'
+        - $ref: './common.yml#/parameters/EffectiveDateRange'
+        - $ref: '#/components/parameters/FieldSet'
+        - name: 'userId'
+          in: query
+          description: Filter results to the specific user ids.
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+        - $ref: './common.yml#/parameter/Accessibility'
+        - $ref: '#/components/parameters/FreshnessScore'
+        - $ref: '#/components/parameters/QualityScore'
+        - $ref: '#/components/parameters/ContentQualityScore'
+      responses:
+        200:
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    post:
+      tags:
+        - Users
+      summary: Create a new user account.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - captchaToken
+                - email
+                - displayName
+                - password
+              properties:
+                captchaToken:
+                  type: string
+                displayName:
+                  $ref: '#/components/schemas/UserBasic/properties/displayName'
+                email:
+                  $ref: '#/components/schemas/UserPersonal/properties/email'
+                password:
+                  type: string
+      responses:
+        200:
+          description: New user created.
+          headers:
+            Location:
+              description: The URL to GET the resource from.
+              schema:
+                type: string
+                default: '{domain}/users/{userId}'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBasic'
+components:
+  parameters:
+    ContentQualityScore:
+      name: contentQualityScore
+      description: Filter on content quality score range.
+      in: query
+      style: deepObject
+      schema:
+        $ref: './common.yml#/schemas/SocialScoreRange'
+    FreshnessScore:
+      name: freshnessScore
+      description: Filter on freshness score range.
+      in: query
+      style: deepObject
+      schema:
+        $ref: './common.yml#/schemas/SocialScoreRange'
+    QualityScore:
+      name: qualityScore
+      description: Filter on quality score range.
+      in: query
+      style: deepObject
+      schema:
+        $ref: './common.yml#/schemas/SocialScoreRange'
+  schemas:
+    User:
+      type: object
+      properties:
+        basic:
+          $ref: '#/components/schemas/UserBasic'
+        personal:
+          $ref: '#/components/schemas/UserPersonal'
+        micro:
+          $ref: '#/components/schemas/UserMicro'
+    UserBasic:
+      type: object
+      required:
+        - displayName
+      properties:
+        uid:
+          allOf:
+            - $ref: './common.yml#/schemas/Uid'
+            - description: The unique ID associated with this user
+              type: object
+        accessibility:
+          $ref: 'common.yml#/schemas/Accessibility'
+        avatar:
+          $ref: 'common.yml#/schemas/Image'
+        contentQualityScore:
+          allOf:
+            - $ref: './common.yml#/SocialScore'
+            - description: Quality of a units content. Are their posts relevant? Do they have images, how many likes, how many comments. Have posts been reported as bad or inappropriate content.
+              type: integer
+              readOnly: true
+        displayName:
+          description: The publicly displayed name for this user.
+          type: string
+        effectiveDate:
+          $ref: './common.yml#/EffectiveDate'
+        effectiveDateRanges:
+          $ref: './common.yml#/EffectiveDateRanges'
+        freshnessScore:
+          allOf:
+            - $ref: './common.yml#/SocialScore'
+            - description: How active the user is, how often the log in, how often they interact.
+              type: integer
+              readOnly: true
+        longDescription:
+          description: A longer description that a user can add for themself.
+          type: string
+        networks:
+          description: The networks that the user currently has an account with.
+          type: array
+          readOnly: true
+          items:
+            type: string
+        qualityScore:
+          allOf:
+            - $ref: './common.yml#/SocialScore'
+            - description: Quality of a user's identifying data. The more information the unit has filled out (phone, address, logo, about, etc) the higher the quality.
+              type: integer
+              readOnly: true
+        shortDescription:
+          description: A short description that a user can add for themself.
+          type: string
+          maxLength: 500
+        vanityUrlPath:
+          description: The URL to the user's own page within the networks.
+          type: string
+        website:
+          description: A URL to the user's own external website.
+          type: string
+    UserMicro:
+      type: object
+      properties:
+        uid:
+          $ref: '#/components/schemas/UserBasic/properties/uid'
+        avatar:
+          $ref: '#/components/schemas/UserBasic/properties/avatar'
+        displayName:
+          $ref: '#/components/schemas/UserBasic/properties/displayName'
+    UserPersonal:
+      type: object
+      description: Personal fieldset data
+      properties:
+        uid:
+          allOf:
+            - $ref: './common.yml#/schemas/Uid'
+            - description: The unique ID associated with this user
+              type: object
+        accessibility:
+          $ref: './common.yml#/components/schemas/Accessibility'
+        birthdate:
+          type: string
+          format: date
+        birthdateVerified:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        nameVerified:
+          type: boolean
+        email:
+          type: string
+          format: email
+        emailVerified:
+          type: boolean
+        location:
+          $ref: './locations.yml#/components/schemas/Location'
+        locationVerified:
+          type: boolean

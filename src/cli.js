@@ -8,7 +8,7 @@ const [ command, ...args ] = Array.from(process.argv).slice(2)
 
 if (command === 'serve') {
   const [ source, port ] = args
-  Server({ source, port: port || 0 })
+  Server({ source, port: +port || 0 })
 } else if (command === 'build') {
   const [ source ] = args
   const builder = Builder(source)

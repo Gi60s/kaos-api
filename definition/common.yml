@@ -2,9 +2,9 @@ Accessibility:
   type: object
   properties:
     discoverable:
-      type: boolean
+      $ref: './fields.yml#/Discoverable'
     public:
-      type: boolean
+      $ref: './fields.yml#/Public'
 AuthorizationAttributes:
   description: The authorization attributes applied to the user in the context of the network and portfolio.
   type: array
@@ -96,6 +96,12 @@ Image:
   properties:
     id:
       $ref: '#/Uid2'
+    description:
+      type: string
+    mediaType:
+      type: string
+      enum:
+        - image
     small:
       description: The URL to the small image.
       type: string
@@ -106,8 +112,6 @@ Image:
       description: The URL to the large image.
       type: string
     title:
-      type: string
-    description:
       type: string
 Member:
   allOf:
@@ -170,6 +174,10 @@ Uid2:
 Uid2Write:
   description: Unique identifier (UUID v1, date-time and MAC address)
   type: string
+Uid2WriteOnly:
+  description: Unique identifier (UUID v1, date-time and MAC address)
+  type: string
+  writeOnly: true
 Uid4:
   description: Unique identifier (UUID v4, random)
   type: string
@@ -179,6 +187,10 @@ Video:
   properties:
     id:
       $ref: '#/Uid2'
+    mediaType:
+      type: string
+      enum:
+        - video
     provider:
       type: string
       enum:
@@ -190,7 +202,10 @@ Video:
 
 parameterQueryBeforeDate:
   name: beforeDate
-  description: Limit results to those that occur before this date.
+  description: "Limit results to those that occur at or before this date and time.
+    This is useful for retrieving historical data and pagination. If using pagination
+    there is a small possibility of returning data that you've already received
+    so you'll need to check that the results are new."
   in: query
   schema:
     type: string

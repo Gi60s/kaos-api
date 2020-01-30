@@ -10,6 +10,7 @@ paths:
         - $ref: './common.yml#/parameterEffectiveDateRange'
         - $ref: '#/components/parameters/queryUnitIds'
         - $ref: '#/components/parameters/queryFieldSet'
+        - $ref: '#/components/parameters/queryChannelId'
       responses:
         200:
           description: A list of channels.
@@ -108,21 +109,19 @@ paths:
   channelMembers:
     parameters:
       - $ref: '#/components/parameters/pathChannelId'
-      - $ref: '#/components/parameters/pathUserIds'
     put:
-      summary: Add members to channel
+      summary: Set members
+      description: Set members and authorizations for the channel
       tags:
         - Channel Members
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelMembersSet'
       responses:
         204:
-          description: Members added
-    delete:
-      summary: Remove members from channel
-      tags:
-        - Channel Members
-      responses:
-        204:
-          description: Members removed
+          description: Members set
   channelPosts:
     parameters:
       - $ref: '#/components/parameters/pathChannelId'
@@ -134,7 +133,9 @@ paths:
       parameters:
         - $ref: './common.yml#/parameterEffectiveDate'
         - $ref: './common.yml#/parameterEffectiveDateRange'
+        - $ref: './common.yml#/parameterQueryBeforeDate'
         - $ref: '#/components/parameters/queryPostType'
+        - $ref: '#/components/parameters/queryPostId'
       responses:
         200:
           description: List of posts
@@ -220,7 +221,26 @@ paths:
       responses:
         204:
           description: Post removed
-
+  channelPins:
+    parameters:
+      - $ref: '#/components/parameters/pathChannelId'
+      - $ref: '#/components/parameters/pathPostId'
+    put:
+      summary: Pin a post
+      description: Pin a post to the channel.
+      tags:
+        - Pins
+      responses:
+        200:
+          description: Post pinned.
+    delete:
+      summary: Unpin a post
+      description: Unpin a post from the channel.
+      tags:
+        - Pins
+      responses:
+        200:
+          description: Post unpinned.
 components:
   parameters:
     pathChannelId:
@@ -245,6 +265,13 @@ components:
         type: array
         items:
           type: string
+    queryChannelId:
+      name: channelId
+      in: query
+      description: The ID of the channel to limit results to. This is effective for getting the effective date ranges for a specific channel.
+      required: true
+      schema:
+        $ref: './common.yml#/Uid2'
     queryFieldSet:
       name: fieldsets
       description: Specify which fieldsets to return.
@@ -262,6 +289,12 @@ components:
             - members
             - pins
             - posts
+    queryPostId:
+      name: postId
+      in: query
+      description: The ID of the post to limit results to. This is effective for getting the effective date ranges for a specific post.
+      schema:
+        $ref: './common.yml#/Uid2'
     queryPostType:
       name: postType
       description: Limit returned results to a specific post type or types using a comma seperated list.
@@ -302,7 +335,7 @@ components:
           type: array
           description: All members of this channel
           items:
-            $ref: './users.yml#/components/schemas/UserMicro'
+            $ref: '#/components/schemas/ChannelMember'
         pins:
           description: Most recently pinned posts
           type: array
@@ -326,6 +359,7 @@ components:
           type: string
         private:
           type: boolean
+          description: A private channel can be joined by invite only and is not found via search except by channel managers.
         unit:
           allOf:
             - type: object
@@ -335,6 +369,46 @@ components:
           $ref: './common.yml#/EffectiveDate'
         effectiveDateRanges:
           $ref: './common.yml#/EffectiveDateRanges'
+    ChannelMember:
+      allOf:
+        - $ref: './users.yml#/components/schemas/UserMicro'
+        - type: object
+          properties:
+            authorizationAttributes:
+              $ref: '#/components/schemas/ChannelMemberAuthorizations'
+    ChannelMemberAuthorizations:
+      type: array
+      description: "Channel authorization attributes. When setting a member
+        with no authorization attributes it is the same as removing the member.
+
+      - **follower** - Can see posts and comments but not add posts, comments, or reactions.
+
+      - **contributer** - Can make posts, comments, and reactions as well as edit and delete own content.
+
+      - **moderator** can see posts and edit or delete existing posts.
+
+      - **user manager** - Can add or remove users and set authorization attributes to other users.
+
+      - **channel manager** - Can set channel basic info."
+      items:
+        type: string
+        enum:
+          - channel manager
+          - contributer
+          - follower
+          - moderator
+          - user manager
+    ChannelMembersSet:
+      type: array
+      items:
+        type: object
+        properties:
+          authorizationAttributes:
+            $ref: '#/components/schemas/ChannelMemberAuthorizations'
+          effectiveDate:
+            $ref: './common.yml#/EffectiveDate'
+          userId:
+            $ref: './common.yml#/Uid2Write'
     ChannelMicro:
       type: object
       properties:
@@ -348,12 +422,12 @@ components:
         uid:
           $ref: './common.yml#/Uid2'
         body:
-          type: object
-          properties:
-            richText:
-              type: string
-            plainText:
-              type: string
+          type: string
+          description: Rich text representation of the message.
+        bodyPlain:
+          type: string
+          description: Plain text representation of the message.
+          readOnly: true
         deleted:
           type: boolean
           description: Whether this comment has been deleted.
@@ -379,17 +453,17 @@ components:
           type: boolean
           description: Set to `false` to disable future comments and hide current comments.
         body:
-          type: object
-          properties:
-            richText:
-              type: string
-            plainText:
-              type: string
+          type: string
+          description: Rich text representation of the message.
+        bodyPlain:
+          type: string
+          description: Plain text representation of the message.
+          readOnly: true
         channels:
           type: array
-          description: The channels that the post was made to.
+          description: The channel ID's that the post was made to.
           items:
-            $ref: '#/components/schemas/ChannelMicro'
+            $ref: './common.yml#/Uid2Write'
         comments:
           type: array
           description: Comments on this post.
@@ -407,6 +481,11 @@ components:
             oneOf:
               - $ref: './common.yml#/Image'
               - $ref: './common.yml#/Video'
+            discriminator:
+              propertyName: mediaType
+              mapping:
+                image: '#/components/schemas/MediaImage'
+                video: '#/components/schemas/MediaVideo'
         reactions:
           $ref: './common.yml#/Reactions'
         distributionCount:
@@ -428,13 +507,8 @@ components:
               - $ref: './units.yml#/components/schemas/UnitMicro'
           readOnly: true
         pinned:
-          type: object
-          nullable: true
-          properties:
-            effectiveDate:
-              $ref: './common.yml#/EffectiveDate'
-            pinnedBy:
-              $ref: './users.yml#/components/schemas/UserMicro'
+          type: boolean
+          default: false
         postType:
           type: string
           enum:
@@ -443,10 +517,13 @@ components:
         title:
           type: string
         user:
+          readOnly: true
           allOf:
             - type: object
               description: The user who made the post.
             - $ref: './users.yml#/components/schemas/UserMicro'
+        userId:
+          $ref: './common.yml#/Uid2WriteOnly'
         effectiveDate:
           $ref: './common.yml#/EffectiveDate'
         effectiveDateRange:
