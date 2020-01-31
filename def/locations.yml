@@ -1,0 +1,182 @@
+openapi: 3.0.2
+info:
+  title: K.A.O.S. Locations API
+  version: 1.0
+paths:
+  /locations:
+    get:
+      tags:
+        - Locations
+      summary: List locations
+      description: Get a list of all locations. The users and units returned in the results will be limited to the access you have.
+      parameters:
+        - $ref: '#/components/parameters/queryFieldSet'
+        - name: area
+          in: query
+          description: The area to limit results to.
+          style: deepObject
+          schema:
+            type: object
+            properties:
+              northLatitude:
+                $ref: '#/components/schemas/Latitude'
+              eastLongitude:
+                $ref: '#/components/schemas/Longitude'
+              southLatitude:
+                $ref: '#/components/schemas/Latitude'
+              westLongitude:
+                $ref: '#/components/schemas/Longitude'
+        - name: country
+          in: query
+          description: The country to limit results to.
+          schema:
+            type: string
+        - name: postalCode
+          in: query
+          description: The postal code to limit results to.
+          schema:
+            type: string
+        - name: province
+          in: query
+          description: The province to limit results to.
+          schema:
+            type: string
+      responses:
+        200:
+          description: All locations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+  /locations/{locationId}:
+    parameters:
+      - $ref: '#/components/parameters/locationId'
+    get:
+      tags:
+        - Locations
+      summary: Get a location
+      description: Get a specific location. The users and units returned in the results will be limited to the access you have.
+      parameters:
+        - $ref: '#/components/parameters/queryFieldSet'
+      responses:
+        200:
+          description: A single location.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+components:
+  parameters:
+    locationId:
+      name: locationId
+      in: path
+      required: true
+      schema:
+        type: string
+    queryFieldSet:
+      name: fieldsets
+      description: Specify which fieldsets to return.
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        default: ['basic']
+        minItems: 1
+        items:
+          type: string
+          enum:
+            - basic
+            - units
+            - users
+  schemas:
+    Location:
+      type: object
+      properties:
+        basic:
+          $ref: '#/components/schemas/LocationBasic'
+        units:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationUnits'
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationUsers'
+    LocationBasic:
+      type: object
+      required:
+      - locationId
+      - latitude
+      - longitude
+      properties:
+        uid:
+          $ref: './common.yml#/schemas/UidRead'
+        addressLine1:
+          type: string
+          example: 1234 Mountain St
+        addressLine2:
+          type: string
+        addressLine4:
+          type: string
+        addressLine5:
+          type: string
+        country:
+          type: string
+          description: The name of the country.
+        latitude:
+          $ref: '#/components/schemas/Latitude'
+        locality:
+          type: string
+          description: The name of the city or town.
+        longitude:
+          $ref: '#/components/schemas/Longitude'
+        postalCode:
+          type: string
+        province:
+          type: string
+          description: The name of the province or state.
+    LocationUnits:
+      type: object
+      # properties:
+      #   uid:
+      #     $ref: './units.yml#/components/schemas/UnitBasic/properties/uid'
+      #   name:
+      #     $ref: './units.yml#/components/schemas/UnitBasic/properties/name'
+      #   shortDescription:
+      #     $ref: './units.yml#/components/schemas/UnitBasic/properties/shortDescription'
+      #   logo:
+      #     $ref: './units.yml#/components/schemas/UnitBasic/properties/logo'
+    LocationUsers:
+      type: object
+      properties:
+        uid:
+          $ref: './users.yml#/components/schemas/UserBasic/properties/uid'
+        displayName:
+          $ref: './users.yml#/components/schemas/UserBasic/properties/displayName'
+        avatar:
+          $ref: './users.yml#/components/schemas/UserBasic/properties/avatar'
+        firstName:
+          $ref: './users.yml#/components/schemas/UserPersonal/properties/firstName'
+        lastName:
+          $ref: './users.yml#/components/schemas/UserPersonal/properties/lastName'
+    Latitude:
+      type: number
+      minimum: -90
+      maximum: 90
+    Longitude:
+      type: number
+      minimum: -180
+      maximum: 180
+    LongLat:
+      type: object
+      required:
+      - latitude
+      - longitude
+      properties:
+        latitude:
+          $ref: '#/components/schemas/Latitude'
+        longitude:
+          $ref: '#/components/schemas/Longitude'

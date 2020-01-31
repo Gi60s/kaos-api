@@ -7,11 +7,11 @@ paths:
     get:
       tags:
         - Users
-      summary: Get a list of users.
+      summary: List users
       parameters:
         - $ref: './common.yml#/parameters/EffectiveDate'
         - $ref: './common.yml#/parameters/EffectiveDateRange'
-        - $ref: '#/components/parameters/FieldSet'
+        - $ref: '#/components/parameters/Fieldsets'
         - name: 'userId'
           in: query
           description: Filter results to the specific user ids.
@@ -20,7 +20,7 @@ paths:
             type: array
             items:
               type: string
-        - $ref: './common.yml#/parameter/Accessibility'
+        - $ref: './common.yml#/parameters/Accessibility'
         - $ref: '#/components/parameters/FreshnessScore'
         - $ref: '#/components/parameters/QualityScore'
         - $ref: '#/components/parameters/ContentQualityScore'
@@ -30,11 +30,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        400:
+          description: Bad request
+        401:
+          description: Unauthroized
+        403:
+          description: Forbidden
+        500:
+          description: Internal server error
     post:
       tags:
         - Users
-      summary: Create a new user account.
+      summary: Create user
       requestBody:
         content:
           application/json:
@@ -55,10 +65,10 @@ paths:
                 password:
                   type: string
       responses:
-        200:
+        201:
           description: New user created.
           headers:
-            Location:
+            location:
               description: The URL to GET the resource from.
               schema:
                 type: string
@@ -67,6 +77,111 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserBasic'
+        400:
+          description: Bad request
+        500:
+          description: Internal server error
+  /users/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    get:
+      tags:
+        - Users
+      summary: Get user
+      parameters:
+        - $ref: './common.yml#/parameters/EffectiveDate'
+        - $ref: '#/components/parameters/Fieldsets'
+      responses:
+        200:
+          description: User retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+    put:
+      tags:
+        - Users
+      summary: Update user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserBasic'
+      responses:
+        200:
+          description: User basic data updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBasic'
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      description: This will delete all information associated with a user.
+      responses:
+        204:
+          description: Deleted
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+  /users/{userId}/personal:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    put:
+      tags:
+        - Users
+      summary: Update personal
+      description: Update a users personal information.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPersonal'
+      responses:
+        200:
+          description: User personal data updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPersonal'
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        500:
+          description: Internal server error
 components:
   parameters:
     ContentQualityScore:
@@ -76,6 +191,20 @@ components:
       style: deepObject
       schema:
         $ref: './common.yml#/schemas/SocialScoreRange'
+    Fieldsets:
+      name: fieldsets
+      description: The fieldsets to limit results to.
+      in: query
+      schema:
+        type: array
+        default: ['basic']
+        items:
+          type: string
+          enum:
+            - basic
+            - micro
+            - personal
+            - units
     FreshnessScore:
       name: freshnessScore
       description: Filter on freshness score range.
@@ -90,6 +219,12 @@ components:
       style: deepObject
       schema:
         $ref: './common.yml#/schemas/SocialScoreRange'
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        $ref: './common.yml#/schemas/Uid'
   schemas:
     User:
       type: object
@@ -100,39 +235,30 @@ components:
           $ref: '#/components/schemas/UserPersonal'
         micro:
           $ref: '#/components/schemas/UserMicro'
+        units:
+          $ref: '#/components/schemas/UserUnits'
     UserBasic:
       type: object
       required:
         - displayName
       properties:
         uid:
-          allOf:
-            - $ref: './common.yml#/schemas/Uid'
-            - description: The unique ID associated with this user
-              type: object
+          $ref: './common.yml#/schemas/UidRead'
         accessibility:
           $ref: 'common.yml#/schemas/Accessibility'
         avatar:
           $ref: 'common.yml#/schemas/Image'
         contentQualityScore:
-          allOf:
-            - $ref: './common.yml#/SocialScore'
-            - description: Quality of a units content. Are their posts relevant? Do they have images, how many likes, how many comments. Have posts been reported as bad or inappropriate content.
-              type: integer
-              readOnly: true
+          $ref: './common.yml#/schemas/SocialScore'
         displayName:
           description: The publicly displayed name for this user.
           type: string
         effectiveDate:
-          $ref: './common.yml#/EffectiveDate'
+          $ref: './common.yml#/schemas/EffectiveDate'
         effectiveDateRanges:
-          $ref: './common.yml#/EffectiveDateRanges'
+          $ref: './common.yml#/schemas/EffectiveDateRanges'
         freshnessScore:
-          allOf:
-            - $ref: './common.yml#/SocialScore'
-            - description: How active the user is, how often the log in, how often they interact.
-              type: integer
-              readOnly: true
+          $ref: './common.yml#/schemas/SocialScore'
         longDescription:
           description: A longer description that a user can add for themself.
           type: string
@@ -143,11 +269,7 @@ components:
           items:
             type: string
         qualityScore:
-          allOf:
-            - $ref: './common.yml#/SocialScore'
-            - description: Quality of a user's identifying data. The more information the unit has filled out (phone, address, logo, about, etc) the higher the quality.
-              type: integer
-              readOnly: true
+          $ref: './common.yml#/schemas/SocialScore'
         shortDescription:
           description: A short description that a user can add for themself.
           type: string
@@ -172,12 +294,9 @@ components:
       description: Personal fieldset data
       properties:
         uid:
-          allOf:
-            - $ref: './common.yml#/schemas/Uid'
-            - description: The unique ID associated with this user
-              type: object
+          $ref: './common.yml#/schemas/UidRead'
         accessibility:
-          $ref: './common.yml#/components/schemas/Accessibility'
+          $ref: './common.yml#/schemas/Accessibility'
         birthdate:
           type: string
           format: date
@@ -195,6 +314,29 @@ components:
         emailVerified:
           type: boolean
         location:
-          $ref: './locations.yml#/components/schemas/Location'
+          $ref: './locations.yml#/components/schemas/LocationBasic'
         locationVerified:
           type: boolean
+    UserUnits:
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: './units.yml#/components/schemas/AuthorizationAttribute'
+        effectiveDate:
+          $ref: './common.yml#/schemas/EffectiveDate'
+        effectiveDateRanges:
+          $ref: './common.yml#/schemas/EffectiveDateRanges'
+        unit:
+          type: object
+          description: The unit that granted this membership and attributes attribute.
+          properties:
+            uid:
+              $ref: './common.yml#/schemas/UidRead'
+            name:
+              type: string
+            unitType:
+              type: string
+              enum:
+                $ref: './units.yml#/components/schemas/UnitTypeEnumValues'

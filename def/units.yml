@@ -1,0 +1,36 @@
+openapi: '3.0.2'
+info:
+  title: 'K.A.O.S. Units API'
+  version: '1.0'
+components:
+  schemas:
+    AuthorizationAttribute:
+      type: string
+      enum:
+        - contributer
+        - channel manager
+        - event manager
+        - moderator
+        - user manager
+    AuthorizationAttributes:
+      type: array
+      description: "Authorization attributes may be one of the following values:
+
+        - **channel creator** - Can create channels and edit or delete own channels.
+
+        - **channel manager** - Can create, edit, and delete channels. Can set channel membership for any channel.
+          Not a member of every channel nor authorized to do anything within a channel unless given additional
+          authorization attributes within that channel, which the manager can give to themselves.
+
+        - **event manager** - Coming soon
+
+        - **moderator** - Can make posts as well as edit or delete any posts.
+
+        - **user manager** - Can add or remove users and set authorization attributes to other users.
+        "
+      items:
+        $ref: '#/components/schemas/AuthorizationAttribute'
+    UnitTypeEnumValues:
+      - retailer
+      - team
+      - venue
