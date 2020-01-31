@@ -2,6 +2,19 @@ openapi: '3.0.2'
 info:
   title: 'K.A.O.S. Units API'
   version: '1.0'
+paths:
+  /units:
+    get:
+      summary: List units
+      responses:
+        200:
+          description: A list of units
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unit'
 components:
   schemas:
     AuthorizationAttribute:
@@ -30,7 +43,165 @@ components:
         "
       items:
         $ref: '#/components/schemas/AuthorizationAttribute'
-    UnitTypeEnumValues:
-      - retailer
-      - team
-      - venue
+    Unit:
+      type: object
+      properties:
+        basic:
+          oneOf:
+            - $ref: '#/components/schemas/UnitTypeRetailer'
+            - $ref: '#/components/schemas/UnitTypeTeam'
+            - $ref: '#/components/schemas/UnitTypeVenue'
+          discriminator:
+            propertyName: type
+            mapping:
+              retailer: '#/components/schemas/UnitTypeRetailer'
+              team: '#/components/schemas/UnitTypeTeam'
+              venue: '#/components/schemas/UnitTypeVenue'
+        hierarchy:
+          $ref: '#/components/schemas/UnitHierarchy'
+        networks:
+          description: Array of network ID's for the networks this unit is a part of.
+          type: array
+          items:
+            type: string
+    UnitBasic:
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        uid:
+          $ref: './common.yml#/schemas/UidRead'
+        accessibility:
+          $ref: './common.yml#/schemas/Accessibility'
+        activityScore:
+          $ref: './common.yml#/schemas/SocialScore'
+        banner:
+          $ref: './common.yml#/schemas/Image'
+        contentQualityScore:
+          $ref: './common.yml#/schemas/SocialScore'
+        email:
+          type: string
+        effectiveDate:
+          $ref: './common.yml#/schemas/EffectiveDate'
+        effectiveDateRanges:
+          $ref: './common.yml#/schemas/EffectiveDateRanges'
+        freshnessScore:
+          $ref: './common.yml#/schemas/SocialScore'
+        location:
+          $ref: './locations.yml#/components/schemas/Location'
+        logo:
+          $ref: './common.yml#/schemas/Image'
+        longDescription:
+          type: string
+        name:
+          type: string
+        phoneNumber:
+          $ref: './common.yml#/schemas/PhoneNumber'
+        qualityScore:
+          $ref: './common.yml#/schemas/SocialScore'
+        shortDescription:
+          type: string
+          maxLength: 500
+        type:
+          type: string
+          description: The unit type.
+          enum:
+            - retailer
+            - team
+            - venue
+        vanityUrlPath:
+          type: string
+        welcomeMessage:
+          type: string
+        website:
+          type: string
+    UnitHierarchy:
+      type: object
+      properties:
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitMicro'
+        parent:
+          $ref: '#/components/schemas/UnitMicro'
+    UnitMicro:
+      type: object
+      description: The parent unit.
+      nullable: true
+      properties:
+        uid:
+          $ref: './common.yml#/schemas/UidRead'
+        name:
+          type: string
+          readOnly: true
+        url:
+          type: string
+          description: The URL to the parent unit's page.
+    UnitTypeRetailer:
+      allOf:
+        - $ref: '#/components/schemas/UnitBasic'
+        - type: object
+          required:
+            - type
+          properties:
+            hasOnlineStore:
+              type: boolean
+            hasPhysicalStore:
+              type: boolean
+            type:
+              type: string
+              enum:
+                - retailer
+    UnitTypeTeam:
+      allOf:
+        - $ref: '#/components/schemas/UnitBasic'
+        - type: object
+          required:
+            - type
+          properties:
+            networks:
+              type: array
+              items:
+                type: string
+            recruiting:
+              type: boolean
+            recruitingMessage:
+              type: string
+            recruitingMinimumAge:
+              type: integer
+              minimum: 0
+            upcomingEvents:
+              $ref: './events.yml#/components/schemas/UpcomingEvents'
+            type:
+              type: string
+              enum:
+                - team
+    UnitTypeVenue:
+      allOf:
+        - $ref: '#/components/schemas/UnitBasic'
+        - type: object
+          required:
+            - type
+          properties:
+            hoursOfOperation:
+              $ref: './common.yml#/schemas/HoursOfOperationWeek'
+            location:
+              $ref: './locations.yml#/components/schemas/Location'
+            networks:
+              type: array
+              items:
+                type: string
+            rules:
+              type: string
+            types:
+              description: Network specific venue types.
+              type: array
+              items:
+                type: string
+            upcomingEvents:
+              $ref: './events.yml#/components/schemas/UpcomingEvents'
+            type:
+              type: string
+              enum:
+                - venue

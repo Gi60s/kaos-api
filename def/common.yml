@@ -11,6 +11,13 @@ parameters:
           default:
             discoverable: true
             public: true
+  ContentQualityScore:
+    name: contentQualityScore
+    description: Filter on content quality score range.
+    in: query
+    style: deepObject
+    schema:
+      $ref: './common.yml#/schemas/SocialScoreRange'
   EffectiveDate:
     name: effectiveDate
     description: The date and time to use as the effective date identifier. Defaults to the current date and time.  See the [effectiveDate docs](./docs.html) for more information.
@@ -35,6 +42,20 @@ parameters:
         end:
           type: string
           format: date-time
+  FreshnessScore:
+    name: freshnessScore
+    description: Filter on freshness score range.
+    in: query
+    style: deepObject
+    schema:
+      $ref: './common.yml#/schemas/SocialScoreRange'
+  QualityScore:
+    name: qualityScore
+    description: Filter on quality score range.
+    in: query
+    style: deepObject
+    schema:
+      $ref: './common.yml#/schemas/SocialScoreRange'
 responses:
   400:
     description: Bad request
@@ -76,6 +97,32 @@ schemas:
     readOnly: true
     items:
       $ref: '#/schemas/EffectiveDate'
+  HoursOfOperationDay:
+    type: array
+    items:
+      type: object
+      properties:
+        open:
+          $ref: '#/schemas/Time'
+        close:
+          $ref: '#/schemas/Time'
+  HoursOfOperationWeek:
+    type: object
+    properties:
+      sunday:
+        $ref: '#/schemas/HoursOfOperationDay'
+      monday:
+        $ref: '#/schemas/HoursOfOperationDay'
+      tuesday:
+        $ref: '#/schemas/HoursOfOperationDay'
+      wednesday:
+        $ref: '#/schemas/HoursOfOperationDay'
+      thursday:
+        $ref: '#/schemas/HoursOfOperationDay'
+      friday:
+        $ref: '#/schemas/HoursOfOperationDay'
+      saturday:
+        $ref: '#/schemas/HoursOfOperationDay'
   Image:
     type: object
     properties:
@@ -98,6 +145,9 @@ schemas:
         type: string
       title:
         type: string
+  PhoneNumber:
+    type: string
+    pattern: ^\+\d+ \d{3}-\d{3}-\d{4}$
   SocialScore:
     type: integer
     minimum: 1
@@ -110,6 +160,10 @@ schemas:
         $ref: '#/schemas/SocialScore'
       maximum:
         $ref: '#/schemas/SocialScore'
+  Time:
+    type: string
+    description: Stored as military time.
+    pattern: ^\d{2}:\d{2}$
   Uid:
     description: Unique identifier (UUID v1, date-time and MAC address)
     type: string

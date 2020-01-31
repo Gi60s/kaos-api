@@ -1,0 +1,10 @@
+components:
+  schemas:
+    Event:
+      type: object
+    UpcomingEvents:
+      type: array
+      maxItems: 4
+      readOnly: true
+      items:
+        $ref: '#/components/schemas/Event'

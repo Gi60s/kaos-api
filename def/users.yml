@@ -21,9 +21,9 @@ paths:
             items:
               type: string
         - $ref: './common.yml#/parameters/Accessibility'
-        - $ref: '#/components/parameters/FreshnessScore'
-        - $ref: '#/components/parameters/QualityScore'
-        - $ref: '#/components/parameters/ContentQualityScore'
+        - $ref: './common.yml#/parameters/FreshnessScore'
+        - $ref: './common.yml#/parameters/QualityScore'
+        - $ref: './common.yml#/parameters/ContentQualityScore'
       responses:
         200:
           description: A list of users
@@ -184,13 +184,6 @@ paths:
           description: Internal server error
 components:
   parameters:
-    ContentQualityScore:
-      name: contentQualityScore
-      description: Filter on content quality score range.
-      in: query
-      style: deepObject
-      schema:
-        $ref: './common.yml#/schemas/SocialScoreRange'
     Fieldsets:
       name: fieldsets
       description: The fieldsets to limit results to.
@@ -205,20 +198,6 @@ components:
             - micro
             - personal
             - units
-    FreshnessScore:
-      name: freshnessScore
-      description: Filter on freshness score range.
-      in: query
-      style: deepObject
-      schema:
-        $ref: './common.yml#/schemas/SocialScoreRange'
-    QualityScore:
-      name: qualityScore
-      description: Filter on quality score range.
-      in: query
-      style: deepObject
-      schema:
-        $ref: './common.yml#/schemas/SocialScoreRange'
     UserId:
       name: userId
       in: path
@@ -337,6 +316,4 @@ components:
             name:
               type: string
             unitType:
-              type: string
-              enum:
-                $ref: './units.yml#/components/schemas/UnitTypeEnumValues'
+              $ref: './units.yml#/components/schemas/UnitBasic/properties/type'
