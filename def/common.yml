@@ -75,9 +75,11 @@ schemas:
       discoverable:
         description: Whether the data can be found through a public search.
         type: boolean
+        default: true
       public:
         description: Whether the value is public when addressed directly.
         type: boolean
+        default: true
   EffectiveDate:
     description: The date and time range for which this information is effective.
     type: object
@@ -125,6 +127,7 @@ schemas:
         $ref: '#/schemas/HoursOfOperationDay'
   Image:
     type: object
+    readOnly: true
     properties:
       id:
         $ref: '#/schemas/UidRead'
