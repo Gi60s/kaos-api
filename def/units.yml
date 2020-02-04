@@ -279,11 +279,116 @@ paths:
           description: Not found
         500:
           description: Internal server error
+  /units/{unitId}/members:
+    parameters:
+      - $ref: '#/components/parameters/pathUnitId'
+    get:
+      summary: Get members
+      tags:
+        - Unit Members
+      responses:
+        200:
+          description: Members retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitMembers'
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+  /units/{unitId}/members/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/pathUnitId'
+      - $ref: '#/components/parameters/pathUserId'
+    put:
+      summary: Join unit membership
+      tags:
+        - Unit Members
+      description: |
+          Defines the roles to apply to the user for this unit.
 
+          - **administrator** - Can grant roles and edit unit basic info.
+
+          - **channel-manager** - Can created, edit, or delete channels. Can assign channel roles.
+
+          - **event-manager** - Coming soon
+
+          - **guest** - Can join channels within the unit with read only access.
+
+          - **member** - Can join channels within the unit and post.
+
+          - **moderator** - Can edit or delete the posts of others.
+
+          - **user-manager** - Can change the roles of other users, but cannot grant the *administrator* role.
+
+          Users can use this endpoint to join a unit with open membership. Users within this unit with *administrator* or *user-manager* roles can add users if the unit has closed membership.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              default: ["member"]
+              minItems: 1
+              items:
+                type: string
+                enum:
+                  - administrator
+                  - channel-manager
+                  - event-manager
+                  - guest
+                  - member
+                  - moderator
+                  - user-manager
+      responses:
+        200:
+          description: User given membership roles to unit.
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+    delete:
+      summary: Leave unit membership
+      tags:
+        - Unit Members
+      description: This will remove all roles for a user within the unit.
+      responses:
+        200:
+          description: User membership roles removed.
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        500:
+          description: Internal server error
 components:
   parameters:
     pathUnitId:
       name: 'unitId'
+      description: The unit ID.
+      in: path
+      required: true
+      schema:
+        type: string
+    pathUserId:
+      name: 'userId'
+      description: The user ID.
       in: path
       required: true
       schema:
@@ -328,32 +433,6 @@ components:
             type: string
             format: binary
   schemas:
-    AuthorizationAttribute:
-      type: string
-      enum:
-        - contributer
-        - channel manager
-        - event manager
-        - moderator
-        - user manager
-    AuthorizationAttributes:
-      type: array
-      description: "Authorization attributes may be one of the following values:
-
-        - **channel creator** - Can create channels and edit or delete own channels.
-
-        - **channel manager** - Can create, edit, and delete channels. Can set channel membership for any channel.
-          Not a member of every channel nor authorized to do anything within a channel unless given additional
-          authorization attributes within that channel, which the manager can give to themselves.
-
-        - **event manager** - Coming soon
-
-        - **moderator** - Can make posts as well as edit or delete any posts.
-
-        - **user manager** - Can add or remove users and set authorization attributes to other users.
-        "
-      items:
-        $ref: '#/components/schemas/AuthorizationAttribute'
     Unit:
       type: object
       properties:
@@ -370,6 +449,8 @@ components:
               venue: '#/components/schemas/UnitTypeVenue'
         hierarchy:
           $ref: '#/components/schemas/UnitHierarchy'
+        members:
+          $ref: '#/components/schemas/UnitMembers'
         networks:
           description: Array of network ID's for the networks this unit is a part of.
           type: array
@@ -436,6 +517,10 @@ components:
             $ref: '#/components/schemas/UnitMicro'
         parent:
           $ref: '#/components/schemas/UnitMicro'
+    UnitMembers:
+      type: array
+      items:
+        $ref: './users.yml#/components/schemas/UserMicro'
     UnitMicro:
       type: object
       description: The parent unit.
