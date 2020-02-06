@@ -286,6 +286,14 @@ paths:
       summary: Get members
       tags:
         - Unit Members
+      parameters:
+        - name: roles
+          description: The roles to filter results to.
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/UnitRole'
       responses:
         200:
           description: Members retrieved
@@ -316,17 +324,17 @@ paths:
 
           - **administrator** - Can grant roles and edit unit basic info.
 
-          - **channel-manager** - Can created, edit, or delete channels. Can assign channel roles.
+          - **channelManager** - Can created, edit, or delete channels. Can assign channel roles.
 
-          - **event-manager** - Coming soon
+          - **channelModerator** - Can edit or delete the posts of others.
+
+          - **eventManager** - Coming soon
 
           - **guest** - Can join channels within the unit with read only access.
 
           - **member** - Can join channels within the unit and post.
 
-          - **moderator** - Can edit or delete the posts of others.
-
-          - **user-manager** - Can change the roles of other users, but cannot grant the *administrator* role.
+          - **userManager** - Can change the roles of other users, but cannot grant the *administrator* role.
 
           Users can use this endpoint to join a unit with open membership. Users within this unit with *administrator* or *user-manager* roles can add users if the unit has closed membership.
       requestBody:
@@ -337,15 +345,7 @@ paths:
               default: ["member"]
               minItems: 1
               items:
-                type: string
-                enum:
-                  - administrator
-                  - channel-manager
-                  - event-manager
-                  - guest
-                  - member
-                  - moderator
-                  - user-manager
+                $ref: '#/components/schemas/UnitRole'
       responses:
         200:
           description: User given membership roles to unit.
@@ -452,10 +452,12 @@ components:
         members:
           $ref: '#/components/schemas/UnitMembers'
         networks:
-          description: Array of network ID's for the networks this unit is a part of.
+          description: Array of network's that this unit is a part of.
           type: array
           items:
-            type: string
+            $ref: './networks.yml#/components/schemas/NetworkMicro'
+        roles:
+          $ref: '#/components/schemas/UnitRoles'
     UnitBasic:
       type: object
       required:
@@ -520,7 +522,30 @@ components:
     UnitMembers:
       type: array
       items:
-        $ref: './users.yml#/components/schemas/UserMicro'
+        allOf:
+          - $ref: './users.yml#/components/schemas/UserMicro'
+          - type: object
+            properties:
+              roles:
+                type: array
+                description: An array of the user's roles within the unit,
+                  inlucing the unit ID that gave the user that role.
+                  (Users may have been assigned roles in parent units and
+                  those roles propagate to child units.)
+
+                  This fieldset works best in conju
+                items:
+                  type: object
+                  properties:
+                    role:
+                      $ref: '#/components/schemas/UnitRole'
+                    unitId:
+                      allOf:
+                        - type: string
+                          description: The ID of the unit that assigned this role.
+                            It's possible that this role was assigned by a parent
+                            unit and the roles of parent units propagate to child units.
+                        - $ref: '#/components/schemas/UnitBasic/properties/uid'
     UnitMicro:
       type: object
       description: The parent unit.
@@ -534,6 +559,65 @@ components:
         url:
           type: string
           description: The URL to the parent unit's page.
+    UnitRole:
+      type: string
+      enum:
+        - administrator
+        - channelManager
+        - channelModerator
+        - eventManager
+        - guest
+        - member
+        - userManager
+    UnitRoles:
+      type: object
+      description: A map of roles and the user's who have that role
+        within the unit, inlucing the unit ID that gave the user that
+        role. (Users may have been assigned roles in parent units and
+        those roles propagate to child units.)
+      properties:
+        administrator:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitRolesAssignment'
+        channelCreator:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitRolesAssignment'
+        channelManager:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitRolesAssignment'
+        eventManager:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitRolesAssignment'
+        guest:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitRolesAssignment'
+        member:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitRolesAssignment'
+        channelModerator:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitRolesAssignment'
+        userManager:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitRolesAssignment'
+    UnitRolesAssignment:
+      allOf:
+        - $ref: './users.yml#/components/schemas/UserMicro'
+        - type: object
+          properties:
+            unitId:
+              allOf:
+                - type: string
+                  description: The unit ID that gave the user this role.
+                - $ref: '#/components/schemas/UnitBasic/properties/uid'
     UnitTypeRetailer:
       allOf:
         - $ref: '#/components/schemas/UnitBasic'
