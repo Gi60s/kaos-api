@@ -1,3 +1,13 @@
 components:
   schemas:
     NetworkMicro:
+      type: object
+      properties:
+        uid:
+          $ref: './common.yml#/schemas/UidRead'
+        name:
+          description: The network's name
+          type: string
+        url:
+          description: The URL to the network's domain.
+          type: string
