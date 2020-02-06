@@ -236,6 +236,27 @@ paths:
           description: Not found
         500:
           description: Internal server error
+  /units/{unitId}/hierarchy:
+    parameters:
+      - $ref: '#/components/parameters/pathUnitId'
+    get:
+      tags:
+        - Unit Hierarchy
+      summary: Get ancestral hierarchy
+      description: Get a list of units that are all ancestors of this unit.
+
+        The first item in the list is the parent, followed by the parent's
+        parent, etc.
+      responses:
+        200:
+          description: A list of units. The first item in the list is
+            the parent, followed by the parent's parent, etc.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnitMicro'
   /units/{unitId}/hierarchy/{childUnitId}:
     parameters:
       - $ref: '#/components/parameters/pathUnitId'
@@ -409,8 +430,10 @@ components:
             - basic
             - activityFeed
             - channels
+            - hierarchy
             - members
-            - units
+            - networks
+            - roles
   requestBodies:
     UnitBasic:
       content:
