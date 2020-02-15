@@ -459,6 +459,9 @@ components:
     Unit:
       type: object
       properties:
+        activityFeed:
+          description: TODO - This is actually a channel object.
+          type: string
         basic:
           oneOf:
             - $ref: '#/components/schemas/UnitTypeRetailer'
@@ -470,6 +473,9 @@ components:
               retailer: '#/components/schemas/UnitTypeRetailer'
               team: '#/components/schemas/UnitTypeTeam'
               venue: '#/components/schemas/UnitTypeVenue'
+        channels:
+          description: TODO - This is actually an array of channel objects.
+          type: string
         hierarchy:
           $ref: '#/components/schemas/UnitHierarchy'
         members:

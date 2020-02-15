@@ -1,0 +1,139 @@
+openapi: '3.0.2'
+info:
+  title: K.A.O.S. Channels API
+  version: 'v1'
+paths:
+  /channels:
+    get:
+      tags:
+        - Channels
+      summary: List channels
+      description: Get a list of channels.
+      parameters:
+        - $ref: './common.yml#/parameters/EffectiveDate'
+        - $ref: './common.yml#/parameters/EffectiveDateRange'
+        - $ref: '#/components/parameters/UnitIds'
+        - $ref: '#/components/parameters/Fieldsets'
+      responses:
+        200:
+          description: A list of channels.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Channel'
+components:
+  parameters:
+    ChannelIds:
+      name: channelId
+      in: query
+      required: true
+      schema:
+        $ref: './common.yml#/schemas/UidRead'
+    Fieldsets:
+      name: fieldsets
+      description: Specify which fieldsets to return.
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        default: ['basic']
+        minItems: 1
+        items:
+          type: string
+          enum:
+            - basic
+            - members
+            - pins
+            - posts
+    UnitIds:
+      name: unitId
+      description: A comma seperated list of unit IDs to filter results to.
+      in: query
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+  schemas:
+    Channel:
+      type: object
+      properties:
+        basic:
+          $ref: '#/components/schemas/ChannelBasic'
+        members:
+          type: array
+          description: All members of this channel
+          items:
+            $ref: '#/components/schemas/ChannelMember'
+        pins:
+          description: Most recently pinned posts
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/PostTypes'
+        posts:
+          type: array
+          maxItems: 50
+          description: Latest posts
+          items:
+            $ref: '#/components/schemas/PostTypes'
+    ChannelBasic:
+      type: object
+      properties:
+        id:
+          $ref: './common.yml#/schemas/UidRead'
+        name:
+          type: string
+        description:
+          type: string
+        private:
+          type: boolean
+          description: A private channel can be joined by invite only and is not found via search except by channel managers.
+        unit:
+          allOf:
+            - type: object
+              description: The unit this channel belongs to
+            - $ref: './units.yml#/components/schemas/UnitMicro'
+        effectiveDate:
+          $ref: './common.yml#/schemas/EffectiveDate'
+        effectiveDateRanges:
+          $ref: './common.yml#/schemas/EffectiveDateRanges'
+    ChannelMember:
+      allOf:
+        - $ref: './users.yml#/components/schemas/UserMicro'
+        - type: object
+          properties:
+            authorizationAttributes:
+              $ref: '#/components/schemas/ChannelMemberAuthorizations'
+    ChannelMemberAuthorizations:
+      type: array
+      description: "Channel authorization attributes. When setting a member
+        with no authorization attributes it is the same as removing the member.
+
+      - **contributer** - Can make posts, comments, and reactions as well as edit and delete own content.
+
+      - **guest** - Can see posts and comments but not add posts, comments, or reactions.
+
+      - **moderator** can see posts and edit or delete existing posts.
+
+      - **user manager** - Can add or remove users and set authorization attributes to other users.
+
+      - **channel manager** - Can set channel basic info."
+      items:
+        type: string
+        enum:
+          - channel manager
+          - contributer
+          - follower
+          - moderator
+          - user manager
+    ChannelMicro:
+      type: object
+      properties:
+        id:
+          $ref: './common.yml#/Uid2'
+        name:
+          type: string

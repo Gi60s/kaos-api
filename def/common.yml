@@ -151,6 +151,24 @@ schemas:
   PhoneNumber:
     type: string
     pattern: ^\+\d+ \d{3}-\d{3}-\d{4}$
+  Reactions:
+    type: object
+    readOnly: true
+    properties:
+      total:
+        type: integer
+      like:
+        type: integer
+      lol:
+        type: integer
+      mad:
+        type: integer
+      sad:
+        type: integer
+      wow:
+        type: integer
+      love:
+        type: integer
   SocialScore:
     type: integer
     minimum: 1
@@ -178,3 +196,20 @@ schemas:
     description: Unique identifier (UUID v1, date-time and MAC address)
     type: string
     writeOnly: true
+  Video:
+    type: object
+    properties:
+      id:
+        $ref: '#/schemas/UidRead'
+      mediaType:
+        type: string
+        enum:
+          - video
+      provider:
+        type: string
+        enum:
+          - YouTube
+          - Vimeo
+      url:
+        type: string
+        description: The embed URL.
